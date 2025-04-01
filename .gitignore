@@ -1,0 +1,14 @@
+# Node.js
+node_modules/
+.env
+package-lock.json
+yarn.lock
+
+# React
+frontend/node_modules/
+frontend/.env
+frontend/.next/
+
+# Logs
+logs/
+*.log
