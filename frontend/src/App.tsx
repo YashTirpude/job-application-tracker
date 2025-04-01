@@ -1,7 +1,20 @@
-export default function App() {
+import React from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+
+import ApplicationList from "./components/ApplicationList";
+import HomePage from "./pages/HomePage";
+
+const App = () => {
   return (
-    <div className="h-screen flex items-center justify-center bg-blue-500 text-white text-3xl font-bold">
-      Tailwind is working! 🎉
-    </div>
+    <Router>
+      <div className="container mx-auto px-4 py-6">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/applications" element={<ApplicationList />} />
+        </Routes>
+      </div>
+    </Router>
   );
-}
+};
+
+export default App;
