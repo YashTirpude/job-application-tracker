@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import JobApplication from "../models/Application";
 
-// 📌 Create a new job application
 export const createApplication = async (req: Request, res: Response) => {
   try {
     const {
@@ -14,10 +13,8 @@ export const createApplication = async (req: Request, res: Response) => {
       jobUrl,
     } = req.body;
 
-    // Resume file URL (uploaded to Cloudinary)
     const resumeUrl = req.file ? req.file.path : null;
 
-    // Create a new job application document
     const newApplication = new JobApplication({
       jobTitle,
       company,
@@ -39,8 +36,6 @@ export const createApplication = async (req: Request, res: Response) => {
   }
 };
 
-// 📌 Get all job applications
-
 export const getAllApplications = async (req: Request, res: Response) => {
   try {
     const applications = await JobApplication.find();
@@ -52,8 +47,6 @@ export const getAllApplications = async (req: Request, res: Response) => {
     return;
   }
 };
-
-// 📌 Get a single job application by ID
 
 export const getApplicationById = async (req: Request, res: Response) => {
   try {
@@ -74,8 +67,6 @@ export const getApplicationById = async (req: Request, res: Response) => {
     return;
   }
 };
-
-// 📌 Update a job application
 
 export const updateApplication = async (req: Request, res: Response) => {
   try {
@@ -100,8 +91,6 @@ export const updateApplication = async (req: Request, res: Response) => {
     return;
   }
 };
-
-// 📌 Delete a job application
 
 export const deleteApplication = async (req: Request, res: Response) => {
   try {
