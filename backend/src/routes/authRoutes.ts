@@ -74,6 +74,7 @@ router.get("/logout", (req, res) => {
   });
 });
 
+// Manual Auth
 router.post("/register", async (req: Request, res: Response): Promise<void> => {
   try {
     const { displayName, email, password } = req.body;
