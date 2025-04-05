@@ -10,6 +10,7 @@ interface IJobApplication extends Document {
   jobPlatform: string;
   jobUrl: string;
   resumeUrl?: string; // This field is optional for now
+  user: mongoose.Types.ObjectId;
 }
 
 // Define the JobApplication schema
@@ -46,6 +47,11 @@ const jobApplicationSchema: Schema = new Schema(
     resumeUrl: {
       type: String, // URL of the uploaded resume (stored in cloud storage)
       required: false, // Not required initially
+    },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true, // ✅ This links each app to a specific user
     },
   },
   { timestamps: true } // Automatically adds createdAt and updatedAt fields

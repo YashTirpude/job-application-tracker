@@ -5,7 +5,7 @@ import User from "../models/User";
 
 dotenv.config();
 
-interface AuthRequest extends Request {
+export interface AuthRequest extends Request {
   user?: any;
 }
 

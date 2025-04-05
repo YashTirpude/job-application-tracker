@@ -4,6 +4,8 @@ import passport from "../config/passportConfig";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User";
+import { forgotPassword } from "../controllers/authController";
+import { resetPassword } from "../controllers/resetPassword ";
 
 const router = Router();
 
@@ -156,5 +158,8 @@ router.post("/login", async (req: Request, res: Response): Promise<void> => {
     return;
   }
 });
+
+router.post("/forgot-password", forgotPassword);
+router.post("/reset-password/:token", resetPassword);
 
 export default router;
