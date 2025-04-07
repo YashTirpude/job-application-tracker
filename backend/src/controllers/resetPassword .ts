@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
+import crypto from "crypto";
 import User from "../models/User";
 import bcrypt from "bcryptjs";
+
 export const resetPassword = async (
   req: Request,
   res: Response
@@ -14,8 +16,11 @@ export const resetPassword = async (
       return;
     }
 
+    // Hash the incoming token to match what's stored in the DB
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
     const user = await User.findOne({
-      resetPasswordToken: token,
+      resetPasswordToken: hashedToken,
       resetPasswordExpires: { $gt: new Date() },
     });
 

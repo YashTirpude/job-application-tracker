@@ -40,19 +40,11 @@ router.get(
         { expiresIn: "7d" }
       );
 
-      res.json({
-        message: "Google login successful",
-        user: {
-          _id: user._id,
-          displayName: user.displayName,
-          email: user.email,
-          photo: user.photo,
-        },
-        token,
-      });
+      // 🔁 Redirect to frontend with token
+      res.redirect(`${process.env.CLIENT_URL}/auth-redirect?token=${token}`);
     } catch (error) {
       console.error("Google authentication error:", error);
-      res.status(500).json({ message: "Server error" });
+      res.redirect(`${process.env.CLIENT_URL}/login?error=oauth`);
     }
   }
 );
