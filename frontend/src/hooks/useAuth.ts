@@ -26,7 +26,7 @@ const useAuth = () => {
         });
 
         dispatch(setUser(res.data.user));
-        dispatch(setToken(token)); // 💡 add this line
+        dispatch(setToken(token));
       } catch (err) {
         dispatch(logout());
       } finally {

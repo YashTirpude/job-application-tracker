@@ -35,7 +35,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
     try {
       const res = await axios.post(endpoint, data, { withCredentials: true });
       localStorage.setItem("token", res.data.token);
-      dispatch(setUser(res.data.user)); // 👈 Add this line!
+      dispatch(setUser(res.data.user));
       navigate("/applications");
     } catch (err: any) {
       alert(err.response?.data?.message || "Auth failed.");

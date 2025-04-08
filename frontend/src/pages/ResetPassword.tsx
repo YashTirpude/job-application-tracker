@@ -1,4 +1,3 @@
-// src/pages/ResetPassword.tsx
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -20,7 +19,7 @@ const ResetPassword = () => {
       );
 
       setMessage(response.data.message);
-      setTimeout(() => navigate("/login"), 3000); // redirect after success
+      setTimeout(() => navigate("/login"), 3000);
     } catch (error: any) {
       setMessage(error.response?.data?.message || "Something went wrong.");
     }

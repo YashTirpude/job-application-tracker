@@ -1,4 +1,3 @@
-// ApplicationList.tsx
 import React, { useEffect, useState } from "react";
 import { fetchApplications } from "../services/api";
 
