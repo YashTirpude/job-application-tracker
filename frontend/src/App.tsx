@@ -5,24 +5,60 @@ import ApplicationList from "./components/ApplicationList";
 import HomePage from "./pages/HomePage";
 import ResetPassword from "./pages/ResetPassword";
 import AuthRedirect from "./pages/AuthRedirect";
-import ProtectedRoute from "./utils/ProtectedRoute";
+import Layout from "./components/Layout";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
+import useAuth from "./hooks/useAuth";
+import PrivateRoute from "./components/routes/PrivateRoute";
+import PublicRoute from "./components/routes/PublicRoute";
 
 const App = () => {
+  useAuth();
+
   return (
     <Router>
       <div className="container mx-auto px-4 py-6">
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route
+            path="/"
+            element={
+              <PublicRoute>
+                <Layout>
+                  <HomePage />
+                </Layout>
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              <PublicRoute>
+                <Layout>
+                  <Login />
+                </Layout>
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <PublicRoute>
+                <Layout>
+                  <Register />
+                </Layout>
+              </PublicRoute>
+            }
+          />
           <Route
             path="/applications"
             element={
-              <ProtectedRoute>
-                <ApplicationList />
-              </ProtectedRoute>
+              <PrivateRoute>
+                <Layout>
+                  <ApplicationList />
+                </Layout>
+              </PrivateRoute>
             }
           />
-          <Route path="/login" element={<Login />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/auth-redirect" element={<AuthRedirect />} />
         </Routes>
