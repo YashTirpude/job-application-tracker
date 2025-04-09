@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "../index";
-import api from "../../services/api"; // ✅ Update this path as needed
+import api from "../../services/api";
 
 export interface Application {
   _id: string;
@@ -29,7 +29,6 @@ const initialState: ApplicationState = {
   error: null,
 };
 
-// ✅ Create application
 export const addApplication = createAsyncThunk<
   Application,
   { formData: FormData; token: string },
@@ -49,7 +48,6 @@ export const addApplication = createAsyncThunk<
   }
 });
 
-// ✅ Fetch applications
 export const getApplications = createAsyncThunk(
   "applications/fetchAll",
   async (_, { getState, rejectWithValue }) => {
