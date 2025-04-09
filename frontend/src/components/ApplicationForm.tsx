@@ -1,173 +1,229 @@
-import axios from "axios";
 import { useSelector } from "react-redux";
 import { RootState } from "../store";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../store";
+import { addApplication } from "../store/slices/applicationSlice";
+import { useForm, Controller } from "react-hook-form";
 
 const ApplicationForm = () => {
   const token = useSelector((state: RootState) => state.auth.token);
-
+  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+  const [uploadProgress, setUploadProgress] = useState(0);
 
-  const [formData, setFormData] = useState({
-    jobTitle: "",
-    company: "",
-    description: "",
-    dateApplied: "",
-    status: "applied",
-    jobPlatform: "",
-    jobUrl: "",
-    resume: null as File | null,
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    defaultValues: {
+      jobTitle: "",
+      company: "",
+      description: "",
+      dateApplied: "",
+      status: "applied",
+      jobPlatform: "",
+      jobUrl: "",
+      resume: null,
+    },
   });
 
-  // Update form fields
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  // Handle file input
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setFormData((prev) => ({ ...prev, resume: e.target.files![0] }));
-    }
-  };
-
-  // Just console.log for now — we'll send data in Step 2
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const onSubmit = async (data: any) => {
     if (!token) {
       console.error("No token found. Please login.");
       return;
     }
 
     try {
+      setUploadProgress(0);
+
       const formDataToSend = new FormData();
-
-      formDataToSend.append("jobTitle", formData.jobTitle);
-      formDataToSend.append("company", formData.company);
-      formDataToSend.append("description", formData.description);
-      formDataToSend.append("dateApplied", formData.dateApplied);
-      formDataToSend.append("status", formData.status);
-      formDataToSend.append("jobPlatform", formData.jobPlatform);
-      formDataToSend.append("jobUrl", formData.jobUrl);
-
-      if (formData.resume) {
-        formDataToSend.append("resume", formData.resume);
+      formDataToSend.append("jobTitle", data.jobTitle);
+      formDataToSend.append("company", data.company);
+      formDataToSend.append("description", data.description);
+      formDataToSend.append("dateApplied", data.dateApplied);
+      formDataToSend.append("status", data.status);
+      formDataToSend.append("jobPlatform", data.jobPlatform);
+      formDataToSend.append("jobUrl", data.jobUrl);
+      if (data.resume) {
+        formDataToSend.append("resume", data.resume);
       }
 
-      const res = await fetch("/api/applications", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formDataToSend,
-      });
+      let simulatedProgress = 0;
+      const progressInterval = setInterval(() => {
+        const increment = Math.max(
+          1,
+          Math.floor((100 - simulatedProgress) / 10)
+        );
+        simulatedProgress = Math.min(simulatedProgress + increment, 90);
+        setUploadProgress(simulatedProgress);
+      }, 200);
 
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.message || "Something went wrong");
-      }
+      const result = await dispatch(
+        addApplication({ formData: formDataToSend, token })
+      ).unwrap();
 
-      const result = await res.json();
-      console.log("✅ Application submitted:", result);
-    } catch (error: any) {
-      console.error("❌ Submission error:", error);
+      clearInterval(progressInterval);
+      setUploadProgress(100);
+
+      console.log("✅ Submitted:", result);
+
+      setTimeout(() => {
+        navigate("/applications");
+      }, 500);
+    } catch (err: any) {
+      console.error("❌ Error:", err.message || err);
+      setUploadProgress(0);
     }
   };
-  console.log("Token in Redux:", token);
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 max-w-xl mx-auto mt-10">
-      <input
-        type="text"
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="space-y-4 max-w-xl mx-auto mt-10"
+    >
+      <Controller
         name="jobTitle"
-        placeholder="Job Title"
-        value={formData.jobTitle}
-        onChange={handleChange}
-        className="w-full p-2 border rounded"
-        required
+        control={control}
+        rules={{ required: "Job Title is required" }}
+        render={({ field }) => (
+          <input
+            {...field}
+            type="text"
+            placeholder="Job Title"
+            className="w-full p-2 border rounded"
+          />
+        )}
       />
+      {errors.jobTitle && (
+        <p className="text-sm text-red-600">{errors.jobTitle.message}</p>
+      )}
 
-      <input
-        type="text"
+      <Controller
         name="company"
-        placeholder="Company"
-        value={formData.company}
-        onChange={handleChange}
-        className="w-full p-2 border rounded"
-        required
+        control={control}
+        rules={{ required: "Company is required" }}
+        render={({ field }) => (
+          <input
+            {...field}
+            type="text"
+            placeholder="Company"
+            className="w-full p-2 border rounded"
+          />
+        )}
       />
+      {errors.company && (
+        <p className="text-sm text-red-600">{errors.company.message}</p>
+      )}
 
-      <textarea
+      <Controller
         name="description"
-        placeholder="Job Description"
-        value={formData.description}
-        onChange={handleChange}
-        className="w-full p-2 border rounded"
-        rows={4}
-        required
+        control={control}
+        rules={{ required: "Job Description is required" }}
+        render={({ field }) => (
+          <textarea
+            {...field}
+            placeholder="Job Description"
+            className="w-full p-2 border rounded"
+            rows={4}
+          />
+        )}
       />
+      {errors.description && (
+        <p className="text-sm text-red-600">{errors.description.message}</p>
+      )}
 
-      <input
-        type="date"
+      <Controller
         name="dateApplied"
-        value={formData.dateApplied}
-        onChange={handleChange}
-        className="w-full p-2 border rounded"
-        required
+        control={control}
+        rules={{ required: "Date Applied is required" }}
+        render={({ field }) => (
+          <input {...field} type="date" className="w-full p-2 border rounded" />
+        )}
       />
+      {errors.dateApplied && (
+        <p className="text-sm text-red-600">{errors.dateApplied.message}</p>
+      )}
 
-      <select
+      <Controller
         name="status"
-        value={formData.status}
-        onChange={handleChange}
-        className="w-full p-2 border rounded"
-      >
-        <option value="applied">Applied</option>
-        <option value="interview">Interview</option>
-        <option value="rejected">Rejected</option>
-        <option value="offer">Offer</option>
-      </select>
+        control={control}
+        render={({ field }) => (
+          <select {...field} className="w-full p-2 border rounded">
+            <option value="applied">Applied</option>
+            <option value="interview">Interview</option>
+            <option value="rejected">Rejected</option>
+            <option value="offer">Offer</option>
+          </select>
+        )}
+      />
 
-      <input
-        type="text"
+      <Controller
         name="jobPlatform"
-        placeholder="Job Platform (e.g. LinkedIn)"
-        value={formData.jobPlatform}
-        onChange={handleChange}
-        className="w-full p-2 border rounded"
-        required
+        control={control}
+        rules={{ required: "Job Platform is required" }}
+        render={({ field }) => (
+          <input
+            {...field}
+            type="text"
+            placeholder="Job Platform (e.g. LinkedIn)"
+            className="w-full p-2 border rounded"
+          />
+        )}
       />
+      {errors.jobPlatform && (
+        <p className="text-sm text-red-600">{errors.jobPlatform.message}</p>
+      )}
 
-      <input
-        type="text"
+      <Controller
         name="jobUrl"
-        placeholder="Job Listing URL"
-        value={formData.jobUrl}
-        onChange={handleChange}
-        className="w-full p-2 border rounded"
-        required
+        control={control}
+        rules={{ required: "Job URL is required" }}
+        render={({ field }) => (
+          <input
+            {...field}
+            type="text"
+            placeholder="Job Listing URL"
+            className="w-full p-2 border rounded"
+          />
+        )}
       />
+      {errors.jobUrl && (
+        <p className="text-sm text-red-600">{errors.jobUrl.message}</p>
+      )}
 
-      <input
-        type="file"
+      <Controller
         name="resume"
-        onChange={handleFileChange}
-        className="w-full"
-        accept=".pdf,.doc,.docx"
+        control={control}
+        render={({ field: { value, onChange, ...fieldProps } }) => (
+          <input
+            {...fieldProps}
+            type="file"
+            accept=".pdf,.doc,.docx"
+            className="w-full"
+            onChange={(e) => {
+              const file = e.target.files?.[0] || null;
+              onChange(file);
+            }}
+          />
+        )}
       />
 
       <button
         type="submit"
-        className="bg-blue-600 text-white px-4 py-2 rounded"
+        className="bg-blue-600 text-white px-4 py-2 rounded flex items-center justify-center w-full mt-4"
+        disabled={isSubmitting}
       >
-        Submit Application
+        {isSubmitting ? (
+          <>
+            <span className="inline-block h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span>
+            {uploadProgress}% Complete
+          </>
+        ) : (
+          "Submit Application"
+        )}
       </button>
     </form>
   );

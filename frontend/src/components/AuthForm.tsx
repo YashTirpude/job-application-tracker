@@ -3,9 +3,8 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setUser } from "../store/slices/authSlice";
-import { setToken } from "../store/slices/authSlice"; // also import this
-
-import axios from "axios";
+import { setToken } from "../store/slices/authSlice";
+import api from "../services/api";
 
 interface AuthFormProps {
   type: "login" | "register";
@@ -28,22 +27,16 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
   const navigate = useNavigate();
 
   const onSubmit = async (data: FormValues) => {
-    const endpoint =
-      type === "login"
-        ? "http://localhost:5000/auth/login"
-        : "http://localhost:5000/auth/register";
-
+    const endpoint = type === "login" ? "/auth/login" : "/auth/register";
     try {
-      const res = await axios.post(endpoint, data, { withCredentials: true });
+      const res = await api.post(endpoint, data, { withCredentials: true });
 
       const token = res.data.token;
       const user = res.data.user;
 
-      // Save to Redux
       dispatch(setUser(user));
       dispatch(setToken(token));
 
-      // Save to localStorage for hydration
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
 
@@ -54,7 +47,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:5000/auth/google";
+    window.location.href = `${process.env.REACT_APP_API_URL}/auth/google`;
   };
 
   return (

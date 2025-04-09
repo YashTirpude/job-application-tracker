@@ -1,45 +1,35 @@
-import React, { useEffect, useState } from "react";
-import { fetchApplications } from "../services/api";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../store";
+import { getApplications } from "../store/slices/applicationSlice";
 import { useNavigate } from "react-router-dom";
 
 const ApplicationList = () => {
-  const [applications, setApplications] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+
+  const { applications, loading, error } = useSelector(
+    (state: RootState) => state.applications
+  );
+
+  const { token } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
-    const getApplications = async () => {
-      try {
-        const data = await fetchApplications();
-        setApplications(data);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching applications:", error);
-        setError("There was an error fetching applications.");
-        setLoading(false);
-      }
-    };
-    getApplications();
-  }, []);
-
-  const navigate = useNavigate();
+    if (token) {
+      dispatch(getApplications());
+    }
+  }, [dispatch, token]);
 
   const handleCreateClick = () => {
     navigate("/create");
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>{error}</div>;
-  }
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <div>
       <h1>Job Applications</h1>
-
       <button
         onClick={handleCreateClick}
         className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
@@ -48,7 +38,7 @@ const ApplicationList = () => {
       </button>
       <ul>
         {applications.map((app) => (
-          <li key={app.id}>
+          <li key={app._id}>
             {app.jobTitle} - {app.company}
           </li>
         ))}
