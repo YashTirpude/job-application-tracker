@@ -14,7 +14,7 @@ const router = express.Router();
 router.post("/", authenticateJWT, upload.single("resume"), createApplication);
 router.get("/", authenticateJWT, getAllApplications);
 router.get("/:id", authenticateJWT, getApplicationById);
-router.put("/:id", authenticateJWT, updateApplication);
+router.put("/:id", authenticateJWT, upload.single("resume"), updateApplication);
 router.delete("/:id", authenticateJWT, deleteApplication);
 
 export default router;

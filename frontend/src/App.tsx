@@ -11,6 +11,7 @@ import Register from "./pages/Register";
 import useAuth from "./hooks/useAuth";
 import PrivateRoute from "./components/routes/PrivateRoute";
 import PublicRoute from "./components/routes/PublicRoute";
+import CreateApplication from "./pages/CreateApplication";
 
 const App = () => {
   useAuth();
@@ -55,6 +56,16 @@ const App = () => {
               <PrivateRoute>
                 <Layout>
                   <ApplicationList />
+                </Layout>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/create"
+            element={
+              <PrivateRoute>
+                <Layout>
+                  <CreateApplication />
                 </Layout>
               </PrivateRoute>
             }

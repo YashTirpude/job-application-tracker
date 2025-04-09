@@ -98,20 +98,34 @@ export const updateApplication = async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
 
-    const application = await JobApplication.findOneAndUpdate(
-      { _id: id, user: req.user._id },
-      req.body,
-      { new: true }
-    );
+    const existingApp = await JobApplication.findOne({
+      _id: id,
+      user: req.user._id,
+    });
 
-    if (!application) {
+    if (!existingApp) {
       res
         .status(404)
         .json({ message: "Application not found or unauthorized" });
       return;
     }
 
-    res.status(200).json(application);
+    const resumeUrl = req.file ? req.file.path : existingApp.resumeUrl;
+
+    const updatedFields = {
+      ...req.body,
+      resumeUrl,
+    };
+
+    const updatedApp = await JobApplication.findByIdAndUpdate(
+      id,
+      updatedFields,
+      {
+        new: true,
+      }
+    );
+
+    res.status(200).json(updatedApp);
   } catch (error) {
     console.error("Error updating application:", error);
     res.status(500).json({ message: "Internal Server Error" });

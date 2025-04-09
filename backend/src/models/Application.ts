@@ -29,11 +29,12 @@ const jobApplicationSchema: Schema = new Schema(
       required: true,
     },
     dateApplied: {
-      type: String,
+      type: Date,
       required: true,
     },
     status: {
       type: String,
+
       required: true,
     },
     jobPlatform: {
@@ -47,6 +48,7 @@ const jobApplicationSchema: Schema = new Schema(
     resumeUrl: {
       type: String, // URL of the uploaded resume (stored in cloud storage)
       required: false, // Not required initially
+      default: "",
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,

@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setUser } from "../store/slices/authSlice";
+import { setToken } from "../store/slices/authSlice"; // also import this
 
 import axios from "axios";
 
@@ -34,8 +35,18 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
 
     try {
       const res = await axios.post(endpoint, data, { withCredentials: true });
-      localStorage.setItem("token", res.data.token);
-      dispatch(setUser(res.data.user));
+
+      const token = res.data.token;
+      const user = res.data.user;
+
+      // Save to Redux
+      dispatch(setUser(user));
+      dispatch(setToken(token));
+
+      // Save to localStorage for hydration
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+
       navigate("/applications");
     } catch (err: any) {
       alert(err.response?.data?.message || "Auth failed.");
