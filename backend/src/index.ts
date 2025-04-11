@@ -7,6 +7,7 @@ import connectDB from "./config/db";
 import applicationRoutes from "./routes/applicationRoutes";
 import passport from "./config/passportConfig";
 import authRoutes from "./routes/authRoutes";
+
 dotenv.config();
 
 connectDB(); // Establish the MongoDB connection

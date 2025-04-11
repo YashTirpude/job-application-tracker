@@ -1,38 +1,45 @@
 import { Response } from "express";
 import JobApplication from "../models/Application";
 import { AuthRequest } from "../middleware/authMiddleware";
+import fs from "fs";
+import multer from "multer";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  "https://lnqqfhuvmniktlcnhcnx.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxucXFmaHV2bW5pa3RsY25oY254Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQzNjk2MjAsImV4cCI6MjA1OTk0NTYyMH0.uH--KOc5iAKwAsQfA_Rc4ZpLw6OC7mxN_cLrZL3HWWs"
+);
 
 export const createApplication = async (req: AuthRequest, res: Response) => {
   try {
-    const {
-      jobTitle,
-      company,
-      description,
-      dateApplied,
-      status,
-      jobPlatform,
-      jobUrl,
-    } = req.body;
+    const applicationData = { ...req.body, user: req.user._id };
 
-    const resumeUrl = req.file ? req.file.path : null;
+    if (req.file) {
+      const fileExt =
+        req.file.originalname.split(".").pop()?.toLowerCase() || "pdf";
+      const fileName = `${req.user._id}-${Date.now()}.${fileExt}`;
 
-    const newApplication = new JobApplication({
-      jobTitle: jobTitle.trim().replace(/^"+|"+$/g, ""),
-      company: company.trim().replace(/^"+|"+$/g, ""),
-      description,
-      dateApplied: dateApplied.trim().replace(/^"+|"+$/g, ""),
-      status: status.trim().replace(/^"+|"+$/g, ""),
-      jobPlatform: jobPlatform.trim().replace(/^"+|"+$/g, ""),
-      jobUrl,
-      resumeUrl,
-      user: req.user._id,
-    });
+      const { data, error } = await supabase.storage
+        .from("resumes")
+        .upload(fileName, req.file.buffer, {
+          contentType: `application/${fileExt}`,
+        });
 
-    await newApplication.save();
-    res.status(201).json(newApplication);
-  } catch (error) {
-    console.error("Error creating application:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+      if (error) throw new Error("Supabase upload failed: " + error.message);
+
+      applicationData.resumeUrl = supabase.storage
+        .from("resumes")
+        .getPublicUrl(fileName).data.publicUrl;
+    }
+
+    const application = new JobApplication(applicationData);
+    await application.save();
+
+    res.status(201).json(application);
+  } catch (error: any) {
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
   }
 };
 

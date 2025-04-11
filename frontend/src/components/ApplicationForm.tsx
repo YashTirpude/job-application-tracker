@@ -82,6 +82,7 @@ const ApplicationForm = () => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
+      encType="multipart/form-data"
       className="space-y-4 max-w-xl mx-auto mt-10"
     >
       <Controller

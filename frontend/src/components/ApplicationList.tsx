@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store";
 import { getApplications } from "../store/slices/applicationSlice";
@@ -64,6 +64,27 @@ const ApplicationList = () => {
       }
     }
     return null;
+  };
+
+  const handleDownload = async (url: any, filename: any) => {
+    const safeFilename = filename.endsWith(".pdf")
+      ? filename
+      : `${filename}.pdf`;
+    console.log("Downloading URL:", url, "as", safeFilename);
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("Download failed");
+      const blob = await response.blob();
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = safeFilename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(link.href);
+    } catch (error) {
+      console.error("Download Error:", error);
+    }
   };
 
   if (loading)
@@ -149,18 +170,20 @@ const ApplicationList = () => {
                       <h3 className="text-sm font-medium text-gray-700">
                         Resume:
                       </h3>
-                      <a
-                        href={app.resumeUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:text-blue-800 text-xs underline"
+                      <button
+                        onClick={() =>
+                          handleDownload(
+                            app.resumeUrl,
+                            `${app.jobTitle}-resume.pdf`
+                          )
+                        }
+                        style={{ marginLeft: "10px" }}
                       >
-                        Open PDF
-                      </a>
+                        Download PDF
+                      </button>
                     </div>
 
                     {thumbnailUrl ? (
-                      // Show Cloudinary-generated thumbnail
                       <div className="resume-thumbnail">
                         <a
                           href={app.resumeUrl}
@@ -176,7 +199,6 @@ const ApplicationList = () => {
                         </a>
                       </div>
                     ) : (
-                      // Fallback PDF preview with icon
                       <div className="resume-placeholder bg-gray-50 rounded border p-4 flex flex-col items-center justify-center h-48">
                         <svg
                           className="w-10 h-10 text-gray-400"
@@ -195,14 +217,17 @@ const ApplicationList = () => {
                         <span className="text-sm text-gray-500 mt-2">
                           PDF Resume
                         </span>
-                        <a
-                          href={app.resumeUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="mt-2 text-blue-600 underline text-xs"
+                        <button
+                          onClick={() =>
+                            handleDownload(
+                              app.resumeUrl,
+                              `${app.jobTitle}-resume.pdf`
+                            )
+                          }
+                          style={{ marginLeft: "10px" }}
                         >
-                          View PDF
-                        </a>
+                          Download PDF
+                        </button>
                       </div>
                     )}
                   </div>

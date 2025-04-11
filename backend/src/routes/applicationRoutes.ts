@@ -1,5 +1,5 @@
 import express from "express";
-import upload from "../config/multerConfig";
+
 import { authenticateJWT } from "../middleware/authMiddleware";
 import {
   createApplication,
@@ -8,9 +8,10 @@ import {
   updateApplication,
   deleteApplication,
 } from "../controllers/applicationController";
+import multer from "multer";
 
 const router = express.Router();
-
+const upload = multer({ storage: multer.memoryStorage() });
 router.post("/", authenticateJWT, upload.single("resume"), createApplication);
 router.get("/", authenticateJWT, getAllApplications);
 router.get("/:id", authenticateJWT, getApplicationById);

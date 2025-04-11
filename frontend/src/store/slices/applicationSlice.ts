@@ -11,7 +11,7 @@ export interface Application {
   status: string;
   jobPlatform: string;
   jobUrl: string;
-  resumeUrl?: string;
+  resumeUrl: string;
   user: string;
   createdAt: string;
   updatedAt: string;
