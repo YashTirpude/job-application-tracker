@@ -45,11 +45,18 @@ export const createApplication = async (req: AuthRequest, res: Response) => {
 
 export const getAllApplications = async (req: AuthRequest, res: Response) => {
   try {
-    const { status, jobPlatform, search, sortBy, order } = req.query;
+    const {
+      status,
+      jobPlatform,
+      search,
+      sortBy,
+      order,
+      page = "1",
+      limit = "10",
+    } = req.query;
 
     const query: any = { user: req.user._id };
 
-    // 🔍 Search
     if (search) {
       query.$or = [
         { jobTitle: { $regex: search, $options: "i" } },
@@ -58,22 +65,31 @@ export const getAllApplications = async (req: AuthRequest, res: Response) => {
       ];
     }
 
-    // 🗂️ Filter
     if (status) query.status = status;
     if (jobPlatform) query.jobPlatform = jobPlatform;
 
-    // 🔃 Sort
     const sortOptions: any = {};
     if (sortBy) {
       sortOptions[sortBy as string] = order === "desc" ? -1 : 1;
     } else {
-      sortOptions.createdAt = -1; // Default: newest first
+      sortOptions.createdAt = -1;
     }
 
-    const applications = await JobApplication.find(query).sort(sortOptions);
+    const pageNum = parseInt(page as string);
+    const limitNum = parseInt(limit as string);
+    const skip = (pageNum - 1) * limitNum;
+
+    const applications = await JobApplication.find(query)
+      .sort(sortOptions)
+      .skip(skip)
+      .limit(limitNum);
+
     console.log("Query:", query);
 
-    res.status(200).json(applications);
+    const total = await JobApplication.countDocuments(query);
+    const hasNextPage = skip + applications.length < total;
+
+    res.status(200).json({ applications, hasNextPage });
   } catch (error) {
     console.error("Error fetching applications:", error);
     res.status(500).json({ message: "Internal Server Error" });

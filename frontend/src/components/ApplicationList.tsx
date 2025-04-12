@@ -1,242 +1,321 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { motion, AnimatePresence } from "framer-motion";
 import { AppDispatch, RootState } from "../store";
-import { getApplications } from "../store/slices/applicationSlice";
+import {
+  deleteApplication,
+  getApplications,
+  setApplications,
+  Application,
+} from "../store/slices/applicationSlice";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const ApplicationList = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const loaderRef = useRef<HTMLDivElement>(null);
+  const [page, setPage] = useState(1);
 
-  const { applications, loading, error } = useSelector(
+  const { token } = useSelector((state: RootState) => state.auth);
+  const { applications, loading, error, hasNextPage } = useSelector(
     (state: RootState) => state.applications
   );
-  const { token } = useSelector((state: RootState) => state.auth);
+  console.log("Redux token:", token); // Debug
+  console.log("Has next page:", hasNextPage); // Debug
+  console.log("Applications:", applications); // Debug
+
+  // Remove duplicates by _id
+  const uniqueApplications = Array.from(
+    new Map(applications.map((app) => [app._id, app])).values()
+  );
 
   useEffect(() => {
     if (token) {
-      dispatch(getApplications());
+      dispatch(getApplications({ page, limit: 10 }));
     }
-  }, [dispatch, token]);
+  }, [dispatch, token, page]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !loading) {
+          setPage((prev) => prev + 1);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (loaderRef.current && hasNextPage) {
+      observer.observe(loaderRef.current);
+    }
+
+    return () => {
+      if (loaderRef.current) {
+        observer.unobserve(loaderRef.current);
+      }
+    };
+  }, [hasNextPage, loading]);
 
   const handleCreateClick = () => {
     navigate("/create");
   };
 
-  // Format date to a more readable format
-  const formatDate = (dateString: any) => {
-    const options: any = { year: "numeric", month: "short", day: "numeric" };
-    return new Date(dateString).toLocaleDateString(undefined, options);
+  const handleEditClick = (id: string) => {
+    navigate(`/edit/${id}`);
   };
 
-  // Get status color based on application status
-  const getStatusColor = (status: any) => {
+  const handleDeleteClick = (id: string) => {
+    setDeleteId(id);
+  };
+
+  const confirmDelete = () => {
+    if (token && deleteId) {
+      dispatch(deleteApplication({ id: deleteId, token })).then(() => {
+        setPage(1);
+        dispatch(setApplications([]));
+        dispatch(getApplications({ page: 1, limit: 10 }));
+      });
+      setDeleteId(null);
+    }
+  };
+
+  const cancelDelete = () => {
+    setDeleteId(null);
+  };
+
+  const handleDownload = async (url: string, filename: string) => {
+    try {
+      const { data } = await axios.get(url, { responseType: "blob" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(data);
+      link.download = filename;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    } catch {
+      console.error("Download failed");
+    }
+  };
+
+  const formatDate = (dateString: string) =>
+    new Date(dateString).toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+
+  const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case "pending":
-        return "text-yellow-600 bg-yellow-50 border-yellow-200";
+        return "badge-warning";
       case "applied":
-        return "text-blue-600 bg-blue-50 border-blue-200";
+        return "badge-primary";
       case "interview":
-        return "text-purple-600 bg-purple-50 border-purple-200";
+        return "badge-secondary";
       case "offer":
-        return "text-green-600 bg-green-50 border-green-200";
+        return "badge-success";
       case "rejected":
-        return "text-red-600 bg-red-50 border-red-200";
+        return "badge-error";
       default:
-        return "text-gray-600 bg-gray-50 border-gray-200";
+        return "badge-neutral";
     }
   };
 
-  // Function to create thumbnail URL for Cloudinary PDFs
-  const getCloudinaryThumbnail = (pdfUrl: any) => {
-    // Check if it's a Cloudinary URL
-    if (pdfUrl && pdfUrl.includes("cloudinary.com")) {
-      // Transform the URL to get a PNG thumbnail of the first page
-      // Format: https://res.cloudinary.com/[cloud_name]/image/upload/c_thumb,pg_1,w_400,h_500,f_png/v1234/path/to/file.pdf
-
-      try {
-        const urlParts = pdfUrl.split("/upload/");
-        if (urlParts.length === 2) {
-          return `${urlParts[0]}/upload/c_thumb,pg_1,w_300,h_400,f_png/${urlParts[1]}`;
-        }
-      } catch (e) {
-        console.error("Error creating thumbnail URL:", e);
-      }
-    }
-    return null;
-  };
-
-  const handleDownload = async (url: any, filename: any) => {
-    const safeFilename = filename.endsWith(".pdf")
-      ? filename
-      : `${filename}.pdf`;
-    console.log("Downloading URL:", url, "as", safeFilename);
-    try {
-      const response = await fetch(url);
-      if (!response.ok) throw new Error("Download failed");
-      const blob = await response.blob();
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = safeFilename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(link.href);
-    } catch (error) {
-      console.error("Download Error:", error);
-    }
-  };
-
-  if (loading)
+  if (loading && page === 1) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <span className="loading loading-spinner loading-lg text-primary"></span>
       </div>
     );
+  }
 
-  if (error)
+  if (error) {
     return (
-      <div className="text-red-600 text-center mt-10 p-4 bg-red-50 rounded-lg border border-red-200">
-        Error loading applications: {error}
+      <div className="alert alert-error max-w-2xl mx-auto mt-10">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-6 w-6 shrink-0 stroke-current"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+        <span>Error loading applications: {error}</span>
       </div>
     );
+  }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Job Applications</h1>
-        <button
+    <div className="container mx-auto px-4 py-10">
+      <div className="flex justify-between items-center mb-8">
+        <motion.h1
+          className="text-3xl font-bold text-base-content"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          Job Applications
+        </motion.h1>
+        <motion.button
+          className="btn btn-primary"
           onClick={handleCreateClick}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
         >
           + New Application
-        </button>
+        </motion.button>
       </div>
 
-      {applications.length === 0 ? (
-        <div className="text-center p-10 bg-gray-50 rounded-lg">
-          <p className="text-gray-600">
+      {uniqueApplications.length === 0 ? (
+        <motion.div
+          className="card bg-base-100 shadow-xl text-center p-10"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <p className="text-base-content/70">
             No applications found. Start by creating a new application.
           </p>
-        </div>
+        </motion.div>
       ) : (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {applications.map((app) => {
-            // Generate thumbnail if it's a Cloudinary PDF
-            const thumbnailUrl = app.resumeUrl
-              ? getCloudinaryThumbnail(app.resumeUrl)
-              : null;
-
-            return (
-              <div
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <AnimatePresence>
+            {uniqueApplications.map((app: Application) => (
+              <motion.div
                 key={app._id}
-                className="bg-white rounded-xl shadow-md hover:shadow-lg transition p-5 space-y-3 border border-gray-100"
+                className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+                whileHover={{ y: -5 }}
               >
-                <div className="flex justify-between items-start">
-                  <h2 className="text-xl font-semibold text-gray-800">
-                    {app.jobTitle}
-                  </h2>
-                  <span
-                    className={`text-xs px-2 py-1 rounded-full font-medium border ${getStatusColor(
-                      app.status
-                    )}`}
-                  >
-                    {app.status}
-                  </span>
-                </div>
-
-                <p className="text-gray-700 font-medium">{app.company}</p>
-
-                <div className="text-sm text-gray-500 space-y-1">
-                  <p>Applied: {formatDate(app.dateApplied)}</p>
-                  <p>Platform: {app.jobPlatform}</p>
-                  {app.description && (
-                    <p className="line-clamp-2">{app.description}</p>
+                <div className="card-body">
+                  <div className="flex justify-between items-start">
+                    <h2 className="card-title text-lg">{app.jobTitle}</h2>
+                    <span className={`badge ${getStatusColor(app.status)}`}>
+                      {app.status}
+                    </span>
+                  </div>
+                  <p className="font-medium text-base-content/80">
+                    {app.company}
+                  </p>
+                  <div className="text-sm text-base-content/60 space-y-1">
+                    <p>Applied: {formatDate(app.dateApplied)}</p>
+                    <p>Platform: {app.jobPlatform}</p>
+                    {app.description && (
+                      <p className="line-clamp-2">{app.description}</p>
+                    )}
+                  </div>
+                  {app.jobUrl && (
+                    <a
+                      href={app.jobUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="link link-primary text-sm"
+                    >
+                      View Job Listing
+                    </a>
                   )}
-                </div>
-
-                <a
-                  href={app.jobUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:text-blue-800 underline text-sm inline-block"
-                >
-                  View Job Listing
-                </a>
-
-                {app.resumeUrl && (
-                  <div className="pt-2 border-t border-gray-100">
-                    <div className="flex justify-between items-center mb-2">
-                      <h3 className="text-sm font-medium text-gray-700">
-                        Resume:
-                      </h3>
-                      <button
+                  <div className="card-actions justify-end pt-4 border-t border-base-200">
+                    {app.resumeUrl && (
+                      <motion.button
+                        className="btn btn-sm btn-outline btn-primary"
                         onClick={() =>
                           handleDownload(
                             app.resumeUrl,
                             `${app.jobTitle}-resume.pdf`
                           )
                         }
-                        style={{ marginLeft: "10px" }}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                       >
-                        Download PDF
-                      </button>
-                    </div>
-
-                    {thumbnailUrl ? (
-                      <div className="resume-thumbnail">
-                        <a
-                          href={app.resumeUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block"
-                        >
-                          <img
-                            src={thumbnailUrl}
-                            alt="Resume preview"
-                            className="w-full h-48 object-contain bg-gray-50 rounded border"
-                          />
-                        </a>
-                      </div>
-                    ) : (
-                      <div className="resume-placeholder bg-gray-50 rounded border p-4 flex flex-col items-center justify-center h-48">
-                        <svg
-                          className="w-10 h-10 text-gray-400"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                          />
-                        </svg>
-                        <span className="text-sm text-gray-500 mt-2">
-                          PDF Resume
-                        </span>
-                        <button
-                          onClick={() =>
-                            handleDownload(
-                              app.resumeUrl,
-                              `${app.jobTitle}-resume.pdf`
-                            )
-                          }
-                          style={{ marginLeft: "10px" }}
-                        >
-                          Download PDF
-                        </button>
-                      </div>
+                        Download
+                      </motion.button>
                     )}
+                    <motion.button
+                      className="btn btn-sm btn-outline btn-accent"
+                      onClick={() => handleEditClick(app._id)}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      Edit
+                    </motion.button>
+                    <motion.button
+                      className="btn btn-sm btn-outline btn-error"
+                      onClick={() => handleDeleteClick(app._id)}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      Delete
+                    </motion.button>
                   </div>
-                )}
-              </div>
-            );
-          })}
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
       )}
+
+      {hasNextPage && (
+        <div ref={loaderRef} className="flex justify-center py-6">
+          {loading ? (
+            <span className="loading loading-spinner loading-md text-primary"></span>
+          ) : (
+            <span className="text-base-content/50">Scroll to load more...</span>
+          )}
+        </div>
+      )}
+      {!hasNextPage && uniqueApplications.length > 0 && (
+        <div className="flex justify-center py-6">
+          <span className="text-base-content/50">
+            No more applications to load
+          </span>
+        </div>
+      )}
+
+      <AnimatePresence>
+        {deleteId && (
+          <motion.div
+            className="modal modal-open"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <div className="modal-box">
+              <h3 className="font-bold text-lg">Confirm Deletion</h3>
+              <p className="py-4">
+                Are you sure you want to delete this application?
+              </p>
+              <div className="modal-action">
+                <motion.button
+                  className="btn btn-error"
+                  onClick={confirmDelete}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Delete
+                </motion.button>
+                <motion.button
+                  className="btn btn-outline"
+                  onClick={cancelDelete}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Cancel
+                </motion.button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

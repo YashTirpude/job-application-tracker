@@ -21,12 +21,14 @@ interface ApplicationState {
   applications: Application[];
   loading: boolean;
   error: string | null;
+  hasNextPage: boolean;
 }
 
 const initialState: ApplicationState = {
   applications: [],
   loading: false,
   error: null,
+  hasNextPage: true,
 };
 
 export const addApplication = createAsyncThunk<
@@ -48,10 +50,31 @@ export const addApplication = createAsyncThunk<
   }
 });
 
-export const getApplications = createAsyncThunk(
+export const deleteApplication = createAsyncThunk<
+  string,
+  { id: string; token: string },
+  { rejectValue: string }
+>("applications/deleteApplication", async ({ id, token }, thunkAPI) => {
+  try {
+    await api.delete(`/applications/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return id;
+  } catch (error: any) {
+    return thunkAPI.rejectWithValue(
+      error.response?.data?.message || "Failed to delete application"
+    );
+  }
+});
+
+export const getApplications = createAsyncThunk<
+  { applications: Application[]; hasNextPage: boolean },
+  { page: number; limit: number },
+  { state: RootState; rejectValue: string }
+>(
   "applications/fetchAll",
-  async (_, { getState, rejectWithValue }) => {
-    const state = getState() as RootState;
+  async ({ page, limit }, { getState, rejectWithValue }) => {
+    const state = getState();
     const token = state.auth.token;
 
     if (!token) return rejectWithValue("No token");
@@ -59,8 +82,12 @@ export const getApplications = createAsyncThunk(
     try {
       const res = await api.get("/applications", {
         headers: { Authorization: `Bearer ${token}` },
+        params: { page, limit },
       });
-      return res.data;
+      return {
+        applications: res.data.applications,
+        hasNextPage: res.data.hasNextPage,
+      };
     } catch (error: any) {
       return rejectWithValue(
         error.response?.data?.message || "Failed to fetch applications"
@@ -85,7 +112,12 @@ const applicationSlice = createSlice({
       })
       .addCase(getApplications.fulfilled, (state, action) => {
         state.loading = false;
-        state.applications = action.payload;
+        // Reset on page 1, append otherwise
+        state.applications =
+          action.meta.arg.page === 1
+            ? action.payload.applications
+            : [...state.applications, ...action.payload.applications];
+        state.hasNextPage = action.payload.hasNextPage;
       })
       .addCase(getApplications.rejected, (state, action) => {
         state.loading = false;
@@ -102,6 +134,20 @@ const applicationSlice = createSlice({
       .addCase(addApplication.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Unknown error";
+      })
+      .addCase(deleteApplication.fulfilled, (state, action) => {
+        state.applications = state.applications.filter(
+          (app) => app._id !== action.payload
+        );
+        state.loading = false;
+      })
+      .addCase(deleteApplication.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteApplication.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       });
   },
 });
