@@ -98,6 +98,10 @@ const ApplicationList = () => {
     }
   };
 
+  const handleView = (url: string) => {
+    window.open(url, "_blank");
+  };
+
   const formatDate = (dateString: string) =>
     new Date(dateString).toLocaleDateString(undefined, {
       year: "numeric",
@@ -225,19 +229,29 @@ const ApplicationList = () => {
                   )}
                   <div className="card-actions justify-end pt-4 border-t border-base-200">
                     {app.resumeUrl && (
-                      <motion.button
-                        className="btn btn-sm btn-outline btn-primary"
-                        onClick={() =>
-                          handleDownload(
-                            app.resumeUrl,
-                            `${app.jobTitle}-resume.pdf`
-                          )
-                        }
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        Download
-                      </motion.button>
+                      <>
+                        <motion.button
+                          className="btn btn-sm btn-outline btn-info"
+                          onClick={() => handleView(app.resumeUrl)}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          View
+                        </motion.button>
+                        <motion.button
+                          className="btn btn-sm btn-outline btn-primary"
+                          onClick={() =>
+                            handleDownload(
+                              app.resumeUrl,
+                              `${app.jobTitle}-resume.pdf`
+                            )
+                          }
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          Download
+                        </motion.button>
+                      </>
                     )}
                     <motion.button
                       className="btn btn-sm btn-outline btn-accent"
