@@ -112,7 +112,7 @@ const applicationSlice = createSlice({
       })
       .addCase(getApplications.fulfilled, (state, action) => {
         state.loading = false;
-        // Reset on page 1, append otherwise
+
         state.applications =
           action.meta.arg.page === 1
             ? action.payload.applications

@@ -22,11 +22,7 @@ const ApplicationList = () => {
   const { applications, loading, error, hasNextPage } = useSelector(
     (state: RootState) => state.applications
   );
-  console.log("Redux token:", token); // Debug
-  console.log("Has next page:", hasNextPage); // Debug
-  console.log("Applications:", applications); // Debug
 
-  // Remove duplicates by _id
   const uniqueApplications = Array.from(
     new Map(applications.map((app) => [app._id, app])).values()
   );
