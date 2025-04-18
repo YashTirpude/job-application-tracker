@@ -59,7 +59,7 @@ const ApplicationList = () => {
   };
 
   const handleEditClick = (id: string) => {
-    navigate(`/edit/${id}`);
+    navigate(`/applications/edit/${id}`);
   };
 
   const handleDeleteClick = (id: string) => {

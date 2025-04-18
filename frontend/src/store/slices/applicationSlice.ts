@@ -50,6 +50,28 @@ export const addApplication = createAsyncThunk<
   }
 });
 
+export const updateApplication = createAsyncThunk<
+  Application,
+  { id: string; formData: FormData; token: string },
+  { rejectValue: string }
+>(
+  "applications/updateApplication",
+  async ({ id, formData, token }, thunkAPI) => {
+    try {
+      const res = await api.put(`/applications/${id}`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return res.data;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Failed to update application"
+      );
+    }
+  }
+);
+
 export const deleteApplication = createAsyncThunk<
   string,
   { id: string; token: string },
@@ -112,7 +134,6 @@ const applicationSlice = createSlice({
       })
       .addCase(getApplications.fulfilled, (state, action) => {
         state.loading = false;
-
         state.applications =
           action.meta.arg.page === 1
             ? action.payload.applications
@@ -134,6 +155,23 @@ const applicationSlice = createSlice({
       .addCase(addApplication.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Unknown error";
+      })
+      .addCase(updateApplication.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateApplication.fulfilled, (state, action) => {
+        state.loading = false;
+        const index = state.applications.findIndex(
+          (app) => app._id === action.payload._id
+        );
+        if (index !== -1) {
+          state.applications[index] = action.payload;
+        }
+      })
+      .addCase(updateApplication.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       })
       .addCase(deleteApplication.fulfilled, (state, action) => {
         state.applications = state.applications.filter(

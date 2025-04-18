@@ -12,6 +12,7 @@ import useAuth from "./hooks/useAuth";
 import PrivateRoute from "./components/routes/PrivateRoute";
 import PublicRoute from "./components/routes/PublicRoute";
 import CreateApplication from "./pages/CreateApplication";
+import EditApplicationForm from "./components/routes/EditApplication";
 
 const App = () => {
   useAuth();
@@ -69,6 +70,10 @@ const App = () => {
                 </Layout>
               </PrivateRoute>
             }
+          />
+          <Route
+            path="/applications/edit/:id"
+            element={<EditApplicationForm />}
           />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/auth-redirect" element={<AuthRedirect />} />
