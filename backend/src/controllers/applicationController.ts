@@ -116,6 +116,44 @@ export const getApplicationById = async (req: AuthRequest, res: Response) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+//////////////////////
+// export const updateApplication = async (req: AuthRequest, res: Response) => {
+//   try {
+//     const { id } = req.params;
+
+//     const existingApp = await JobApplication.findOne({
+//       _id: id,
+//       user: req.user._id,
+//     });
+
+//     if (!existingApp) {
+//       res
+//         .status(404)
+//         .json({ message: "Application not found or unauthorized" });
+//       return;
+//     }
+
+//     const resumeUrl = req.file ? req.file.path : existingApp.resumeUrl;
+
+//     const updatedFields = {
+//       ...req.body,
+//       resumeUrl,
+//     };
+
+//     const updatedApp = await JobApplication.findByIdAndUpdate(
+//       id,
+//       updatedFields,
+//       {
+//         new: true,
+//       }
+//     );
+
+//     res.status(200).json(updatedApp);
+//   } catch (error) {
+//     console.error("Error updating application:", error);
+//     res.status(500).json({ message: "Internal Server Error" });
+//   }
+// };
 
 export const updateApplication = async (req: AuthRequest, res: Response) => {
   try {
@@ -127,13 +165,36 @@ export const updateApplication = async (req: AuthRequest, res: Response) => {
     });
 
     if (!existingApp) {
-      res
+      return res
         .status(404)
         .json({ message: "Application not found or unauthorized" });
-      return;
     }
 
-    const resumeUrl = req.file ? req.file.path : existingApp.resumeUrl;
+    let resumeUrl = existingApp.resumeUrl;
+
+    if (req.file) {
+      // Optional: delete old resume from Supabase
+      if (resumeUrl) {
+        const filePath = resumeUrl.split("/resumes/")[1]; // get filename
+        await supabase.storage.from("resumes").remove([filePath]);
+      }
+
+      // Upload new resume
+      const fileExt =
+        req.file.originalname.split(".").pop()?.toLowerCase() || "pdf";
+      const fileName = `${req.user._id}-${Date.now()}.${fileExt}`;
+
+      const { data, error } = await supabase.storage
+        .from("resumes")
+        .upload(fileName, req.file.buffer, {
+          contentType: `application/${fileExt}`,
+        });
+
+      if (error) throw new Error("Supabase upload failed: " + error.message);
+
+      resumeUrl = supabase.storage.from("resumes").getPublicUrl(fileName)
+        .data.publicUrl;
+    }
 
     const updatedFields = {
       ...req.body,
@@ -149,9 +210,11 @@ export const updateApplication = async (req: AuthRequest, res: Response) => {
     );
 
     res.status(200).json(updatedApp);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error updating application:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
   }
 };
 
