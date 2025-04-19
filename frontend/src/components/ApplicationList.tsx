@@ -7,6 +7,7 @@ import {
   getApplications,
   setApplications,
   Application,
+  updateApplication,
 } from "../store/slices/applicationSlice";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -14,6 +15,14 @@ import axios from "axios";
 const ApplicationList = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+  const statusOptions = [
+    "pending",
+    "applied",
+    "interview",
+    "offer",
+    "rejected",
+  ];
+
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const loaderRef = useRef<HTMLDivElement>(null);
   const [page, setPage] = useState(1);
@@ -151,6 +160,14 @@ const ApplicationList = () => {
     );
   }
 
+  function objectToFormData(obj: Record<string, any>) {
+    const formData = new FormData();
+    for (const key in obj) {
+      formData.append(key, obj[key]);
+    }
+    return formData;
+  }
+
   return (
     <div className="container mx-auto px-4 py-10">
       <div className="flex justify-between items-center mb-8">
@@ -199,9 +216,39 @@ const ApplicationList = () => {
                 <div className="card-body">
                   <div className="flex justify-between items-start">
                     <h2 className="card-title text-lg">{app.jobTitle}</h2>
-                    <span className={`badge ${getStatusColor(app.status)}`}>
-                      {app.status}
-                    </span>
+                    <div className="dropdown dropdown-end">
+                      <label
+                        tabIndex={0}
+                        className={`badge cursor-pointer ${getStatusColor(
+                          app.status
+                        )}`}
+                      >
+                        {app.status}
+                      </label>
+                      <ul
+                        tabIndex={0}
+                        className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-36"
+                      >
+                        {statusOptions.map((status) => (
+                          <li key={status}>
+                            <button
+                              onClick={() =>
+                                dispatch(
+                                  updateApplication({
+                                    id: app._id,
+                                    formData: objectToFormData({ status }),
+                                    token: token!,
+                                  })
+                                )
+                              }
+                              className="capitalize"
+                            >
+                              {status}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
                   <p className="font-medium text-base-content/80">
                     {app.company}
