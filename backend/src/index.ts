@@ -32,7 +32,7 @@ app.use(passport.initialize());
 app.use(passport.session()); // Enable persistent login
 app.use("/auth", authRoutes); // Use authentication routes
 
-app.use("/api/applications", applicationRoutes);
+app.use("/applications", applicationRoutes);
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
