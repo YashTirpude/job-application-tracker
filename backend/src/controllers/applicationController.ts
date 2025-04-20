@@ -165,9 +165,10 @@ export const updateApplication = async (req: AuthRequest, res: Response) => {
     });
 
     if (!existingApp) {
-      return res
+      res
         .status(404)
         .json({ message: "Application not found or unauthorized" });
+      return;
     }
 
     let resumeUrl = existingApp.resumeUrl;

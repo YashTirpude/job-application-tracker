@@ -122,7 +122,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
               <span className="label-text font-medium">Display Name</span>
             </label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none z-10">
                 {/* User icon */}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -156,7 +156,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
             <span className="label-text font-medium">Email</span>
           </label>
           <div className="relative">
-            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none z-10">
               {/* Envelope icon */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -191,7 +191,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
             <span className="label-text font-medium">Password</span>
           </label>
           <div className="relative">
-            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none z-10">
               {/* Lock icon */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -203,6 +203,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
                 <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z" />
               </svg>
             </span>
+
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Password"
@@ -217,8 +218,9 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
             />
             <button
               type="button"
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 z-10"
               onClick={() => setShowPassword(!showPassword)}
+              tabIndex={-1} // Prevent focus
             >
               {showPassword ? (
                 /* Eye slash icon */
@@ -259,7 +261,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
               <span className="label-text font-medium">Confirm Password</span>
             </label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none z-10">
                 {/* Lock icon */}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -283,8 +285,9 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
               />
               <button
                 type="button"
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 z-10"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                tabIndex={-1} // Prevent focus
               >
                 {showConfirmPassword ? (
                   /* Eye slash icon */
@@ -389,7 +392,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
               d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"
             />
           </svg>
-          <span className="text-white-700">Continue with Google</span>
+          <span className="text-gray-700">Continue with Google</span>
         </motion.button>
 
         <motion.div className="text-center mt-6" variants={itemVariants}>
