@@ -1,3 +1,22 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+input[type="password"]::-ms-clear,
+input[type="password"]::-ms-reveal {
+  display: none;
+}
+input[type="password"]::-webkit-textfield-decoration-container {
+  display: none !important;
+}
+
+/* Override daisyUI radial-progress border-radius */
+.radial-progress,
+.radial-progress:before,
+.radial-progress:after {
+  border-radius: 9999px; /* Large value for circular effect */
+}
+
+/* Override daisyUI btn-circle border-radius */
+.btn-circle {
+  border-radius: 9999px; /* Large value for circular effect */
+}

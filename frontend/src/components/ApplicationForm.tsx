@@ -382,10 +382,7 @@ const ApplicationForm = () => {
             {isSubmitting ? (
               <div className="flex items-center justify-center">
                 <span className="loading loading-spinner loading-sm mr-2"></span>
-                <motion.div
-                  className="radial-progress"
-                  style={{ "--value": uploadProgress } as any}
-                >
+                <motion.div style={{ "--value": uploadProgress } as any}>
                   {uploadProgress}%
                 </motion.div>
               </div>
