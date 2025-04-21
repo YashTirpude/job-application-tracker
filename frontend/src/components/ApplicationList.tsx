@@ -609,6 +609,7 @@ const ApplicationList = () => {
                 animate={{ scale: [1, 1.05, 1] }}
                 transition={{
                   repeat: Infinity,
+                  repeatType: "loop",
                   duration: 2,
                   ease: "easeInOut",
                 }}
@@ -943,7 +944,12 @@ const ApplicationList = () => {
                 <motion.div
                   className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full"
                   animate={{ rotate: 360 }}
-                  transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                  transition={{
+                    repeat: Infinity,
+                    repeatType: "loop",
+                    duration: 1,
+                    ease: "linear",
+                  }}
                 />
                 <p className="text-base-content/60 font-medium">
                   Loading more applications...
