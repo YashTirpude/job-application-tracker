@@ -52,7 +52,6 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
   const onSubmit = async (data: FormValues) => {
     const endpoint = type === "login" ? "/auth/login" : "/auth/register";
 
-    // Remove confirmPassword before sending to API
     if (type === "register") {
       const { confirmPassword, ...submitData } = data;
       try {
@@ -123,7 +122,6 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
             </label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none z-10">
-                {/* User icon */}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"
@@ -157,7 +155,6 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
           </label>
           <div className="relative">
             <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none z-10">
-              {/* Envelope icon */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="16"
@@ -192,7 +189,6 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
           </label>
           <div className="relative">
             <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none z-10">
-              {/* Lock icon */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="16"
@@ -220,10 +216,9 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
               type="button"
               className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 z-10"
               onClick={() => setShowPassword(!showPassword)}
-              tabIndex={-1} // Prevent focus
+              tabIndex={-1}
             >
               {showPassword ? (
-                /* Eye slash icon */
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"
@@ -236,7 +231,6 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
                   <path d="M3.35 5.47c-.18.16-.353.322-.518.487A13.134 13.134 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.881 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7.029 7.029 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.709zm10.296 8.884-12-12 .708-.708 12 12-.708.708z" />
                 </svg>
               ) : (
-                /* Eye icon */
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"
@@ -262,7 +256,6 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
             </label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none z-10">
-                {/* Lock icon */}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"
@@ -287,10 +280,9 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
                 type="button"
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 z-10"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                tabIndex={-1} // Prevent focus
+                tabIndex={-1}
               >
                 {showConfirmPassword ? (
-                  /* Eye slash icon */
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="16"
@@ -303,7 +295,6 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
                     <path d="M3.35 5.47c-.18.16-.353.322-.518.487A13.134 13.134 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.881 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7.029 7.029 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.709zm10.296 8.884-12-12 .708-.708 12 12-.708.708z" />
                   </svg>
                 ) : (
-                  /* Eye icon */
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="16"
@@ -338,7 +329,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
 
         <motion.button
           type="submit"
-          className="btn btn-primary w-full"
+          className="bg-primary rounded-full w-full h-12 flex items-center justify-center text-white hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
           disabled={isSubmitting}
           variants={itemVariants}
           whileHover={{ scale: 1.02 }}
@@ -368,7 +359,6 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
-          {/* Google icon */}
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="18"
