@@ -57,13 +57,16 @@ const ApplicationList = () => {
       { threshold: 0.1 }
     );
 
-    if (loaderRef.current && hasNextPage) {
-      observer.observe(loaderRef.current);
+    const currentRef = loaderRef.current;
+
+    if (currentRef && hasNextPage) {
+      observer.observe(currentRef);
     }
 
+    // Use the captured ref value in cleanup
     return () => {
-      if (loaderRef.current) {
-        observer.unobserve(loaderRef.current);
+      if (currentRef) {
+        observer.unobserve(currentRef);
       }
     };
   }, [hasNextPage, loading]);

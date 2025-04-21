@@ -13,6 +13,7 @@ const AuthRedirect = () => {
     } else {
       navigate("/login");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return <div>Logging you in...</div>;

@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { useForm, Controller } from "react-hook-form";
 import { AppDispatch, RootState } from "../../store";
 import { setLoading } from "../../store/slices/authSlice";
-import { updateApplication } from "../../store/slices/applicationSlice";
+
 import api from "../../services/api";
 
 interface FormData {
@@ -144,10 +144,6 @@ const EditApplicationForm = () => {
         simulatedProgress = Math.min(simulatedProgress + increment, 90);
         setUploadProgress(simulatedProgress);
       }, 200);
-
-      const result = await dispatch(
-        updateApplication({ id, formData: formDataToSend, token })
-      ).unwrap();
 
       clearInterval(progressInterval);
       setUploadProgress(100);
