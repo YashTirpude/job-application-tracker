@@ -20,84 +20,84 @@ const App = () => {
 
   return (
     <Router>
-      <div className="container mx-auto px-4 py-6">
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <PublicRoute>
-                <Layout>
-                  <HomePage />
-                </Layout>
-              </PublicRoute>
-            }
-          />
-          <Route
-            path="/login"
-            element={
-              <PublicRoute>
-                <Layout>
-                  <Login />
-                </Layout>
-              </PublicRoute>
-            }
-          />
-          <Route
-            path="/register"
-            element={
-              <PublicRoute>
-                <Layout>
-                  <Register />
-                </Layout>
-              </PublicRoute>
-            }
-          />
-          <Route
-            path="/applications"
-            element={
-              <PrivateRoute>
-                <Layout>
-                  <ApplicationList />
-                </Layout>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/create"
-            element={
-              <PrivateRoute>
-                <Layout>
-                  <CreateApplication />
-                </Layout>
-              </PrivateRoute>
-            }
-          />
-
-          <Route
-            path="/forgot-password"
-            element={
-              <PublicRoute>
-                <Layout>
-                  <ForgotPassword />
-                </Layout>
-              </PublicRoute>
-            }
-          />
-          <Route
-            path="/applications/edit/:id"
-            element={<EditApplicationForm />}
-          />
-
-          <Route
-            path="/reset-password/:token"
-            element={
-              <PublicRoute>
-                <ResetPassword />
-              </PublicRoute>
-            }
-          />
-          <Route path="/auth-redirect" element={<AuthRedirect />} />
-        </Routes>
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-indigo-950 text-gray-100">
+        <div className="container mx-auto px-4 py-6">
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <PublicRoute>
+                  <Layout>
+                    <HomePage />
+                  </Layout>
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/login"
+              element={
+                <PublicRoute>
+                  <Layout>
+                    <Login />
+                  </Layout>
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                <PublicRoute>
+                  <Layout>
+                    <Register />
+                  </Layout>
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/applications"
+              element={
+                <PrivateRoute>
+                  <Layout>
+                    <ApplicationList />
+                  </Layout>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/create"
+              element={
+                <PrivateRoute>
+                  <Layout>
+                    <CreateApplication />
+                  </Layout>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/forgot-password"
+              element={
+                <PublicRoute>
+                  <Layout>
+                    <ForgotPassword />
+                  </Layout>
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/applications/edit/:id"
+              element={<EditApplicationForm />}
+            />
+            <Route
+              path="/reset-password/:token"
+              element={
+                <PublicRoute>
+                  <ResetPassword />
+                </PublicRoute>
+              }
+            />
+            <Route path="/auth-redirect" element={<AuthRedirect />} />
+          </Routes>
+        </div>
       </div>
     </Router>
   );
