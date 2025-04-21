@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import { useForm, Controller } from "react-hook-form";
 import { AppDispatch, RootState } from "../../store";
 import { setLoading } from "../../store/slices/authSlice";
-
 import api from "../../services/api";
 
 interface FormData {
@@ -46,7 +45,6 @@ const EditApplicationForm = () => {
     },
   });
 
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -135,25 +133,28 @@ const EditApplicationForm = () => {
         formDataToSend.append("resume", data.resume);
       }
 
-      let simulatedProgress = 0;
-      const progressInterval = setInterval(() => {
-        const increment = Math.max(
-          1,
-          Math.floor((100 - simulatedProgress) / 10)
-        );
-        simulatedProgress = Math.min(simulatedProgress + increment, 90);
-        setUploadProgress(simulatedProgress);
-      }, 200);
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+        onUploadProgress: (progressEvent: any) => {
+          const percentCompleted = Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total
+          );
+          setUploadProgress(percentCompleted);
+        },
+      };
 
-      clearInterval(progressInterval);
-      setUploadProgress(100);
+      await api.put(`/applications/${id}`, formDataToSend, config);
 
-      // Show success animation before navigating
       setTimeout(() => {
         navigate("/applications");
       }, 800);
     } catch (err: any) {
-      setApiError(err.message || "Failed to update application");
+      setApiError(
+        err.response?.data?.message || "Failed to update application"
+      );
       setUploadProgress(0);
     }
   };
@@ -162,24 +163,27 @@ const EditApplicationForm = () => {
     return (
       <div className="container mx-auto px-4 py-10">
         <motion.div
-          className="card bg-base-100 shadow-xl max-w-xl mx-auto"
+          className="bg-white shadow-xl max-w-xl mx-auto rounded-lg"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <div className="card-body flex flex-col items-center justify-center min-h-64">
+          <div className="flex flex-col items-center justify-center min-h-64 p-6">
             <motion.div
-              animate={{
-                transition: { duration: 1, repeat: Infinity, ease: "linear" },
+              className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full"
+              animate={{ rotate: 360 }}
+              transition={{
+                repeat: Infinity,
+                repeatType: "loop",
+                duration: 1,
+                ease: "linear",
               }}
-            >
-              <span className="loading loading-spinner loading-lg text-primary"></span>
-            </motion.div>
+            />
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
-              className="mt-4 text-base-content/70"
+              className="mt-4 text-gray-600"
             >
               Loading application details...
             </motion.p>
@@ -193,23 +197,24 @@ const EditApplicationForm = () => {
     return (
       <div className="container mx-auto px-4 py-10">
         <motion.div
-          className="card bg-base-100 shadow-xl max-w-xl mx-auto"
+          className="bg-white shadow-xl max-w-xl mx-auto rounded-lg"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <div className="card-body">
+          <div className="p-6">
             <motion.div
-              className="alert alert-error shadow-lg"
+              className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.4 }}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 shrink-0 stroke-current"
+                className="h-6 w-6 shrink-0"
                 fill="none"
                 viewBox="0 0 24 24"
+                stroke="currentColor"
               >
                 <path
                   strokeLinecap="round"
@@ -218,10 +223,10 @@ const EditApplicationForm = () => {
                   d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-              <span>{apiError}</span>
+              <span className="ml-3">{apiError}</span>
             </motion.div>
             <motion.button
-              className="btn btn-primary w-full mt-6"
+              className="mt-6 w-full py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
               onClick={() => navigate("/applications")}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
@@ -238,24 +243,23 @@ const EditApplicationForm = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <motion.div
-        className="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 max-w-xl mx-auto overflow-hidden"
+        className="bg-white shadow-xl hover:shadow-2xl transition-all duration-300 max-w-xl mx-auto rounded-lg overflow-hidden"
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, type: "spring", damping: 15 }}
       >
-        <div className="card-body">
-          {/* New professional heading with subtle animation */}
+        <div className="p-6">
           <motion.div
             className="mb-6"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
-            <h1 className="text-3xl font-bold text-center text-primary">
+            <h1 className="text-3xl font-bold text-center text-indigo-600">
               Edit Application
             </h1>
             <motion.div
-              className="divider mt-2"
+              className="w-16 h-1 bg-indigo-600 mx-auto mt-2 rounded-full"
               initial={{ scaleX: 0 }}
               animate={{ scaleX: 1 }}
               transition={{ duration: 0.7, delay: 0.3 }}
@@ -271,8 +275,8 @@ const EditApplicationForm = () => {
             animate="visible"
           >
             <motion.div variants={itemVariants} className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">Job Title</span>
+              <label className="block text-sm font-medium text-gray-700">
+                Job Title
               </label>
               <Controller
                 name="jobTitle"
@@ -283,7 +287,7 @@ const EditApplicationForm = () => {
                     {...field}
                     type="text"
                     placeholder="Job Title"
-                    className="input input-bordered w-full focus:input-primary transition-colors duration-300"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                     disabled={isSubmitting}
                   />
                 )}
@@ -292,7 +296,7 @@ const EditApplicationForm = () => {
                 <motion.p
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="text-sm text-error mt-1"
+                  className="mt-1 text-sm text-red-600"
                 >
                   {errors.jobTitle.message}
                 </motion.p>
@@ -300,8 +304,8 @@ const EditApplicationForm = () => {
             </motion.div>
 
             <motion.div variants={itemVariants} className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">Company</span>
+              <label className="block text-sm font-medium text-gray-700">
+                Company
               </label>
               <Controller
                 name="company"
@@ -312,7 +316,7 @@ const EditApplicationForm = () => {
                     {...field}
                     type="text"
                     placeholder="Company"
-                    className="input input-bordered w-full focus:input-primary transition-colors duration-300"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                     disabled={isSubmitting}
                   />
                 )}
@@ -321,7 +325,7 @@ const EditApplicationForm = () => {
                 <motion.p
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="text-sm text-error mt-1"
+                  className="mt-1 text-sm text-red-600"
                 >
                   {errors.company.message}
                 </motion.p>
@@ -329,8 +333,8 @@ const EditApplicationForm = () => {
             </motion.div>
 
             <motion.div variants={itemVariants} className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">Job Description</span>
+              <label className="block text-sm font-medium text-gray-700">
+                Job Description
               </label>
               <Controller
                 name="description"
@@ -340,7 +344,7 @@ const EditApplicationForm = () => {
                   <textarea
                     {...field}
                     placeholder="Job Description"
-                    className="textarea textarea-bordered w-full h-32 focus:textarea-primary transition-colors duration-300"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 h-32"
                     disabled={isSubmitting}
                   />
                 )}
@@ -349,7 +353,7 @@ const EditApplicationForm = () => {
                 <motion.p
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="text-sm text-error mt-1"
+                  className="mt-1 text-sm text-red-600"
                 >
                   {errors.description.message}
                 </motion.p>
@@ -358,8 +362,8 @@ const EditApplicationForm = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <motion.div variants={itemVariants} className="form-control">
-                <label className="label">
-                  <span className="label-text font-medium">Date Applied</span>
+                <label className="block text-sm font-medium text-gray-700">
+                  Date Applied
                 </label>
                 <Controller
                   name="dateApplied"
@@ -369,7 +373,7 @@ const EditApplicationForm = () => {
                     <input
                       {...field}
                       type="date"
-                      className="input input-bordered w-full focus:input-primary transition-colors duration-300"
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                       disabled={isSubmitting}
                     />
                   )}
@@ -378,7 +382,7 @@ const EditApplicationForm = () => {
                   <motion.p
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="text-sm text-error mt-1"
+                    className="mt-1 text-sm text-red-600"
                   >
                     {errors.dateApplied.message}
                   </motion.p>
@@ -386,8 +390,8 @@ const EditApplicationForm = () => {
               </motion.div>
 
               <motion.div variants={itemVariants} className="form-control">
-                <label className="label">
-                  <span className="label-text font-medium">Status</span>
+                <label className="block text-sm font-medium text-gray-700">
+                  Status
                 </label>
                 <Controller
                   name="status"
@@ -395,7 +399,7 @@ const EditApplicationForm = () => {
                   render={({ field }) => (
                     <select
                       {...field}
-                      className="select select-bordered w-full focus:select-primary transition-colors duration-300"
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                       disabled={isSubmitting}
                     >
                       <option value="applied">Applied</option>
@@ -409,8 +413,8 @@ const EditApplicationForm = () => {
             </div>
 
             <motion.div variants={itemVariants} className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">Job Platform</span>
+              <label className="block text-sm font-medium text-gray-700">
+                Job Platform
               </label>
               <Controller
                 name="jobPlatform"
@@ -421,7 +425,7 @@ const EditApplicationForm = () => {
                     {...field}
                     type="text"
                     placeholder="Job Platform (e.g. LinkedIn)"
-                    className="input input-bordered w-full focus:input-primary transition-colors duration-300"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                     disabled={isSubmitting}
                   />
                 )}
@@ -430,7 +434,7 @@ const EditApplicationForm = () => {
                 <motion.p
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="text-sm text-error mt-1"
+                  className="mt-1 text-sm text-red-600"
                 >
                   {errors.jobPlatform.message}
                 </motion.p>
@@ -438,8 +442,8 @@ const EditApplicationForm = () => {
             </motion.div>
 
             <motion.div variants={itemVariants} className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">Job URL</span>
+              <label className="block text-sm font-medium text-gray-700">
+                Job URL
               </label>
               <Controller
                 name="jobUrl"
@@ -450,7 +454,7 @@ const EditApplicationForm = () => {
                     {...field}
                     type="text"
                     placeholder="Job Listing URL"
-                    className="input input-bordered w-full focus:input-primary transition-colors duration-300"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                     disabled={isSubmitting}
                   />
                 )}
@@ -459,7 +463,7 @@ const EditApplicationForm = () => {
                 <motion.p
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="text-sm text-error mt-1"
+                  className="mt-1 text-sm text-red-600"
                 >
                   {errors.jobUrl.message}
                 </motion.p>
@@ -467,10 +471,8 @@ const EditApplicationForm = () => {
             </motion.div>
 
             <motion.div variants={itemVariants} className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">
-                  Resume (Optional)
-                </span>
+              <label className="block text-sm font-medium text-gray-700">
+                Resume (Optional)
               </label>
               <Controller
                 name="resume"
@@ -481,14 +483,14 @@ const EditApplicationForm = () => {
                       {...fieldProps}
                       type="file"
                       accept=".pdf,.doc,.docx"
-                      className="file-input file-input-bordered w-full focus:file-input-primary transition-colors duration-300"
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 file:bg-white file:text-gray-700 file:rounded-md file:border-0 file:mr-4 file:py-2 file:px-4 hover:file:bg-gray-100"
                       disabled={isSubmitting}
                       onChange={(e) => {
                         const file = e.target.files?.[0] || null;
                         onChange(file);
                       }}
                     />
-                    <span className="text-xs text-base-content/60 mt-1">
+                    <span className="mt-1 text-xs text-gray-500">
                       Accepted formats: PDF, DOC, DOCX
                     </span>
                   </div>
@@ -496,25 +498,26 @@ const EditApplicationForm = () => {
               />
             </motion.div>
 
-            {/* Progress bar for upload */}
             {uploadProgress > 0 && uploadProgress < 100 && (
               <motion.div
                 initial={{ opacity: 0, scaleX: 0 }}
                 animate={{ opacity: 1, scaleX: 1 }}
                 className="w-full mt-2"
               >
-                <progress
-                  className="progress progress-primary w-full"
-                  value={uploadProgress}
-                  max="100"
-                ></progress>
+                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                  <div
+                    className="bg-indigo-600 h-2.5 rounded-full transition-all duration-300"
+                    style={{ width: `${uploadProgress}%` }}
+                  ></div>
+                </div>
+                <p className="text-sm text-gray-600 mt-1">{uploadProgress}%</p>
               </motion.div>
             )}
 
             <motion.div variants={itemVariants} className="pt-4 space-y-3">
               <motion.button
                 type="submit"
-                className="btn btn-primary w-full"
+                className="w-full py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
                 disabled={isSubmitting}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -532,7 +535,7 @@ const EditApplicationForm = () => {
 
               <motion.button
                 type="button"
-                className="btn btn-outline btn-secondary w-full"
+                className="w-full py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-100 disabled:bg-gray-200 disabled:cursor-not-allowed"
                 onClick={() => navigate("/applications")}
                 disabled={isSubmitting}
                 whileHover={{ scale: 1.02 }}

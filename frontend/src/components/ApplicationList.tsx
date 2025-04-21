@@ -63,7 +63,6 @@ const ApplicationList = () => {
       observer.observe(currentRef);
     }
 
-    // Use the captured ref value in cleanup
     return () => {
       if (currentRef) {
         observer.unobserve(currentRef);
@@ -126,17 +125,17 @@ const ApplicationList = () => {
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case "pending":
-        return "border-warning text-warning";
+        return "border-yellow-500 text-yellow-500";
       case "applied":
-        return "border-primary text-primary";
+        return "border-indigo-600 text-indigo-600";
       case "interview":
-        return "border-secondary text-secondary";
+        return "border-amber-500 text-amber-500";
       case "offer":
-        return "border-success text-success";
+        return "border-green-500 text-green-500";
       case "rejected":
-        return "border-error text-error";
+        return "border-red-500 text-red-500";
       default:
-        return "border-neutral text-neutral";
+        return "border-gray-500 text-gray-500";
     }
   };
 
@@ -232,7 +231,6 @@ const ApplicationList = () => {
     }
   };
 
-  // Animation variants
   const container = {
     hidden: { opacity: 0 },
     show: {
@@ -266,10 +264,19 @@ const ApplicationList = () => {
 
   if (loading && page === 1) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-base-200 to-base-300">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-200 to-gray-300">
         <div className="text-center space-y-6">
-          <motion.div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full" />
-          <p className="text-xl text-base-content/70 font-semibold">
+          <motion.div
+            className="w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full"
+            animate={{ rotate: 360 }}
+            transition={{
+              repeat: Infinity,
+              repeatType: "loop",
+              duration: 1,
+              ease: "linear",
+            }}
+          />
+          <p className="text-xl text-gray-600 font-semibold">
             Fetching your applications...
           </p>
         </div>
@@ -280,14 +287,14 @@ const ApplicationList = () => {
   if (error) {
     return (
       <motion.div
-        className="alert alert-error max-w-lg mx-auto mt-16 shadow-2xl rounded-xl bg-gradient-to-r from-error/10 to-error/20"
+        className="max-w-lg mx-auto mt-16 shadow-2xl rounded-xl bg-gradient-to-r from-red-100 to-red-200 p-6"
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.25, ease: "easeInOut" }}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className="h-8 w-8 shrink-0 stroke-current"
+          className="h-8 w-8 text-red-600 shrink-0"
           fill="none"
           viewBox="0 0 24 24"
         >
@@ -298,9 +305,9 @@ const ApplicationList = () => {
             d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
           />
         </svg>
-        <span className="text-lg font-medium">Error: {error}</span>
+        <span className="text-lg font-medium text-red-800">Error: {error}</span>
         <motion.button
-          className="btn btn-sm btn-outline"
+          className="mt-4 px-4 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-100"
           onClick={() => dispatch(getApplications({ page: 1, limit: 10 }))}
           whileHover={{ scale: 1.05, boxShadow: "0 0 8px rgba(0, 0, 0, 0.2)" }}
           whileTap={{ scale: 0.95 }}
@@ -321,10 +328,10 @@ const ApplicationList = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-base-200 to-base-300 py-16">
+    <div className="min-h-screen bg-gradient-to-b from-gray-200 to-gray-300 py-16">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
-          className="flex flex-col sm:flex-row justify-between items-center gap-4 md:gap-6 px-4 sm:px-6 py-4 mb-6 md:mb-10 bg-base-100/50 backdrop-blur-sm rounded-2xl shadow-lg"
+          className="flex flex-col sm:flex-row justify-between items-center gap-4 md:gap-6 px-4 sm:px-6 py-4 mb-6 md:mb-10 bg-white/50 backdrop-blur-sm rounded-2xl shadow-lg"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
@@ -336,19 +343,19 @@ const ApplicationList = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.1, ease: "easeOut" }}
             >
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary-focus to-secondary leading-tight">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-indigo-700 to-amber-500 leading-tight">
                 Job Applications
               </h1>
               <div className="relative">
-                <span className="absolute inset-0 bg-gradient-to-br from-primary to-secondary rounded-full blur-sm opacity-70"></span>
-                <div className="relative badge badge-lg py-3 px-4 bg-gradient-to-r from-primary to-secondary text-white font-bold text-sm md:text-base shadow-md">
+                <span className="absolute inset-0 bg-gradient-to-br from-indigo-600 to-amber-500 rounded-full blur-sm opacity-70"></span>
+                <div className="relative px-4 py-2 bg-gradient-to-r from-indigo-600 to-amber-500 text-white font-bold text-sm md:text-base rounded-full shadow-md">
                   {uniqueApplications.length}
                 </div>
               </div>
             </motion.div>
 
             <motion.button
-              className="btn btn-lg gap-2 w-full sm:w-auto bg-gradient-to-r from-primary to-secondary hover:from-primary-focus hover:to-secondary-focus text-white font-bold shadow-lg rounded-xl border-none"
+              className="px-6 py-3 gap-2 w-full sm:w-auto bg-gradient-to-r from-indigo-600 to-amber-500 hover:from-indigo-700 hover:to-amber-600 text-white font-bold shadow-lg rounded-xl border-none"
               onClick={handleCreateClick}
               whileHover={{
                 scale: 1.03,
@@ -379,14 +386,12 @@ const ApplicationList = () => {
           </div>
         </motion.div>
 
-        {/* Filter Tabs Component */}
         <motion.div
           className="mb-8 md:mb-12"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1], delay: 0.1 }}
         >
-          {/* Section Header */}
           <div className="flex items-center justify-between px-4 mb-3">
             <motion.div
               className="flex items-center gap-2"
@@ -396,7 +401,7 @@ const ApplicationList = () => {
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-primary"
+                className="h-5 w-5 text-indigo-600"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
@@ -406,14 +411,14 @@ const ApplicationList = () => {
                   clipRule="evenodd"
                 />
               </svg>
-              <h2 className="text-base font-semibold text-base-content/90">
+              <h2 className="text-base font-semibold text-gray-800">
                 Filter Applications
               </h2>
             </motion.div>
 
             {selectedFilter && (
               <motion.button
-                className="text-xs text-primary hover:text-primary-focus underline flex items-center gap-1"
+                className="text-xs text-indigo-600 hover:text-indigo-700 underline flex items-center gap-1"
                 onClick={() => setSelectedFilter(null)}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -437,13 +442,10 @@ const ApplicationList = () => {
           </div>
 
           <div className="relative">
-            {/* Enhanced Shadow indicators for horizontal scroll */}
-            <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-base-100 via-base-100/80 to-transparent z-10 pointer-events-none rounded-l-xl"></div>
-            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-base-100 via-base-100/80 to-transparent z-10 pointer-events-none rounded-r-xl"></div>
+            <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white via-white/80 to-transparent z-10 pointer-events-none rounded-l-xl"></div>
+            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white via-white/80 to-transparent z-10 pointer-events-none rounded-r-xl"></div>
 
-            {/* Glass card effect container */}
-            <div className="bg-base-100/50 backdrop-blur-sm rounded-xl shadow-lg p-1.5">
-              {/* Scrollable container */}
+            <div className="bg-white/50 backdrop-blur-sm rounded-xl shadow-lg p-1.5">
               <div className="overflow-x-auto scrollbar-hide py-1.5 px-2">
                 <motion.div
                   className="flex flex-nowrap min-w-max gap-2"
@@ -454,8 +456,8 @@ const ApplicationList = () => {
                   <motion.button
                     className={`px-4 py-2.5 rounded-lg flex items-center gap-2 font-medium text-sm transition-all duration-300 ${
                       !selectedFilter
-                        ? "bg-gradient-to-r from-primary to-primary-focus text-primary-content shadow-md ring-2 ring-primary/20"
-                        : "bg-base-200/80 hover:bg-base-200 text-base-content/80 hover:text-base-content"
+                        ? "bg-gradient-to-r from-indigo-600 to-amber-500 text-white shadow-md ring-2 ring-indigo-600/20"
+                        : "bg-gray-200/80 hover:bg-gray-200 text-gray-800 hover:text-gray-900"
                     }`}
                     onClick={() => setSelectedFilter(null)}
                     whileHover={{
@@ -472,12 +474,11 @@ const ApplicationList = () => {
                   </motion.button>
 
                   {statusOptions.map((status, index) => {
-                    // Status colors based on application status
                     const statusColors: any = {
                       applied: {
-                        bg: "from-blue-500 to-blue-600",
-                        ring: "ring-blue-500/20",
-                        icon: "text-blue-500",
+                        bg: "from-indigo-600 to-indigo-700",
+                        ring: "ring-indigo-600/20",
+                        icon: "text-indigo-600",
                       },
                       interview: {
                         bg: "from-amber-500 to-amber-600",
@@ -490,25 +491,23 @@ const ApplicationList = () => {
                         icon: "text-green-500",
                       },
                       rejected: {
-                        bg: "from-rose-500 to-rose-600",
-                        ring: "ring-rose-500/20",
-                        icon: "text-rose-500",
+                        bg: "from-red-500 to-red-600",
+                        ring: "ring-red-500/20",
+                        icon: "text-red-500",
                       },
-                      onHold: {
-                        bg: "from-purple-500 to-purple-600",
-                        ring: "ring-purple-500/20",
-                        icon: "text-purple-500",
+                      pending: {
+                        bg: "from-yellow-500 to-yellow-600",
+                        ring: "ring-yellow-500/20",
+                        icon: "text-yellow-500",
                       },
                     };
 
-                    // Default to primary if status not found
                     const colorConfig = statusColors[status.toLowerCase()] || {
-                      bg: "from-primary to-primary-focus",
-                      ring: "ring-primary/20",
-                      icon: "text-primary",
+                      bg: "from-indigo-600 to-amber-500",
+                      ring: "ring-indigo-600/20",
+                      icon: "text-indigo-600",
                     };
 
-                    // Get count for this status
                     const count = uniqueApplications.filter(
                       (app) => app.status.toLowerCase() === status.toLowerCase()
                     ).length;
@@ -519,7 +518,7 @@ const ApplicationList = () => {
                         className={`px-4 py-2.5 rounded-lg flex items-center gap-2 font-medium text-sm transition-all duration-300 ${
                           selectedFilter === status
                             ? `bg-gradient-to-r ${colorConfig.bg} text-white shadow-md ring-2 ${colorConfig.ring}`
-                            : `bg-base-200/80 hover:bg-base-200 text-base-content/80 hover:text-base-content`
+                            : `bg-gray-200/80 hover:bg-gray-200 text-gray-800 hover:text-gray-900`
                         }`}
                         onClick={() => setSelectedFilter(status)}
                         variants={{
@@ -547,7 +546,7 @@ const ApplicationList = () => {
                           className={`flex items-center justify-center ${
                             selectedFilter === status
                               ? "bg-white/20"
-                              : "bg-base-300/50"
+                              : "bg-gray-300/50"
                           } rounded-full w-5 h-5 text-xs`}
                         >
                           {count}
@@ -570,7 +569,6 @@ const ApplicationList = () => {
             </div>
           </div>
 
-          {/* Progress indicators */}
           <motion.div
             className="flex justify-center gap-1 mt-3"
             initial={{ opacity: 0 }}
@@ -583,18 +581,17 @@ const ApplicationList = () => {
                 className={`w-1.5 h-1.5 rounded-full ${
                   i === statusOptions.findIndex((s) => s === selectedFilter) ||
                   (selectedFilter === null && i === 0)
-                    ? "bg-primary"
-                    : "bg-base-300"
+                    ? "bg-indigo-600"
+                    : "bg-gray-300"
                 }`}
               ></div>
             ))}
           </motion.div>
         </motion.div>
 
-        {/* ///////////////////////////////////// */}
         {filteredApplications.length === 0 ? (
           <motion.div
-            className="card bg-base-100/90 backdrop-blur-md shadow-2xl text-center p-12 max-w-md mx-auto rounded-2xl"
+            className="bg-white/90 backdrop-blur-md shadow-2xl text-center p-12 max-w-md mx-auto rounded-2xl"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.25, ease: "easeInOut" }}
@@ -602,7 +599,7 @@ const ApplicationList = () => {
             <div className="flex flex-col items-center gap-6">
               <motion.svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-20 w-20 text-base-content/20"
+                className="h-20 w-20 text-gray-300"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -621,13 +618,13 @@ const ApplicationList = () => {
                   d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                 />
               </motion.svg>
-              <p className="text-xl text-base-content/70 font-medium">
+              <p className="text-xl text-gray-600 font-medium">
                 {selectedFilter
                   ? `No ${selectedFilter} applications found.`
                   : "No applications found. Start by creating a new application."}
               </p>
               <motion.button
-                className="btn btn-primary bg-gradient-to-r from-primary to-primary-focus text-primary-content"
+                className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-amber-500 text-white rounded-md hover:from-indigo-700 hover:to-amber-600"
                 onClick={handleCreateClick}
                 whileHover={{
                   scale: 1.05,
@@ -653,7 +650,7 @@ const ApplicationList = () => {
                 <motion.div
                   key={app._id}
                   variants={cardItem}
-                  className={`card bg-base-100/90 backdrop-blur-md shadow-xl hover:shadow-2xl transition-all duration-200 ease-in-out rounded-2xl border-l-4 ${getStatusColor(
+                  className={`bg-white/90 backdrop-blur-md shadow-xl hover:shadow-2xl transition-all duration-200 ease-in-out rounded-2xl border-l-4 ${getStatusColor(
                     app.status
                   )}`}
                   initial="hidden"
@@ -665,15 +662,15 @@ const ApplicationList = () => {
                     transition: { duration: 0.2, ease: "easeInOut" },
                   }}
                 >
-                  <div className="card-body p-6">
+                  <div className="p-6">
                     <div className="flex justify-between items-start">
-                      <h2 className="card-title text-xl font-bold text-base-content line-clamp-1">
+                      <h2 className="text-xl font-bold text-gray-800 line-clamp-1">
                         {app.jobTitle}
                       </h2>
                       <div className="dropdown dropdown-end">
                         <label
                           tabIndex={0}
-                          className={`badge gap-2 py-4 px-3 font-medium ${getStatusColor(
+                          className={`px-3 py-2 flex items-center gap-2 font-medium ${getStatusColor(
                             app.status
                           )} bg-opacity-10 hover:brightness-110 transition-all cursor-pointer rounded-lg`}
                         >
@@ -682,7 +679,7 @@ const ApplicationList = () => {
                         </label>
                         <ul
                           tabIndex={0}
-                          className="dropdown-content z-[1] menu p-2 shadow-2xl bg-base-100/95 backdrop-blur-sm rounded-xl w-40"
+                          className="dropdown-content z-[1] menu p-2 shadow-2xl bg-white/95 backdrop-blur-sm rounded-xl w-40"
                         >
                           {statusOptions.map((status) => (
                             <li key={status}>
@@ -696,7 +693,7 @@ const ApplicationList = () => {
                                     })
                                   )
                                 }
-                                className={`capitalize gap-2 text-base-content hover:bg-primary hover:text-primary-content rounded-lg ${getStatusColor(
+                                className={`capitalize gap-2 text-gray-800 hover:bg-indigo-100 rounded-lg ${getStatusColor(
                                   status
                                 )}`}
                               >
@@ -708,10 +705,10 @@ const ApplicationList = () => {
                         </ul>
                       </div>
                     </div>
-                    <p className="font-semibold text-base-content/80 flex items-center gap-2 text-lg">
+                    <p className="font-semibold text-gray-700 flex items-center gap-2 text-lg">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5 text-base-content/50"
+                        className="h-5 w-5 text-gray-400"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -725,12 +722,12 @@ const ApplicationList = () => {
                       </svg>
                       {app.company}
                     </p>
-                    <div className="divider my-3 opacity-50"></div>
-                    <div className="text-base text-base-content/70 space-y-3">
+                    <div className="border-t border-gray-200 my-3 opacity-50"></div>
+                    <div className="text-base text-gray-600 space-y-3">
                       <p className="flex items-center gap-2">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
-                          className="h-5 w-5 text-base-content/50"
+                          className="h-5 w-5 text-gray-400"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -747,7 +744,7 @@ const ApplicationList = () => {
                       <p className="flex items-center gap-2">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
-                          className="h-5 w-5 text-base-content/50"
+                          className="h-5 w-5 text-gray-400"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -762,7 +759,7 @@ const ApplicationList = () => {
                         {app.jobPlatform}
                       </p>
                       {app.description && (
-                        <p className="line-clamp-2 pt-2 text-base-content/60">
+                        <p className="line-clamp-2 pt-2 text-gray-500">
                           {app.description}
                         </p>
                       )}
@@ -772,7 +769,7 @@ const ApplicationList = () => {
                         href={app.jobUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="link link-primary text-base inline-flex items-center gap-2 mt-3 hover:gap-3 transition-all font-medium"
+                        className="text-indigo-600 text-base inline-flex items-center gap-2 mt-3 hover:gap-3 transition-all font-medium"
                       >
                         View Job Listing
                         <svg
@@ -791,10 +788,10 @@ const ApplicationList = () => {
                         </svg>
                       </a>
                     )}
-                    <div className="card-actions justify-between pt-5 mt-3 border-t border-base-200/50">
+                    <div className="flex justify-between pt-5 mt-3 border-t border-gray-200">
                       <div className="tooltip" data-tip="Edit application">
                         <motion.button
-                          className="btn btn-sm btn-circle bg-accent/10 text-accent hover:bg-accent hover:text-accent-content shadow-md"
+                          className="w-10 h-10 bg-rose-200/50 text-rose-500 hover:bg-rose-500 hover:text-white rounded-full flex items-center justify-center shadow-md"
                           onClick={() => handleEditClick(app._id)}
                           whileHover={{
                             scale: 1.1,
@@ -824,7 +821,7 @@ const ApplicationList = () => {
                           <>
                             <div className="tooltip" data-tip="View resume">
                               <motion.button
-                                className="btn btn-sm btn-circle bg-info/10 text-info hover:bg-info hover:text-info-content shadow-md"
+                                className="w-10 h-10 bg-cyan-200/50 text-cyan-500 hover:bg-cyan-500 hover:text-white rounded-full flex items-center justify-center shadow-md"
                                 onClick={() => handleView(app.resumeUrl)}
                                 whileHover={{
                                   scale: 1.1,
@@ -860,7 +857,7 @@ const ApplicationList = () => {
                             </div>
                             <div className="tooltip" data-tip="Download resume">
                               <motion.button
-                                className="btn btn-sm btn-circle bg-primary/10 text-primary hover:bg-primary hover:text-primary-content shadow-md"
+                                className="w-10 h-10 bg-indigo-200/50 text-indigo-600 hover:bg-indigo-600 hover:text-white rounded-full flex items-center justify-center shadow-md"
                                 onClick={() =>
                                   handleDownload(
                                     app.resumeUrl,
@@ -897,7 +894,7 @@ const ApplicationList = () => {
                         )}
                         <div className="tooltip" data-tip="Delete application">
                           <motion.button
-                            className="btn btn-sm btn-circle bg-error/10 text-error hover:bg-error hover:text-error-content shadow-md"
+                            className="w-10 h-10 bg-red-200/50 text-red-500 hover:bg-red-500 hover:text-white rounded-full flex items-center justify-center shadow-md"
                             onClick={() => handleDeleteClick(app._id)}
                             whileHover={{
                               scale: 1.1,
@@ -942,7 +939,7 @@ const ApplicationList = () => {
             {loading ? (
               <div className="flex flex-col items-center gap-4">
                 <motion.div
-                  className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full"
+                  className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full"
                   animate={{ rotate: 360 }}
                   transition={{
                     repeat: Infinity,
@@ -951,12 +948,12 @@ const ApplicationList = () => {
                     ease: "linear",
                   }}
                 />
-                <p className="text-base-content/60 font-medium">
+                <p className="text-gray-600 font-medium">
                   Loading more applications...
                 </p>
               </div>
             ) : (
-              <p className="text-base-content/60 font-medium">
+              <p className="text-gray-600 font-medium">
                 Scroll to load more...
               </p>
             )}
@@ -970,7 +967,7 @@ const ApplicationList = () => {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.25, ease: "easeInOut" }}
           >
-            <div className="badge badge-lg bg-base-100/80 text-base-content/70 shadow-md">
+            <div className="px-4 py-2 bg-white/80 text-gray-600 shadow-md rounded-full">
               End of applications
             </div>
           </motion.div>
@@ -989,20 +986,20 @@ const ApplicationList = () => {
               }
             >
               <motion.div
-                className="bg-base-100 rounded-2xl p-8 max-w-md w-full shadow-2xl z-[1001]"
+                className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl z-[1001]"
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.9, opacity: 0 }}
                 transition={{ duration: 0.25, ease: "easeInOut" }}
                 onClick={(e) => e.stopPropagation()}
               >
-                <h3 className="font-bold text-2xl text-base-content text-center mb-4">
+                <h3 className="font-bold text-2xl text-gray-800 text-center mb-4">
                   Confirm Deletion
                 </h3>
                 <div className="py-4 text-center">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-16 w-16 text-error mx-auto mb-4"
+                    className="h-16 w-16 text-red-500 mx-auto mb-4"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -1014,16 +1011,16 @@ const ApplicationList = () => {
                       d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
                     />
                   </svg>
-                  <p className="text-lg text-base-content">
+                  <p className="text-lg text-gray-800">
                     Are you sure you want to delete this application?
                   </p>
-                  <p className="text-sm text-base-content/60 mt-2">
+                  <p className="text-sm text-gray-500 mt-2">
                     This action cannot be undone.
                   </p>
                 </div>
                 <div className="flex justify-center gap-4">
                   <motion.button
-                    className="btn btn-error bg-red-500 text-white shadow-md"
+                    className="px-4 py-2 bg-red-500 text-white rounded-md shadow-md"
                     onClick={confirmDelete}
                     whileHover={{
                       scale: 1.05,
@@ -1035,7 +1032,7 @@ const ApplicationList = () => {
                     Delete
                   </motion.button>
                   <motion.button
-                    className="btn btn-outline text-base-content shadow-md"
+                    className="px-4 py-2 border border-gray-300 text-gray-800 rounded-md shadow-md"
                     onClick={cancelDelete}
                     whileHover={{
                       scale: 1.05,

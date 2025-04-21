@@ -117,10 +117,10 @@ const ApplicationForm = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="bg-base-200 p-6 rounded-box shadow-lg max-w-xl mx-auto mt-10"
+      className="bg-gray-100 p-6 rounded-lg shadow-lg max-w-xl mx-auto mt-10"
     >
       <motion.h2
-        className="text-2xl font-bold text-primary text-center mb-6"
+        className="text-2xl font-bold text-indigo-600 text-center mb-6"
         initial={{ y: -20 }}
         animate={{ y: 0 }}
         transition={{ type: "spring", stiffness: 300 }}
@@ -136,7 +136,7 @@ const ApplicationForm = () => {
         initial="hidden"
         animate="visible"
       >
-        <motion.div variants={itemVariants} className="form-control">
+        <motion.div variants={itemVariants} className="flex flex-col">
           <label className="block text-sm font-medium text-gray-700">
             Job Title
           </label>
@@ -168,7 +168,7 @@ const ApplicationForm = () => {
           </AnimatePresence>
         </motion.div>
 
-        <motion.div variants={itemVariants} className="form-control">
+        <motion.div variants={itemVariants} className="flex flex-col">
           <label className="block text-sm font-medium text-gray-700">
             Company
           </label>
@@ -200,7 +200,7 @@ const ApplicationForm = () => {
           </AnimatePresence>
         </motion.div>
 
-        <motion.div variants={itemVariants} className="form-control">
+        <motion.div variants={itemVariants} className="flex flex-col">
           <label className="block text-sm font-medium text-gray-700">
             Job Description
           </label>
@@ -232,7 +232,7 @@ const ApplicationForm = () => {
           </AnimatePresence>
         </motion.div>
 
-        <motion.div variants={itemVariants} className="form-control">
+        <motion.div variants={itemVariants} className="flex flex-col">
           <label className="block text-sm font-medium text-gray-700">
             Date Applied
           </label>
@@ -263,7 +263,7 @@ const ApplicationForm = () => {
           </AnimatePresence>
         </motion.div>
 
-        <motion.div variants={itemVariants} className="form-control">
+        <motion.div variants={itemVariants} className="flex flex-col">
           <label className="block text-sm font-medium text-gray-700">
             Status
           </label>
@@ -284,7 +284,7 @@ const ApplicationForm = () => {
           />
         </motion.div>
 
-        <motion.div variants={itemVariants} className="form-control">
+        <motion.div variants={itemVariants} className="flex flex-col">
           <label className="block text-sm font-medium text-gray-700">
             Job Platform
           </label>
@@ -316,7 +316,7 @@ const ApplicationForm = () => {
           </AnimatePresence>
         </motion.div>
 
-        <motion.div variants={itemVariants} className="form-control">
+        <motion.div variants={itemVariants} className="flex flex-col">
           <label className="block text-sm font-medium text-gray-700">
             Job URL
           </label>
@@ -348,7 +348,7 @@ const ApplicationForm = () => {
           </AnimatePresence>
         </motion.div>
 
-        <motion.div variants={itemVariants} className="form-control">
+        <motion.div variants={itemVariants} className="flex flex-col">
           <label className="block text-sm font-medium text-gray-700">
             Resume (Optional)
           </label>
@@ -378,7 +378,7 @@ const ApplicationForm = () => {
         >
           <button
             type="submit"
-            className="bg-primary text-white rounded-full w-full h-12 flex items-center justify-center hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+            className="bg-indigo-600 text-white rounded-full w-full h-12 flex items-center justify-center hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
             disabled={isSubmitting}
           >
             {isSubmitting ? (

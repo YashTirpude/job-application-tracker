@@ -101,7 +101,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
       initial="hidden"
       animate="visible"
       variants={containerVariants}
-      className="flex justify-center items-center min-h-screen bg-base-200 px-4"
+      className="flex justify-center items-center min-h-screen bg-gray-200 px-4"
     >
       <motion.form
         onSubmit={handleSubmit(onSubmit)}
@@ -109,16 +109,16 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
         variants={containerVariants}
       >
         <motion.h2
-          className="text-3xl font-bold text-center mb-6 text-primary"
+          className="text-3xl font-bold text-center mb-6 text-indigo-600"
           variants={itemVariants}
         >
           {type === "login" ? "Welcome Back" : "Create Account"}
         </motion.h2>
 
         {type === "register" && (
-          <motion.div className="form-control w-full" variants={itemVariants}>
-            <label className="label">
-              <span className="label-text font-medium">Display Name</span>
+          <motion.div className="flex flex-col w-full" variants={itemVariants}>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Display Name
             </label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none z-10">
@@ -135,23 +135,23 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
               <input
                 type="text"
                 placeholder="Your name"
-                className="input input-bordered w-full pl-10"
+                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300"
                 {...register("displayName", {
                   required: "Display name is required",
                 })}
               />
             </div>
             {errors.displayName && (
-              <p className="text-sm text-error mt-1">
+              <p className="text-sm text-red-600 mt-1">
                 {errors.displayName.message}
               </p>
             )}
           </motion.div>
         )}
 
-        <motion.div className="form-control w-full" variants={itemVariants}>
-          <label className="label">
-            <span className="label-text font-medium">Email</span>
+        <motion.div className="flex flex-col w-full" variants={itemVariants}>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Email
           </label>
           <div className="relative">
             <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none z-10">
@@ -168,7 +168,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
             <input
               type="email"
               placeholder="example@email.com"
-              className="input input-bordered w-full pl-10"
+              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300"
               {...register("email", {
                 required: "Email is required",
                 pattern: {
@@ -179,13 +179,13 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
             />
           </div>
           {errors.email && (
-            <p className="text-sm text-error mt-1">{errors.email.message}</p>
+            <p className="text-sm text-red-600 mt-1">{errors.email.message}</p>
           )}
         </motion.div>
 
-        <motion.div className="form-control w-full" variants={itemVariants}>
-          <label className="label">
-            <span className="label-text font-medium">Password</span>
+        <motion.div className="flex flex-col w-full" variants={itemVariants}>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Password
           </label>
           <div className="relative">
             <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none z-10">
@@ -203,7 +203,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Password"
-              className="input input-bordered w-full pl-10 pr-10"
+              className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300"
               {...register("password", {
                 required: "Password is required",
                 minLength: {
@@ -245,14 +245,16 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
             </button>
           </div>
           {errors.password && (
-            <p className="text-sm text-error mt-1">{errors.password.message}</p>
+            <p className="text-sm text-red-600 mt-1">
+              {errors.password.message}
+            </p>
           )}
         </motion.div>
 
         {type === "register" && (
-          <motion.div className="form-control w-full" variants={itemVariants}>
-            <label className="label">
-              <span className="label-text font-medium">Confirm Password</span>
+          <motion.div className="flex flex-col w-full" variants={itemVariants}>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Confirm Password
             </label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none z-10">
@@ -269,7 +271,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
               <input
                 type={showConfirmPassword ? "text" : "password"}
                 placeholder="Confirm password"
-                className="input input-bordered w-full pl-10 pr-10"
+                className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300"
                 {...register("confirmPassword", {
                   required: "Please confirm your password",
                   validate: (value) =>
@@ -309,7 +311,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
               </button>
             </div>
             {errors.confirmPassword && (
-              <p className="text-sm text-error mt-1">
+              <p className="text-sm text-red-600 mt-1">
                 {errors.confirmPassword.message}
               </p>
             )}
@@ -320,7 +322,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
           <motion.div className="text-right" variants={itemVariants}>
             <a
               href="/forgot-password"
-              className="text-sm text-primary hover:underline"
+              className="text-sm text-indigo-600 hover:underline"
             >
               Forgot password?
             </a>
@@ -329,7 +331,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
 
         <motion.button
           type="submit"
-          className="bg-primary rounded-full w-full h-12 flex items-center justify-center text-white hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+          className="bg-indigo-600 rounded-full w-full h-12 flex items-center justify-center text-white hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
           disabled={isSubmitting}
           variants={itemVariants}
           whileHover={{ scale: 1.02 }}
@@ -347,14 +349,17 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
           )}
         </motion.button>
 
-        <motion.div className="divider text-gray-400" variants={itemVariants}>
+        <motion.div
+          className="flex items-center justify-center text-gray-400"
+          variants={itemVariants}
+        >
           or continue with
         </motion.div>
 
         <motion.button
           type="button"
           onClick={handleGoogleLogin}
-          className="btn btn-outline btn-neutral w-full flex items-center gap-2 border-gray-300"
+          className="border border-gray-300 bg-white w-full flex items-center justify-center gap-2 py-2 rounded-md hover:bg-gray-50"
           variants={itemVariants}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
@@ -391,7 +396,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
               Don't have an account?{" "}
               <a
                 href="/register"
-                className="text-primary font-medium hover:underline"
+                className="text-indigo-600 font-medium hover:underline"
               >
                 Register
               </a>
@@ -401,7 +406,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
               Already have an account?{" "}
               <a
                 href="/login"
-                className="text-primary font-medium hover:underline"
+                className="text-indigo-600 font-medium hover:underline"
               >
                 Login
               </a>
