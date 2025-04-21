@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import axios from "axios";
+
 import { useDispatch } from "react-redux";
 import {
   setUser,
@@ -7,6 +7,7 @@ import {
   setLoading,
   logout,
 } from "../store/slices/authSlice";
+import api from "../services/api";
 
 const useAuth = () => {
   const dispatch = useDispatch();
@@ -19,7 +20,7 @@ const useAuth = () => {
       dispatch(setLoading(true));
 
       try {
-        const res = await axios.get("http://localhost:5000/auth/user", {
+        const res = await api.get("/auth/user", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
