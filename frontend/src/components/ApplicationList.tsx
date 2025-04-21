@@ -485,7 +485,7 @@ const ApplicationList = () => {
                   whileHover={{
                     y: -8,
                     boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.3)",
-                    transition: { duration: 0.3 },
+                    transition: { duration: 0.1, ease: "easeInOut" },
                   }}
                 >
                   <div className="card-body p-6">
