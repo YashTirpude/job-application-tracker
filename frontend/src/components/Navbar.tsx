@@ -271,7 +271,7 @@ const Navbar = () => {
                     <motion.div whileTap={{ scale: 0.95 }}>
                       <Link
                         to="/register"
-                        className="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary text-white rounded-lg"
+                        className="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary text-white "
                         onClick={() => setIsMenuOpen(false)}
                       >
                         <UserPlus size={20} />
