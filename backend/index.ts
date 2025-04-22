@@ -3,10 +3,10 @@ import dotenv from "dotenv";
 import session from "express-session";
 import MongoStore from "connect-mongo";
 import cors from "cors";
-import connectDB from "../src/config/db";
-import applicationRoutes from "../src/routes/applicationRoutes";
-import passport from "../src/config/passportConfig";
-import authRoutes from "../src/routes/authRoutes";
+import connectDB from "./src/config/db";
+import applicationRoutes from "./src/routes/applicationRoutes";
+import passport from "./src/config/passportConfig";
+import authRoutes from "./src/routes/authRoutes";
 
 dotenv.config();
 
