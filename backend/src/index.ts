@@ -13,7 +13,6 @@ dotenv.config();
 connectDB(); // Establish the MongoDB connection
 
 const app = express();
-const port = process.env.PORT || 5000;
 
 app.use(express.json());
 app.use(cors({ origin: "http://localhost:3000", credentials: true })); // This allows all origins. You can configure it to be more restrictive if needed.
@@ -34,7 +33,3 @@ app.use(passport.session()); // Enable persistent login
 app.use("/auth", authRoutes); // Use authentication routes
 
 app.use("/applications", applicationRoutes);
-
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
