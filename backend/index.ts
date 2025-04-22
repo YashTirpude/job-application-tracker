@@ -38,9 +38,12 @@ app.use(
       ttl: 14 * 24 * 60 * 60, // 14 days
     }),
     cookie: {
-      secure: true, // Force HTTPS in production
+      secure: true,
       sameSite: "none",
+      httpOnly: true, // Add this
       maxAge: 15 * 24 * 60 * 60 * 1000,
+      domain:
+        process.env.NODE_ENV === "production" ? ".vercel.app" : "localhost",
     },
   })
 );
