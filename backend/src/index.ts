@@ -19,6 +19,7 @@ app.use(express.json());
 app.use(
   cors({
     origin: "https://job-application-tracker-orcin.vercel.app",
+    methods: ["POST", "GET", "PUT", "DELETE"],
     credentials: true,
   })
 ); // This allows all origins. You can configure it to be more restrictive if needed.
