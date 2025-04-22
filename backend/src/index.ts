@@ -15,7 +15,12 @@ connectDB(); // Establish the MongoDB connection
 const app = express();
 
 app.use(express.json());
-app.use(cors({ origin: "http://localhost:3000", credentials: true })); // This allows all origins. You can configure it to be more restrictive if needed.
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+    credentials: true,
+  })
+); // This allows all origins. You can configure it to be more restrictive if needed.
 
 app.use(
   session({
