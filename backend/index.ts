@@ -33,10 +33,14 @@ app.use(
     secret: process.env.SESSION_SECRET as string,
     resave: false,
     saveUninitialized: false,
-    store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGO_URI,
+      ttl: 14 * 24 * 60 * 60, // 14 days
+    }),
     cookie: {
-      secure: process.env.NODE_ENV === "production", // True in production, false locally
-      maxAge: 15 * 24 * 60 * 60 * 1000, // 15 days
+      secure: true, // Force HTTPS in production
+      sameSite: "none",
+      maxAge: 15 * 24 * 60 * 60 * 1000,
     },
   })
 );
@@ -47,13 +51,5 @@ app.use(passport.session()); // Enable persistent login
 // Routes
 app.use("/auth", authRoutes);
 app.use("/applications", applicationRoutes);
-
-// Local development server
-if (process.env.NODE_ENV !== "production") {
-  const port = process.env.PORT || 5000;
-  app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
-  });
-}
 
 export default app; // Export for Vercel

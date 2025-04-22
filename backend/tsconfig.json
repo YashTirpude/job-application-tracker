@@ -2,11 +2,17 @@
   "compilerOptions": {
     "outDir": "./dist",
     "target": "ES2020",
-    "module": "CommonJS", // or ESNext if you've changed "type"
+    "module": "CommonJS",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "strict": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "moduleResolution": "node", // Add this
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"] // Optional but recommended
+    }
   },
-  "include": ["src", "index.ts"]
+  "include": ["src/**/*", "index.ts"],
+  "exclude": ["node_modules", "dist"]
 }
