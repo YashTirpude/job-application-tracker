@@ -48,6 +48,15 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session()); // Enable persistent login
 
+// Add this before other routes
+app.get("/", (req, res) => {
+  res.json({
+    status: "running",
+    version: "1.0.0",
+    docs: "https://your-docs-link.com",
+  });
+});
+
 // Routes
 app.use("/auth", authRoutes);
 app.use("/applications", applicationRoutes);
