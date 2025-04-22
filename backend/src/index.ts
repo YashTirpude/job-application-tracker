@@ -13,28 +13,54 @@ dotenv.config();
 connectDB(); // Establish the MongoDB connection
 
 const app = express();
+const port = process.env.PORT || 5000;
 
 app.use(express.json());
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: process.env.CLIENT_URL || "http://localhost:3000",
     credentials: true,
-  })
-); // This allows all origins. You can configure it to be more restrictive if needed.
-
-app.use(
-  cors({
-    origin: process.env.CLIENT_URL || "http://localhost:3000", // Fallback for development
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Handle preflight
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+console.log("CORS middleware applied");
 
 app.options("*", cors());
 
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET as string,
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
+
+    cookie: {
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 15 * 24 * 60 * 60 * 1000,
+    },
+  })
+);
+
 app.use(passport.initialize());
 app.use(passport.session()); // Enable persistent login
-app.use("/auth", authRoutes); // Use authentication routes
+app.use("/auth", authRoutes);
+console.log(
+  "Auth routes registered:",
+  authRoutes.stack.map((r) => r.route?.path).filter(Boolean)
+);
 
 app.use("/applications", applicationRoutes);
+console.log(
+  "Application routes registered:",
+  applicationRoutes.stack.map((r) => r.route?.path).filter(Boolean)
+);
+
+if (process.env.NODE_ENV !== "production") {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+export default app; // Export for Vercel
