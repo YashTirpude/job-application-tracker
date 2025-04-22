@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User";
 import { forgotPassword } from "../controllers/authController";
-import { resetPassword } from "../controllers/resetPassword ";
+import { resetPassword } from "../controllers/resetPassword";
 
 const router = Router();
 

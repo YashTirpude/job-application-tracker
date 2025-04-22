@@ -13,9 +13,10 @@ dotenv.config();
 connectDB(); // Establish the MongoDB connection
 
 const app = express();
-const port = process.env.PORT || 5000;
 
+// Middleware
 app.use(express.json());
+
 app.use(
   cors({
     origin: process.env.CLIENT_URL || "http://localhost:3000",
@@ -24,9 +25,8 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-console.log("CORS middleware applied");
 
-app.options("*", cors());
+app.options("*", cors()); // Handle preflight requests
 
 app.use(
   session({
@@ -34,32 +34,25 @@ app.use(
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
-
     cookie: {
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 15 * 24 * 60 * 60 * 1000,
+      secure: process.env.NODE_ENV === "production", // True in production, false locally
+      maxAge: 15 * 24 * 60 * 60 * 1000, // 15 days
     },
   })
 );
 
 app.use(passport.initialize());
 app.use(passport.session()); // Enable persistent login
+
+// Routes
 app.use("/auth", authRoutes);
-console.log(
-  "Auth routes registered:",
-  authRoutes.stack.map((r) => r.route?.path).filter(Boolean)
-);
-
 app.use("/applications", applicationRoutes);
-console.log(
-  "Application routes registered:",
-  applicationRoutes.stack.map((r) => r.route?.path).filter(Boolean)
-);
 
+// Local development server
 if (process.env.NODE_ENV !== "production") {
-  const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+  const port = process.env.PORT || 5000;
+  app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
   });
 }
 
