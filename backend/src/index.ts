@@ -23,15 +23,15 @@ app.use(
 ); // This allows all origins. You can configure it to be more restrictive if needed.
 
 app.use(
-  session({
-    secret: process.env.SESSION_SECRET as string,
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
-
-    cookie: { secure: false, maxAge: 15 * 24 * 60 * 60 * 1000 }, // 15 days
+  cors({
+    origin: process.env.CLIENT_URL || "http://localhost:3000", // Fallback for development
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Handle preflight
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+app.options("*", cors());
 
 app.use(passport.initialize());
 app.use(passport.session()); // Enable persistent login
