@@ -62,15 +62,13 @@ app.get("/", (req, res) => {
     timestamp: new Date().toISOString(),
   });
 });
-
+app.use("/auth", authRoutes);
+app.use("/applications", applicationRoutes);
 // Ensure DB is connected before handling routes
 app.use(async (req, res, next) => {
   await dbPromise;
   next();
 });
-
-app.use("/auth", authRoutes);
-app.use("/applications", applicationRoutes);
 
 export default app;
 
