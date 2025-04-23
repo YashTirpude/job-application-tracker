@@ -6,7 +6,11 @@ import cloudinary from "./cloudinaryConfig";
 
 dotenv.config();
 
-if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+if (
+  !process.env.GOOGLE_CLIENT_ID ||
+  !process.env.GOOGLE_CLIENT_SECRET ||
+  !process.env.GOOGLE_CALLBACK_URL
+) {
   throw new Error("Missing Google OAuth environment variables");
 }
 
@@ -15,8 +19,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-      callbackURL:
-        "https://job-application-tracker-backend.vercel.app/auth/google/callback",
+      callbackURL: process.env.GOOGLE_CALLBACK_URL as string,
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
