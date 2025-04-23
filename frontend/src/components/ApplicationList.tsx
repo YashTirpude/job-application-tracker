@@ -72,7 +72,6 @@ const ApplicationList = () => {
   }, [hasNextPage, loading]);
 
   useEffect(() => {
-    // Close dropdown when clicking outside
     const handleClickOutside = (event: MouseEvent) => {
       if (
         isDropdownOpen &&
@@ -97,7 +96,6 @@ const ApplicationList = () => {
   };
 
   const handleDeleteClick = (id: string) => {
-    console.log("Delete clicked, id:", id);
     setDeleteId(id);
   };
 
@@ -143,34 +141,34 @@ const ApplicationList = () => {
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case "pending":
-        return "border-yellow-500 text-yellow-500";
+        return "border-l-amber-400 bg-amber-500/10";
       case "applied":
-        return "border-indigo-600 text-indigo-600";
+        return "border-l-indigo-500 bg-indigo-500/10";
       case "interview":
-        return "border-amber-500 text-amber-500";
+        return "border-l-orange-500 bg-orange-500/10";
       case "offer":
-        return "border-green-500 text-green-500";
+        return "border-l-emerald-500 bg-emerald-500/10";
       case "rejected":
-        return "border-red-500 text-red-500";
+        return "border-l-rose-500 bg-rose-500/10";
       default:
-        return "border-gray-500 text-gray-500";
+        return "border-l-gray-500 bg-gray-500/10";
     }
   };
 
-  const getStatusBgColor = (status: string) => {
+  const getStatusTextColor = (status: string) => {
     switch (status.toLowerCase()) {
       case "pending":
-        return "bg-yellow-500/20";
+        return "text-amber-400";
       case "applied":
-        return "bg-indigo-600/20";
+        return "text-indigo-400";
       case "interview":
-        return "bg-amber-500/20";
+        return "text-orange-400";
       case "offer":
-        return "bg-green-500/20";
+        return "text-emerald-400";
       case "rejected":
-        return "bg-red-500/20";
+        return "text-rose-400";
       default:
-        return "bg-gray-500/20";
+        return "text-gray-400";
     }
   };
 
@@ -179,8 +177,7 @@ const ApplicationList = () => {
       case "pending":
         return (
           <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
+            className="h-4 w-4"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -196,8 +193,7 @@ const ApplicationList = () => {
       case "applied":
         return (
           <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
+            className="h-4 w-4"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -213,8 +209,7 @@ const ApplicationList = () => {
       case "interview":
         return (
           <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
+            className="h-4 w-4"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -230,8 +225,7 @@ const ApplicationList = () => {
       case "offer":
         return (
           <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
+            className="h-4 w-4"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -247,8 +241,7 @@ const ApplicationList = () => {
       case "rejected":
         return (
           <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
+            className="h-4 w-4"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -271,29 +264,29 @@ const ApplicationList = () => {
     show: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1,
-        ease: [0.4, 0, 0.2, 1],
+        staggerChildren: 0.15,
+        ease: "easeOut",
       },
     },
   };
 
   const cardItem = {
-    hidden: { opacity: 0, scale: 0.95, y: 20 },
+    hidden: { opacity: 0, y: 30, scale: 0.95 },
     show: {
       opacity: 1,
-      scale: 1,
       y: 0,
+      scale: 1,
       transition: {
-        duration: 0.3,
+        duration: 0.4,
         ease: "easeOut",
       },
     },
     exit: {
       opacity: 0,
+      y: 30,
       scale: 0.95,
-      y: 20,
       transition: {
-        duration: 0.2,
+        duration: 0.3,
         ease: "easeIn",
       },
     },
@@ -309,25 +302,24 @@ const ApplicationList = () => {
 
   if (loading && page === 1) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 to-black">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-950 to-gray-900">
         <motion.div
-          className="text-center space-y-6"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
+          className="text-center space-y-4"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6 }}
         >
           <motion.div
-            className="w-16 h-16 border-4 border-purple-600 border-t-transparent rounded-full mx-auto"
+            className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full mx-auto"
             animate={{ rotate: 360 }}
             transition={{
               repeat: Infinity,
-              repeatType: "loop",
               duration: 1,
               ease: "linear",
             }}
           />
-          <p className="text-xl text-purple-200 font-semibold">
-            Fetching your applications...
+          <p className="text-lg font-medium text-gray-200">
+            Loading applications...
           </p>
         </motion.div>
       </div>
@@ -336,17 +328,16 @@ const ApplicationList = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 to-black">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-950 to-gray-900">
         <motion.div
-          className="max-w-lg mx-auto shadow-2xl rounded-xl bg-gradient-to-r from-red-900/40 to-red-800/40 p-8 border border-red-700/50"
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.25, ease: "easeInOut" }}
+          className="max-w-md p-6 bg-gray-800/90 backdrop-blur-lg rounded-xl shadow-2xl border border-rose-500/20"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
         >
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-10 w-10 text-red-500 shrink-0"
+              className="h-8 w-8 text-rose-400"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -358,19 +349,17 @@ const ApplicationList = () => {
                 d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-            <span className="text-xl font-medium text-red-300">
+            <span className="text-lg font-medium text-rose-300">
               Error: {error}
             </span>
           </div>
           <motion.button
-            className="mt-6 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-lg shadow-red-600/30 flex items-center justify-center gap-2"
+            className="mt-4 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg flex items-center gap-2"
             onClick={() => dispatch(getApplications({ page: 1, limit: 10 }))}
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            transition={{ duration: 0.15, ease: "easeInOut" }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             <svg
-              xmlns="http://www.w3.org/2000/svg"
               className="h-5 w-5"
               fill="none"
               viewBox="0 0 24 24"
@@ -391,80 +380,64 @@ const ApplicationList = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-black py-16 text-gray-100">
+    <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-black py-12 text-gray-100">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
-          className="flex flex-col sm:flex-row justify-between items-center gap-4 md:gap-6 px-6 sm:px-8 py-6 mb-8 md:mb-12 bg-gray-800/50 backdrop-blur-md rounded-2xl shadow-xl border border-gray-700/50"
+          className="flex flex-col sm:flex-row justify-between items-center gap-4 p-6 mb-10 bg-gray-800/30 backdrop-blur-lg rounded-2xl shadow-lg border border-gray-700/30"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
         >
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 w-full">
-            <motion.div
-              className="flex items-center justify-center sm:justify-start gap-3 w-full"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.1, ease: "easeOut" }}
+          <motion.div
+            className="flex items-center gap-4"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-500 to-pink-500">
+              Applications
+            </h1>
+            <span className="px-3 py-1 bg-indigo-500/20 text-indigo-300 rounded-full text-sm font-semibold">
+              {uniqueApplications.length}
+            </span>
+          </motion.div>
+          <motion.button
+            className="px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold rounded-xl flex items-center gap-2"
+            onClick={handleCreateClick}
+            whileHover={{
+              scale: 1.05,
+              boxShadow: "0 0 15px rgba(99, 102, 241, 0.4)",
+            }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+          >
+            <svg
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
             >
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-500 to-amber-400 leading-tight">
-                Job Applications
-              </h1>
-              <div className="relative">
-                <span className="absolute inset-0 bg-gradient-to-br from-purple-600 to-pink-500 rounded-full blur-md opacity-70"></span>
-                <div className="relative px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-500 text-white font-bold text-sm md:text-base rounded-full shadow-md">
-                  {uniqueApplications.length}
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.button
-              className="px-6 py-3 gap-2 w-full sm:w-auto bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-bold shadow-xl rounded-xl border-none flex items-center justify-center"
-              onClick={handleCreateClick}
-              whileHover={{
-                scale: 1.03,
-                boxShadow: "0 0 25px rgba(168, 85, 247, 0.5)",
-              }}
-              whileTap={{ scale: 0.97 }}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.2, ease: "easeOut" }}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 md:h-6 md:w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth="2.5"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 4v16m8-8H4"
-                />
-              </svg>
-              <span className="hidden xs:inline">New Application</span>
-              <span className="xs:hidden">New</span>
-            </motion.button>
-          </div>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            New Application
+          </motion.button>
         </motion.div>
 
         <motion.div
-          className="mb-8 md:mb-12"
+          className="mb-10"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1], delay: 0.1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
         >
-          <div className="flex items-center justify-between px-4 mb-3">
-            <motion.div
-              className="flex items-center gap-2"
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.4, delay: 0.2 }}
-            >
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex items-center gap-2">
               <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-purple-400"
+                className="h-5 w-5 text-indigo-400"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
@@ -474,22 +447,20 @@ const ApplicationList = () => {
                   clipRule="evenodd"
                 />
               </svg>
-              <h2 className="text-base font-semibold text-purple-200">
-                Filter Applications
+              <h2 className="text-lg font-semibold text-gray-200">
+                Filter by Status
               </h2>
-            </motion.div>
-
+            </div>
             {selectedFilter && (
               <motion.button
-                className="text-xs text-purple-400 hover:text-purple-300 underline flex items-center gap-1"
+                className="text-sm text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
                 onClick={() => setSelectedFilter(null)}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
               >
                 <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-3 w-3"
+                  className="h-4 w-4"
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
@@ -499,127 +470,72 @@ const ApplicationList = () => {
                     clipRule="evenodd"
                   />
                 </svg>
-                Clear filter
+                Clear
               </motion.button>
             )}
           </div>
-
           <div className="relative">
-            <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-gray-800 via-gray-800/80 to-transparent z-10 pointer-events-none rounded-l-xl"></div>
-            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-gray-800 via-gray-800/80 to-transparent z-10 pointer-events-none rounded-r-xl"></div>
-
-            <div className="bg-gray-800/50 backdrop-blur-md rounded-xl shadow-xl border border-gray-700/50 p-1.5">
-              <div className="overflow-x-auto py-1.5 px-2 scrollbar-hide">
+            <div className="absolute inset-y-0 left-0 w-6 bg-gradient-to-r from-gray-900 to-transparent z-10 rounded-l-xl" />
+            <div className="absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-gray-900 to-transparent z-10 rounded-r-xl" />
+            <div className="bg-gray-800/40 backdrop-blur-lg rounded-xl p-2 border border-gray-700/20">
+              <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900">
                 <motion.div
-                  className="flex flex-nowrap min-w-max gap-2"
+                  className="flex gap-2 min-w-max"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 0.2, ease: "easeOut" }}
+                  transition={{ duration: 0.4, delay: 0.3 }}
                 >
                   <motion.button
-                    className={`px-4 py-2.5 rounded-lg flex items-center gap-2 font-medium text-sm transition-all duration-300 ${
+                    className={`px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-medium ${
                       !selectedFilter
-                        ? "bg-gradient-to-r from-purple-600 to-pink-500 text-white shadow-lg ring-2 ring-purple-500/20"
-                        : "bg-gray-700/50 hover:bg-gray-700 text-gray-300 hover:text-gray-100"
+                        ? "bg-indigo-600 text-white shadow-md"
+                        : "bg-gray-700/50 text-gray-300 hover:bg-gray-600"
                     }`}
                     onClick={() => setSelectedFilter(null)}
-                    whileHover={{
-                      scale: 1.02,
-                      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
-                    }}
-                    whileTap={{ scale: 0.98 }}
-                    transition={{ duration: 0.2, ease: "easeOut" }}
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
                   >
-                    <span className="flex items-center justify-center bg-white/20 rounded-full w-5 h-5 text-xs">
+                    <span className="w-5 h-5 bg-white/20 rounded-full flex items-center justify-center text-xs">
                       {uniqueApplications.length}
                     </span>
-                    <span>All</span>
+                    All
                   </motion.button>
-
                   {statusOptions.map((status, index) => {
-                    const statusColors: any = {
-                      applied: {
-                        bg: "from-indigo-600 to-indigo-700",
-                        ring: "ring-indigo-500/20",
-                        icon: "text-indigo-400",
-                      },
-                      interview: {
-                        bg: "from-amber-500 to-amber-600",
-                        ring: "ring-amber-500/20",
-                        icon: "text-amber-400",
-                      },
-                      offer: {
-                        bg: "from-green-500 to-green-600",
-                        ring: "ring-green-500/20",
-                        icon: "text-green-400",
-                      },
-                      rejected: {
-                        bg: "from-red-500 to-red-600",
-                        ring: "ring-red-500/20",
-                        icon: "text-red-400",
-                      },
-                      pending: {
-                        bg: "from-yellow-500 to-yellow-600",
-                        ring: "ring-yellow-500/20",
-                        icon: "text-yellow-400",
-                      },
-                    };
-
-                    const colorConfig = statusColors[status.toLowerCase()] || {
-                      bg: "from-purple-600 to-pink-500",
-                      ring: "ring-purple-500/20",
-                      icon: "text-purple-400",
-                    };
-
                     const count = uniqueApplications.filter(
                       (app) => app.status.toLowerCase() === status.toLowerCase()
                     ).length;
-
                     return (
                       <motion.button
                         key={status}
-                        className={`px-4 py-2.5 rounded-lg flex items-center gap-2 font-medium text-sm transition-all duration-300 ${
+                        className={`px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-medium ${
                           selectedFilter === status
-                            ? `bg-gradient-to-r ${colorConfig.bg} text-white shadow-lg ring-2 ${colorConfig.ring}`
-                            : `bg-gray-700/50 hover:bg-gray-700 text-gray-300 hover:text-gray-100`
+                            ? `bg-gradient-to-r ${getStatusColor(status)
+                                .replace("border-l-", "from-")
+                                .replace(" bg-", " to-")} text-white shadow-md`
+                            : "bg-gray-700/50 text-gray-300 hover:bg-gray-600"
                         }`}
                         onClick={() => setSelectedFilter(status)}
                         variants={{
-                          hidden: { opacity: 0, y: 15 },
-                          show: {
-                            opacity: 1,
-                            y: 0,
-                            transition: {
-                              delay: 0.2 + index * 0.05,
-                              duration: 0.4,
-                              ease: "easeOut",
-                            },
-                          },
+                          hidden: { opacity: 0, y: 10 },
+                          show: { opacity: 1, y: 0 },
                         }}
                         initial="hidden"
                         animate="show"
-                        whileHover={{
-                          scale: 1.02,
-                          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
-                        }}
-                        whileTap={{ scale: 0.98 }}
-                        transition={{ duration: 0.2, ease: "easeOut" }}
+                        whileHover={{ scale: 1.03 }}
+                        whileTap={{ scale: 0.97 }}
+                        transition={{ duration: 0.2, delay: index * 0.05 }}
                       >
                         <span
-                          className={`flex items-center justify-center ${
+                          className={`w-5 h-5 rounded-full flex items-center justify-center text-xs ${
                             selectedFilter === status
                               ? "bg-white/20"
-                              : "bg-gray-600/70"
-                          } rounded-full w-5 h-5 text-xs`}
+                              : "bg-gray-600/50"
+                          }`}
                         >
                           {count}
                         </span>
-                        <span className="capitalize flex items-center gap-1.5">
-                          <span
-                            className={
-                              selectedFilter !== status ? colorConfig.icon : ""
-                            }
-                          >
+                        <span className="capitalize flex items-center gap-1">
+                          <span className={getStatusTextColor(status)}>
                             {getStatusIcon(status)}
                           </span>
                           {status}
@@ -631,74 +547,47 @@ const ApplicationList = () => {
               </div>
             </div>
           </div>
-
-          <motion.div
-            className="flex justify-center gap-1 mt-3"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.7 }}
-            transition={{ delay: 0.5 }}
-          >
-            {statusOptions.map((_, i) => (
-              <div
-                key={i}
-                className={`w-1.5 h-1.5 rounded-full ${
-                  i === statusOptions.findIndex((s) => s === selectedFilter) ||
-                  (selectedFilter === null && i === 0)
-                    ? "bg-purple-500"
-                    : "bg-gray-600"
-                }`}
-              ></div>
-            ))}
-          </motion.div>
         </motion.div>
 
         {filteredApplications.length === 0 ? (
           <motion.div
-            className="bg-gray-800/70 backdrop-blur-md shadow-2xl text-center p-12 max-w-md mx-auto rounded-2xl border border-gray-700/50"
+            className="bg-gray-800/50 backdrop-blur-lg p-8 rounded-xl text-center max-w-lg mx-auto border border-gray-700/20"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.25, ease: "easeInOut" }}
+            transition={{ duration: 0.4 }}
           >
-            <div className="flex flex-col items-center gap-6">
-              <motion.svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-20 w-20 text-gray-600"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                animate={{ scale: [1, 1.05, 1] }}
-                transition={{
-                  repeat: Infinity,
-                  repeatType: "loop",
-                  duration: 2,
-                  ease: "easeInOut",
-                }}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
-              </motion.svg>
-              <p className="text-xl text-gray-300 font-medium">
-                {selectedFilter
-                  ? `No ${selectedFilter} applications found.`
-                  : "No applications found. Start by creating a new application."}
-              </p>
-              <motion.button
-                className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-lg shadow-lg shadow-purple-700/30 hover:shadow-purple-700/50"
-                onClick={handleCreateClick}
-                whileHover={{
-                  scale: 1.05,
-                  boxShadow: "0 0 20px rgba(168, 85, 247, 0.4)",
-                }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ duration: 0.15, ease: "easeInOut" }}
-              >
-                Create Application
-              </motion.button>
-            </div>
+            <motion.svg
+              className="h-16 w-16 text-gray-500 mx-auto mb-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              animate={{ scale: [1, 1.05, 1] }}
+              transition={{
+                repeat: Infinity,
+                duration: 1.5,
+                ease: "easeInOut",
+              }}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              />
+            </motion.svg>
+            <p className="text-lg text-gray-300 mb-4">
+              {selectedFilter
+                ? `No ${selectedFilter} applications found.`
+                : "No applications yet. Create one to get started!"}
+            </p>
+            <motion.button
+              className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg"
+              onClick={handleCreateClick}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Create Application
+            </motion.button>
           </motion.div>
         ) : (
           <motion.div
@@ -713,68 +602,72 @@ const ApplicationList = () => {
                 <motion.div
                   key={app._id}
                   variants={cardItem}
-                  className={`bg-gray-800/70 backdrop-blur-md shadow-xl rounded-2xl border-l-4 overflow-hidden ${getStatusColor(
+                  className={`relative bg-gray-800/70 backdrop-blur-lg rounded-xl shadow-lg overflow-hidden ${getStatusColor(
                     app.status
                   )} group`}
-                  initial="hidden"
-                  animate="show"
-                  exit="exit"
                   whileHover={{
-                    y: -8,
-                    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
-                    transition: { duration: 0.2, ease: "easeInOut" },
+                    y: -5,
+                    boxShadow: "0 10px 30px rgba(0, 0, 0, 0.3)",
                   }}
                 >
-                  {/* Glass effect top highlight */}
-                  <div className="h-1 w-full bg-gradient-to-r from-white/10 via-white/20 to-transparent"></div>
-
-                  <div className="p-6">
-                    <div className="flex justify-between items-start">
-                      <h2 className="text-xl font-bold text-gray-100 line-clamp-1 group-hover:text-white transition-colors">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="p-5">
+                    <div className="flex justify-between items-start mb-3">
+                      <h2 className="text-lg font-bold text-gray-100 group-hover:text-indigo-300 transition-colors line-clamp-1">
                         {app.jobTitle}
                       </h2>
                       <div className="relative status-dropdown">
                         <label
                           tabIndex={0}
-                          className={`px-3 py-2 flex items-center gap-2 font-medium ${getStatusColor(
+                          className={`px-2.5 py-1.5 flex items-center gap-1.5 text-sm font-medium ${getStatusTextColor(
                             app.status
-                          )} bg-opacity-10 hover:brightness-110 transition-all cursor-pointer rounded-lg`}
+                          )} rounded-md hover:bg-gray-700/50 cursor-pointer`}
+                          onClick={() =>
+                            setIsDropdownOpen(
+                              isDropdownOpen === app._id ? null : app._id
+                            )
+                          }
                         >
                           {getStatusIcon(app.status)}
                           <span className="capitalize">{app.status}</span>
                         </label>
-                        <ul
-                          tabIndex={0}
-                          className="dropdown-content z-[1] menu p-2 shadow-2xl bg-white/95 backdrop-blur-sm rounded-xl w-40"
-                        >
-                          {statusOptions.map((status) => (
-                            <li key={status}>
-                              <button
-                                onClick={() =>
-                                  dispatch(
-                                    updateApplication({
-                                      id: app._id,
-                                      formData: objectToFormData({ status }),
-                                      token: token!,
-                                    })
-                                  )
-                                }
-                                className={`capitalize gap-2 text-gray-800 hover:bg-indigo-100 rounded-lg ${getStatusColor(
-                                  status
-                                )}`}
-                              >
-                                {getStatusIcon(status)}
-                                {status}
-                              </button>
-                            </li>
-                          ))}
-                        </ul>
+                        {isDropdownOpen === app._id && (
+                          <motion.ul
+                            tabIndex={0}
+                            className="absolute right-0 mt-2 p-2 bg-gray-800/95 backdrop-blur-md rounded-lg shadow-xl w-40 z-10 border border-gray-700/30"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 10 }}
+                          >
+                            {statusOptions.map((status) => (
+                              <li key={status}>
+                                <button
+                                  onClick={() => {
+                                    dispatch(
+                                      updateApplication({
+                                        id: app._id,
+                                        formData: objectToFormData({ status }),
+                                        token: token!,
+                                      })
+                                    );
+                                    setIsDropdownOpen(null);
+                                  }}
+                                  className={`w-full text-left px-3 py-2 text-sm capitalize ${getStatusTextColor(
+                                    status
+                                  )} hover:bg-gray-700/50 rounded-md flex items-center gap-2`}
+                                >
+                                  {getStatusIcon(status)}
+                                  {status}
+                                </button>
+                              </li>
+                            ))}
+                          </motion.ul>
+                        )}
                       </div>
                     </div>
-                    <p className="font-semibold text-gray-700 flex items-center gap-2 text-lg">
+                    <p className="text-gray-300 font-medium flex items-center gap-2 mb-3">
                       <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5 text-gray-400"
+                        className="h-4 w-4 text-gray-400"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -788,12 +681,10 @@ const ApplicationList = () => {
                       </svg>
                       {app.company}
                     </p>
-                    <div className="border-t border-gray-200 my-3 opacity-50"></div>
-                    <div className="text-base text-gray-600 space-y-3">
+                    <div className="text-sm text-gray-400 space-y-2">
                       <p className="flex items-center gap-2">
                         <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-5 w-5 text-gray-400"
+                          className="h-4 w-4 text-gray-400"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -805,12 +696,11 @@ const ApplicationList = () => {
                             d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                           />
                         </svg>
-                        Applied: {formatDate(app.dateApplied)}
+                        {formatDate(app.dateApplied)}
                       </p>
                       <p className="flex items-center gap-2">
                         <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-5 w-5 text-gray-400"
+                          className="h-4 w-4 text-gray-400"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -825,7 +715,7 @@ const ApplicationList = () => {
                         {app.jobPlatform}
                       </p>
                       {app.description && (
-                        <p className="line-clamp-2 pt-2 text-gray-500">
+                        <p className="line-clamp-2 text-gray-500">
                           {app.description}
                         </p>
                       )}
@@ -835,12 +725,11 @@ const ApplicationList = () => {
                         href={app.jobUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-indigo-600 text-base inline-flex items-center gap-2 mt-3 hover:gap-3 transition-all font-medium"
+                        className="text-indigo-400 hover:text-indigo-300 text-sm flex items-center gap-1.5 mt-3"
                       >
-                        View Job Listing
+                        View Job
                         <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-5 w-5"
+                          className="h-4 w-4"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -854,123 +743,17 @@ const ApplicationList = () => {
                         </svg>
                       </a>
                     )}
-                    <div className="flex justify-between pt-5 mt-3 border-t border-gray-200">
-                      <div className="tooltip" data-tip="Edit application">
-                        <motion.button
-                          className="w-10 h-10 bg-rose-200/50 text-rose-500 hover:bg-rose-500 hover:text-white rounded-full flex items-center justify-center shadow-md"
-                          onClick={() => handleEditClick(app._id)}
-                          whileHover={{
-                            scale: 1.1,
-                            boxShadow: "0 0 8px rgba(236, 72, 153, 0.4)",
-                          }}
-                          whileTap={{ scale: 0.95 }}
-                          transition={{ duration: 0.15, ease: "easeInOut" }}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-5 w-5"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                            />
-                          </svg>
-                        </motion.button>
-                      </div>
-                      <div className="flex gap-2">
-                        {app.resumeUrl && (
-                          <>
-                            <div className="tooltip" data-tip="View resume">
-                              <motion.button
-                                className="w-10 h-10 bg-cyan-200/50 text-cyan-500 hover:bg-cyan-500 hover:text-white rounded-full flex items-center justify-center shadow-md"
-                                onClick={() => handleView(app.resumeUrl)}
-                                whileHover={{
-                                  scale: 1.1,
-                                  boxShadow: "0 0 8px rgba(34, 211, 238, 0.4)",
-                                }}
-                                whileTap={{ scale: 0.95 }}
-                                transition={{
-                                  duration: 0.15,
-                                  ease: "easeInOut",
-                                }}
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  className="h-5 w-5"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  stroke="currentColor"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                                  />
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                                  />
-                                </svg>
-                              </motion.button>
-                            </div>
-                            <div className="tooltip" data-tip="Download resume">
-                              <motion.button
-                                className="w-10 h-10 bg-indigo-200/50 text-indigo-600 hover:bg-indigo-600 hover:text-white rounded-full flex items-center justify-center shadow-md"
-                                onClick={() =>
-                                  handleDownload(
-                                    app.resumeUrl,
-                                    `${app.jobTitle}-resume.pdf`
-                                  )
-                                }
-                                whileHover={{
-                                  scale: 1.1,
-                                  boxShadow: "0 0 8px rgba(59, 130, 246, 0.4)",
-                                }}
-                                whileTap={{ scale: 0.95 }}
-                                transition={{
-                                  duration: 0.15,
-                                  ease: "easeInOut",
-                                }}
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  className="h-5 w-5"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  stroke="currentColor"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                                  />
-                                </svg>
-                              </motion.button>
-                            </div>
-                          </>
-                        )}
-                        <div className="tooltip" data-tip="Delete application">
+                    <div className="flex justify-end gap-2 mt-4">
+                      {app.resumeUrl && (
+                        <>
                           <motion.button
-                            className="w-10 h-10 bg-red-200/50 text-red-500 hover:bg-red-500 hover:text-white rounded-full flex items-center justify-center shadow-md"
-                            onClick={() => handleDeleteClick(app._id)}
-                            whileHover={{
-                              scale: 1.1,
-                              boxShadow: "0 0 8px rgba(239, 68, 68, 0.4)",
-                            }}
-                            whileTap={{ scale: 0.95 }}
-                            transition={{ duration: 0.15, ease: "easeInOut" }}
+                            className="p-2 bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500 hover:text-white rounded-full"
+                            onClick={() => handleView(app.resumeUrl)}
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            title="View resume"
                           >
                             <svg
-                              xmlns="http://www.w3.org/2000/svg"
                               className="h-5 w-5"
                               fill="none"
                               viewBox="0 0 24 24"
@@ -980,12 +763,86 @@ const ApplicationList = () => {
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 strokeWidth="2"
-                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                              />
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
                               />
                             </svg>
                           </motion.button>
-                        </div>
-                      </div>
+                          <motion.button
+                            className="p-2 bg-indigo-500/20 text-indigo-400 hover:bg-indigo-500 hover:text-white rounded-full"
+                            onClick={() =>
+                              handleDownload(
+                                app.resumeUrl,
+                                `${app.jobTitle}-resume.pdf`
+                              )
+                            }
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            title="Download resume"
+                          >
+                            <svg
+                              className="h-5 w-5"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                              />
+                            </svg>
+                          </motion.button>
+                        </>
+                      )}
+                      <motion.button
+                        className="p-2 bg-rose-500/20 text-rose-400 hover:bg-rose-500 hover:text-white rounded-full"
+                        onClick={() => handleEditClick(app._id)}
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        title="Edit application"
+                      >
+                        <svg
+                          className="h-5 w-5"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                          />
+                        </svg>
+                      </motion.button>
+                      <motion.button
+                        className="p-2 bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white rounded-full"
+                        onClick={() => handleDeleteClick(app._id)}
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        title="Delete application"
+                      >
+                        <svg
+                          className="h-5 w-5"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                          />
+                        </svg>
+                      </motion.button>
                     </div>
                   </div>
                 </motion.div>
@@ -997,115 +854,80 @@ const ApplicationList = () => {
         {hasNextPage && (
           <motion.div
             ref={loaderRef}
-            className="flex justify-center py-10"
+            className="flex justify-center py-8"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.25, ease: "easeInOut" }}
+            transition={{ duration: 0.3 }}
           >
             {loading ? (
-              <div className="flex flex-col items-center gap-4">
+              <div className="flex flex-col items-center gap-3">
                 <motion.div
-                  className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full"
+                  className="w-10 h-10 border-3 border-indigo-500 border-t-transparent rounded-full"
                   animate={{ rotate: 360 }}
                   transition={{
                     repeat: Infinity,
-                    repeatType: "loop",
                     duration: 1,
                     ease: "linear",
                   }}
                 />
-                <p className="text-gray-600 font-medium">
-                  Loading more applications...
-                </p>
+                <p className="text-gray-400 text-sm">Loading more...</p>
               </div>
             ) : (
-              <p className="text-gray-600 font-medium">
-                Scroll to load more...
-              </p>
+              <p className="text-gray-400 text-sm">Scroll to load more...</p>
             )}
           </motion.div>
         )}
 
         {!hasNextPage && uniqueApplications.length > 0 && (
           <motion.div
-            className="flex justify-center py-10"
+            className="flex justify-center py-8"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.25, ease: "easeInOut" }}
+            transition={{ duration: 0.3 }}
           >
-            <div className="px-4 py-2 bg-white/80 text-gray-600 shadow-md rounded-full">
-              End of applications
-            </div>
+            <span className="px-4 py-1 bg-gray-700/50 text-gray-300 rounded-full text-sm">
+              No more applications
+            </span>
           </motion.div>
         )}
 
         <AnimatePresence>
           {deleteId && (
             <motion.div
-              className="fixed inset-0 bg-black bg-opacity-60 z-[1000] flex items-center justify-center p-4"
+              className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.2, ease: "easeInOut" }}
-              onClick={() =>
-                console.log("Modal overlay rendered, deleteId:", deleteId)
-              }
+              transition={{ duration: 0.3 }}
             >
               <motion.div
-                className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl z-[1001]"
+                className="bg-gray-800 rounded-xl p-6 max-w-sm w-full shadow-xl border border-gray-700/30"
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.9, opacity: 0 }}
-                transition={{ duration: 0.25, ease: "easeInOut" }}
+                transition={{ duration: 0.3 }}
                 onClick={(e) => e.stopPropagation()}
               >
-                <h3 className="font-bold text-2xl text-gray-800 text-center mb-4">
-                  Confirm Deletion
+                <h3 className="text-xl font-semibold text-gray-100 mb-4">
+                  Delete Application
                 </h3>
-                <div className="py-4 text-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-16 w-16 text-red-500 mx-auto mb-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                    />
-                  </svg>
-                  <p className="text-lg text-gray-800">
-                    Are you sure you want to delete this application?
-                  </p>
-                  <p className="text-sm text-gray-500 mt-2">
-                    This action cannot be undone.
-                  </p>
-                </div>
-                <div className="flex justify-center gap-4">
+                <p className="text-gray-300 mb-4">
+                  Are you sure? This action cannot be undone.
+                </p>
+                <div className="flex justify-end gap-3">
                   <motion.button
-                    className="px-4 py-2 bg-red-500 text-white rounded-md shadow-md"
+                    className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg"
                     onClick={confirmDelete}
-                    whileHover={{
-                      scale: 1.05,
-                      boxShadow: "0 0 8px rgba(239, 68, 68, 0.4)",
-                    }}
+                    whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    transition={{ duration: 0.15, ease: "easeInOut" }}
                   >
                     Delete
                   </motion.button>
                   <motion.button
-                    className="px-4 py-2 border border-gray-300 text-gray-800 rounded-md shadow-md"
+                    className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-gray-200 rounded-lg"
                     onClick={cancelDelete}
-                    whileHover={{
-                      scale: 1.05,
-                      boxShadow: "0 0 8px rgba(0, 0, 0, 0.2)",
-                    }}
+                    whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    transition={{ duration: 0.15, ease: "easeInOut" }}
                   >
                     Cancel
                   </motion.button>
