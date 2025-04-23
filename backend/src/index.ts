@@ -12,6 +12,11 @@ dotenv.config();
 
 const app = express();
 
+// Health check endpoint (independent of MongoDB)
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "OK", message: "Server is running" });
+});
+
 const startServer = async () => {
   try {
     await connectDB();
