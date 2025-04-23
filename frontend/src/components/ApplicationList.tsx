@@ -27,6 +27,7 @@ const ApplicationList = () => {
   const loaderRef = useRef<HTMLDivElement>(null);
   const [page, setPage] = useState(1);
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState<string | null>(null);
 
   const { token } = useSelector((state: RootState) => state.auth);
   const { applications, loading, error, hasNextPage } = useSelector(
@@ -69,6 +70,23 @@ const ApplicationList = () => {
       }
     };
   }, [hasNextPage, loading]);
+
+  useEffect(() => {
+    // Close dropdown when clicking outside
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        isDropdownOpen &&
+        !(event.target as Element).closest(".status-dropdown")
+      ) {
+        setIsDropdownOpen(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isDropdownOpen]);
 
   const handleCreateClick = () => {
     navigate("/create");
@@ -136,6 +154,23 @@ const ApplicationList = () => {
         return "border-red-500 text-red-500";
       default:
         return "border-gray-500 text-gray-500";
+    }
+  };
+
+  const getStatusBgColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case "pending":
+        return "bg-yellow-500/20";
+      case "applied":
+        return "bg-indigo-600/20";
+      case "interview":
+        return "bg-amber-500/20";
+      case "offer":
+        return "bg-green-500/20";
+      case "rejected":
+        return "bg-red-500/20";
+      default:
+        return "bg-gray-500/20";
     }
   };
 
@@ -243,81 +278,26 @@ const ApplicationList = () => {
   };
 
   const cardItem = {
-    hidden: { opacity: 0, scale: 0.95 },
+    hidden: { opacity: 0, scale: 0.95, y: 20 },
     show: {
       opacity: 1,
       scale: 1,
+      y: 0,
       transition: {
-        duration: 0.2,
-        ease: "easeInOut",
+        duration: 0.3,
+        ease: "easeOut",
       },
     },
     exit: {
       opacity: 0,
       scale: 0.95,
+      y: 20,
       transition: {
-        duration: 0.15,
-        ease: "easeInOut",
+        duration: 0.2,
+        ease: "easeIn",
       },
     },
   };
-
-  if (loading && page === 1) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-200 to-gray-300">
-        <div className="text-center space-y-6">
-          <motion.div
-            className="w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full"
-            animate={{ rotate: 360 }}
-            transition={{
-              repeat: Infinity,
-              repeatType: "loop",
-              duration: 1,
-              ease: "linear",
-            }}
-          />
-          <p className="text-xl text-gray-600 font-semibold">
-            Fetching your applications...
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <motion.div
-        className="max-w-lg mx-auto mt-16 shadow-2xl rounded-xl bg-gradient-to-r from-red-100 to-red-200 p-6"
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.25, ease: "easeInOut" }}
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-8 w-8 text-red-600 shrink-0"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-        <span className="text-lg font-medium text-red-800">Error: {error}</span>
-        <motion.button
-          className="mt-4 px-4 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-100"
-          onClick={() => dispatch(getApplications({ page: 1, limit: 10 }))}
-          whileHover={{ scale: 1.05, boxShadow: "0 0 8px rgba(0, 0, 0, 0.2)" }}
-          whileTap={{ scale: 0.95 }}
-          transition={{ duration: 0.15, ease: "easeInOut" }}
-        >
-          Retry
-        </motion.button>
-      </motion.div>
-    );
-  }
 
   function objectToFormData(obj: Record<string, any>) {
     const formData = new FormData();
@@ -327,11 +307,94 @@ const ApplicationList = () => {
     return formData;
   }
 
+  if (loading && page === 1) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 to-black">
+        <motion.div
+          className="text-center space-y-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <motion.div
+            className="w-16 h-16 border-4 border-purple-600 border-t-transparent rounded-full mx-auto"
+            animate={{ rotate: 360 }}
+            transition={{
+              repeat: Infinity,
+              repeatType: "loop",
+              duration: 1,
+              ease: "linear",
+            }}
+          />
+          <p className="text-xl text-purple-200 font-semibold">
+            Fetching your applications...
+          </p>
+        </motion.div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 to-black">
+        <motion.div
+          className="max-w-lg mx-auto shadow-2xl rounded-xl bg-gradient-to-r from-red-900/40 to-red-800/40 p-8 border border-red-700/50"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.25, ease: "easeInOut" }}
+        >
+          <div className="flex items-center gap-4">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-10 w-10 text-red-500 shrink-0"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <span className="text-xl font-medium text-red-300">
+              Error: {error}
+            </span>
+          </div>
+          <motion.button
+            className="mt-6 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-lg shadow-red-600/30 flex items-center justify-center gap-2"
+            onClick={() => dispatch(getApplications({ page: 1, limit: 10 }))}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            transition={{ duration: 0.15, ease: "easeInOut" }}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              />
+            </svg>
+            Retry
+          </motion.button>
+        </motion.div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-200 to-gray-300 py-16">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-black py-16 text-gray-100">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
-          className="flex flex-col sm:flex-row justify-between items-center gap-4 md:gap-6 px-4 sm:px-6 py-4 mb-6 md:mb-10 bg-white/50 backdrop-blur-sm rounded-2xl shadow-lg"
+          className="flex flex-col sm:flex-row justify-between items-center gap-4 md:gap-6 px-6 sm:px-8 py-6 mb-8 md:mb-12 bg-gray-800/50 backdrop-blur-md rounded-2xl shadow-xl border border-gray-700/50"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
@@ -343,23 +406,23 @@ const ApplicationList = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.1, ease: "easeOut" }}
             >
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-indigo-700 to-amber-500 leading-tight">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-500 to-amber-400 leading-tight">
                 Job Applications
               </h1>
               <div className="relative">
-                <span className="absolute inset-0 bg-gradient-to-br from-indigo-600 to-amber-500 rounded-full blur-sm opacity-70"></span>
-                <div className="relative px-4 py-2 bg-gradient-to-r from-indigo-600 to-amber-500 text-white font-bold text-sm md:text-base rounded-full shadow-md">
+                <span className="absolute inset-0 bg-gradient-to-br from-purple-600 to-pink-500 rounded-full blur-md opacity-70"></span>
+                <div className="relative px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-500 text-white font-bold text-sm md:text-base rounded-full shadow-md">
                   {uniqueApplications.length}
                 </div>
               </div>
             </motion.div>
 
             <motion.button
-              className="px-6 py-3 gap-2 w-full sm:w-auto bg-gradient-to-r from-indigo-600 to-amber-500 hover:from-indigo-700 hover:to-amber-600 text-white font-bold shadow-lg rounded-xl border-none"
+              className="px-6 py-3 gap-2 w-full sm:w-auto bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-bold shadow-xl rounded-xl border-none flex items-center justify-center"
               onClick={handleCreateClick}
               whileHover={{
                 scale: 1.03,
-                boxShadow: "0 0 20px rgba(59, 130, 246, 0.5)",
+                boxShadow: "0 0 25px rgba(168, 85, 247, 0.5)",
               }}
               whileTap={{ scale: 0.97 }}
               initial={{ opacity: 0, y: 10 }}
@@ -401,7 +464,7 @@ const ApplicationList = () => {
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-indigo-600"
+                className="h-5 w-5 text-purple-400"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
@@ -411,14 +474,14 @@ const ApplicationList = () => {
                   clipRule="evenodd"
                 />
               </svg>
-              <h2 className="text-base font-semibold text-gray-800">
+              <h2 className="text-base font-semibold text-purple-200">
                 Filter Applications
               </h2>
             </motion.div>
 
             {selectedFilter && (
               <motion.button
-                className="text-xs text-indigo-600 hover:text-indigo-700 underline flex items-center gap-1"
+                className="text-xs text-purple-400 hover:text-purple-300 underline flex items-center gap-1"
                 onClick={() => setSelectedFilter(null)}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -442,11 +505,11 @@ const ApplicationList = () => {
           </div>
 
           <div className="relative">
-            <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white via-white/80 to-transparent z-10 pointer-events-none rounded-l-xl"></div>
-            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white via-white/80 to-transparent z-10 pointer-events-none rounded-r-xl"></div>
+            <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-gray-800 via-gray-800/80 to-transparent z-10 pointer-events-none rounded-l-xl"></div>
+            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-gray-800 via-gray-800/80 to-transparent z-10 pointer-events-none rounded-r-xl"></div>
 
-            <div className="bg-white/50 backdrop-blur-sm rounded-xl shadow-lg p-1.5">
-              <div className="overflow-x-auto scrollbar-hide py-1.5 px-2">
+            <div className="bg-gray-800/50 backdrop-blur-md rounded-xl shadow-xl border border-gray-700/50 p-1.5">
+              <div className="overflow-x-auto py-1.5 px-2 scrollbar-hide">
                 <motion.div
                   className="flex flex-nowrap min-w-max gap-2"
                   initial={{ opacity: 0, y: 10 }}
@@ -456,13 +519,13 @@ const ApplicationList = () => {
                   <motion.button
                     className={`px-4 py-2.5 rounded-lg flex items-center gap-2 font-medium text-sm transition-all duration-300 ${
                       !selectedFilter
-                        ? "bg-gradient-to-r from-indigo-600 to-amber-500 text-white shadow-md ring-2 ring-indigo-600/20"
-                        : "bg-gray-200/80 hover:bg-gray-200 text-gray-800 hover:text-gray-900"
+                        ? "bg-gradient-to-r from-purple-600 to-pink-500 text-white shadow-lg ring-2 ring-purple-500/20"
+                        : "bg-gray-700/50 hover:bg-gray-700 text-gray-300 hover:text-gray-100"
                     }`}
                     onClick={() => setSelectedFilter(null)}
                     whileHover={{
                       scale: 1.02,
-                      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+                      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
                     }}
                     whileTap={{ scale: 0.98 }}
                     transition={{ duration: 0.2, ease: "easeOut" }}
@@ -477,35 +540,35 @@ const ApplicationList = () => {
                     const statusColors: any = {
                       applied: {
                         bg: "from-indigo-600 to-indigo-700",
-                        ring: "ring-indigo-600/20",
-                        icon: "text-indigo-600",
+                        ring: "ring-indigo-500/20",
+                        icon: "text-indigo-400",
                       },
                       interview: {
                         bg: "from-amber-500 to-amber-600",
                         ring: "ring-amber-500/20",
-                        icon: "text-amber-500",
+                        icon: "text-amber-400",
                       },
                       offer: {
                         bg: "from-green-500 to-green-600",
                         ring: "ring-green-500/20",
-                        icon: "text-green-500",
+                        icon: "text-green-400",
                       },
                       rejected: {
                         bg: "from-red-500 to-red-600",
                         ring: "ring-red-500/20",
-                        icon: "text-red-500",
+                        icon: "text-red-400",
                       },
                       pending: {
                         bg: "from-yellow-500 to-yellow-600",
                         ring: "ring-yellow-500/20",
-                        icon: "text-yellow-500",
+                        icon: "text-yellow-400",
                       },
                     };
 
                     const colorConfig = statusColors[status.toLowerCase()] || {
-                      bg: "from-indigo-600 to-amber-500",
-                      ring: "ring-indigo-600/20",
-                      icon: "text-indigo-600",
+                      bg: "from-purple-600 to-pink-500",
+                      ring: "ring-purple-500/20",
+                      icon: "text-purple-400",
                     };
 
                     const count = uniqueApplications.filter(
@@ -517,8 +580,8 @@ const ApplicationList = () => {
                         key={status}
                         className={`px-4 py-2.5 rounded-lg flex items-center gap-2 font-medium text-sm transition-all duration-300 ${
                           selectedFilter === status
-                            ? `bg-gradient-to-r ${colorConfig.bg} text-white shadow-md ring-2 ${colorConfig.ring}`
-                            : `bg-gray-200/80 hover:bg-gray-200 text-gray-800 hover:text-gray-900`
+                            ? `bg-gradient-to-r ${colorConfig.bg} text-white shadow-lg ring-2 ${colorConfig.ring}`
+                            : `bg-gray-700/50 hover:bg-gray-700 text-gray-300 hover:text-gray-100`
                         }`}
                         onClick={() => setSelectedFilter(status)}
                         variants={{
@@ -537,7 +600,7 @@ const ApplicationList = () => {
                         animate="show"
                         whileHover={{
                           scale: 1.02,
-                          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+                          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
                         }}
                         whileTap={{ scale: 0.98 }}
                         transition={{ duration: 0.2, ease: "easeOut" }}
@@ -546,7 +609,7 @@ const ApplicationList = () => {
                           className={`flex items-center justify-center ${
                             selectedFilter === status
                               ? "bg-white/20"
-                              : "bg-gray-300/50"
+                              : "bg-gray-600/70"
                           } rounded-full w-5 h-5 text-xs`}
                         >
                           {count}
@@ -581,8 +644,8 @@ const ApplicationList = () => {
                 className={`w-1.5 h-1.5 rounded-full ${
                   i === statusOptions.findIndex((s) => s === selectedFilter) ||
                   (selectedFilter === null && i === 0)
-                    ? "bg-indigo-600"
-                    : "bg-gray-300"
+                    ? "bg-purple-500"
+                    : "bg-gray-600"
                 }`}
               ></div>
             ))}
@@ -591,7 +654,7 @@ const ApplicationList = () => {
 
         {filteredApplications.length === 0 ? (
           <motion.div
-            className="bg-white/90 backdrop-blur-md shadow-2xl text-center p-12 max-w-md mx-auto rounded-2xl"
+            className="bg-gray-800/70 backdrop-blur-md shadow-2xl text-center p-12 max-w-md mx-auto rounded-2xl border border-gray-700/50"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.25, ease: "easeInOut" }}
@@ -599,7 +662,7 @@ const ApplicationList = () => {
             <div className="flex flex-col items-center gap-6">
               <motion.svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-20 w-20 text-gray-300"
+                className="h-20 w-20 text-gray-600"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -618,17 +681,17 @@ const ApplicationList = () => {
                   d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                 />
               </motion.svg>
-              <p className="text-xl text-gray-600 font-medium">
+              <p className="text-xl text-gray-300 font-medium">
                 {selectedFilter
                   ? `No ${selectedFilter} applications found.`
                   : "No applications found. Start by creating a new application."}
               </p>
               <motion.button
-                className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-amber-500 text-white rounded-md hover:from-indigo-700 hover:to-amber-600"
+                className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-lg shadow-lg shadow-purple-700/30 hover:shadow-purple-700/50"
                 onClick={handleCreateClick}
                 whileHover={{
                   scale: 1.05,
-                  boxShadow: "0 0 12px rgba(59, 130, 246, 0.4)",
+                  boxShadow: "0 0 20px rgba(168, 85, 247, 0.4)",
                 }}
                 whileTap={{ scale: 0.95 }}
                 transition={{ duration: 0.15, ease: "easeInOut" }}
@@ -639,7 +702,7 @@ const ApplicationList = () => {
           </motion.div>
         ) : (
           <motion.div
-            className="grid gap-6 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+            className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
             variants={container}
             initial="hidden"
             animate="show"
@@ -650,24 +713,27 @@ const ApplicationList = () => {
                 <motion.div
                   key={app._id}
                   variants={cardItem}
-                  className={`bg-white/90 backdrop-blur-md shadow-xl hover:shadow-2xl transition-all duration-200 ease-in-out rounded-2xl border-l-4 ${getStatusColor(
+                  className={`bg-gray-800/70 backdrop-blur-md shadow-xl rounded-2xl border-l-4 overflow-hidden ${getStatusColor(
                     app.status
-                  )}`}
+                  )} group`}
                   initial="hidden"
                   animate="show"
                   exit="exit"
                   whileHover={{
-                    y: -6,
-                    boxShadow: "0 20px 40px -10px rgba(0, 0, 0, 0.25)",
+                    y: -8,
+                    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
                     transition: { duration: 0.2, ease: "easeInOut" },
                   }}
                 >
+                  {/* Glass effect top highlight */}
+                  <div className="h-1 w-full bg-gradient-to-r from-white/10 via-white/20 to-transparent"></div>
+
                   <div className="p-6">
                     <div className="flex justify-between items-start">
-                      <h2 className="text-xl font-bold text-gray-800 line-clamp-1">
+                      <h2 className="text-xl font-bold text-gray-100 line-clamp-1 group-hover:text-white transition-colors">
                         {app.jobTitle}
                       </h2>
-                      <div className="dropdown dropdown-end">
+                      <div className="relative status-dropdown">
                         <label
                           tabIndex={0}
                           className={`px-3 py-2 flex items-center gap-2 font-medium ${getStatusColor(
