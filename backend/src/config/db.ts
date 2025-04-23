@@ -6,8 +6,8 @@ dotenv.config();
 let cachedConnection: mongoose.Connection | null = null;
 
 const atlasOptions: mongoose.ConnectOptions = {
-  serverSelectionTimeoutMS: 5000,
-  connectTimeoutMS: 10000,
+  serverSelectionTimeoutMS: 3000, // Reduce from 5000
+  connectTimeoutMS: 5000, // Reduce from 10000
   socketTimeoutMS: 45000,
   maxPoolSize: 10,
   retryWrites: true,
