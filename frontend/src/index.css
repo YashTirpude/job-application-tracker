@@ -1,12 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-/* input[type="password"]::-ms-clear,
+@import "tailwindcss";
+@plugin "daisyui";
+
+input[type="password"]::-ms-clear,
 input[type="password"]::-ms-reveal {
   display: none;
 }
 input[type="password"]::-webkit-textfield-decoration-container {
   display: none !important;
-} */
+} 
 
-/* Force override for daisyUI border-radius issues */
+/* Force override for daisyUI border-radius issues
