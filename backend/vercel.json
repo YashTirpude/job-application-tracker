@@ -18,8 +18,5 @@
         "Access-Control-Allow-Credentials": "true"
       }
     }
-  ],
-  "engines": {
-    "node": "18.x"
-  }
+  ]
 }
