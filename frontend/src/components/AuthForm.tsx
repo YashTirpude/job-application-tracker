@@ -32,6 +32,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
   const navigate = useNavigate();
   const password = watch("password", "");
 
+  // Enhanced animations
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -46,7 +47,23 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
 
   const itemVariants = {
     hidden: { opacity: 0, y: 10 },
-    visible: { opacity: 1, y: 0 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.4,
+        ease: "easeOut",
+      },
+    },
+  };
+
+  const buttonVariants = {
+    hover: {
+      scale: 1.03,
+      boxShadow: "0px 5px 15px rgba(99, 102, 241, 0.4)",
+      transition: { duration: 0.2 },
+    },
+    tap: { scale: 0.97 },
   };
 
   const onSubmit = async (data: FormValues) => {
@@ -101,23 +118,47 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
       initial="hidden"
       animate="visible"
       variants={containerVariants}
-      className="flex justify-center items-center min-h-screen bg-gray-200 px-4"
+      className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-indigo-950 px-4 py-10"
     >
       <motion.form
         onSubmit={handleSubmit(onSubmit)}
-        className="bg-white shadow-xl p-8 max-w-md w-full mx-auto rounded-2xl space-y-6"
+        className="bg-gray-800 shadow-2xl p-8 max-w-md w-full mx-auto rounded-2xl space-y-6 border border-gray-700"
         variants={containerVariants}
       >
-        <motion.h2
-          className="text-3xl font-bold text-center mb-6 text-indigo-600"
+        <motion.div
+          className="flex flex-col items-center mb-2"
           variants={itemVariants}
         >
-          {type === "login" ? "Welcome Back" : "Create Account"}
-        </motion.h2>
+          <svg
+            className="w-12 h-12 text-indigo-400 mb-2"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+          </svg>
+          <motion.h2
+            className="text-3xl font-bold text-center text-white"
+            variants={itemVariants}
+          >
+            {type === "login" ? "Welcome Back" : "Create Account"}
+          </motion.h2>
+          <motion.div
+            className="h-1 w-16 bg-indigo-500 mt-3 mb-2 rounded-full"
+            variants={itemVariants}
+          />
+          <motion.p
+            className="text-gray-400 text-center"
+            variants={itemVariants}
+          >
+            {type === "login"
+              ? "Sign in to track your job applications"
+              : "Create an account to start tracking your jobs"}
+          </motion.p>
+        </motion.div>
 
         {type === "register" && (
           <motion.div className="flex flex-col w-full" variants={itemVariants}>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-300 mb-1">
               Display Name
             </label>
             <div className="relative">
@@ -135,14 +176,14 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
               <input
                 type="text"
                 placeholder="Your name"
-                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300"
+                className="w-full pl-10 pr-3 py-3 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 {...register("displayName", {
                   required: "Display name is required",
                 })}
               />
             </div>
             {errors.displayName && (
-              <p className="text-sm text-red-600 mt-1">
+              <p className="text-sm text-red-400 mt-1">
                 {errors.displayName.message}
               </p>
             )}
@@ -150,7 +191,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
         )}
 
         <motion.div className="flex flex-col w-full" variants={itemVariants}>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-300 mb-1">
             Email
           </label>
           <div className="relative">
@@ -168,7 +209,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
             <input
               type="email"
               placeholder="example@email.com"
-              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300"
+              className="w-full pl-10 pr-3 py-3 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               {...register("email", {
                 required: "Email is required",
                 pattern: {
@@ -179,12 +220,12 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
             />
           </div>
           {errors.email && (
-            <p className="text-sm text-red-600 mt-1">{errors.email.message}</p>
+            <p className="text-sm text-red-400 mt-1">{errors.email.message}</p>
           )}
         </motion.div>
 
         <motion.div className="flex flex-col w-full" variants={itemVariants}>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-300 mb-1">
             Password
           </label>
           <div className="relative">
@@ -203,7 +244,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Password"
-              className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300"
+              className="w-full pl-10 pr-10 py-3 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               {...register("password", {
                 required: "Password is required",
                 minLength: {
@@ -214,7 +255,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
             />
             <button
               type="button"
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 z-10"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300 z-10"
               onClick={() => setShowPassword(!showPassword)}
               tabIndex={-1}
             >
@@ -245,7 +286,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
             </button>
           </div>
           {errors.password && (
-            <p className="text-sm text-red-600 mt-1">
+            <p className="text-sm text-red-400 mt-1">
               {errors.password.message}
             </p>
           )}
@@ -253,7 +294,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
 
         {type === "register" && (
           <motion.div className="flex flex-col w-full" variants={itemVariants}>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-300 mb-1">
               Confirm Password
             </label>
             <div className="relative">
@@ -271,7 +312,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
               <input
                 type={showConfirmPassword ? "text" : "password"}
                 placeholder="Confirm password"
-                className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300"
+                className="w-full pl-10 pr-10 py-3 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 {...register("confirmPassword", {
                   required: "Please confirm your password",
                   validate: (value) =>
@@ -280,7 +321,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
               />
               <button
                 type="button"
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 z-10"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300 z-10"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 tabIndex={-1}
               >
@@ -311,7 +352,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
               </button>
             </div>
             {errors.confirmPassword && (
-              <p className="text-sm text-red-600 mt-1">
+              <p className="text-sm text-red-400 mt-1">
                 {errors.confirmPassword.message}
               </p>
             )}
@@ -322,7 +363,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
           <motion.div className="text-right" variants={itemVariants}>
             <a
               href="/forgot-password"
-              className="text-sm text-indigo-600 hover:underline"
+              className="text-sm text-indigo-400 hover:text-indigo-300 hover:underline transition-colors duration-200"
             >
               Forgot password?
             </a>
@@ -331,38 +372,59 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
 
         <motion.button
           type="submit"
-          className="bg-indigo-600 rounded-full w-full h-12 flex items-center justify-center text-white hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+          className="bg-indigo-600 rounded-lg w-full h-12 flex items-center justify-center text-white hover:bg-indigo-700 disabled:bg-gray-600 disabled:cursor-not-allowed transition-all duration-200"
           disabled={isSubmitting}
-          variants={itemVariants}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
+          variants={buttonVariants}
+          whileHover="hover"
+          whileTap="tap"
         >
           {isSubmitting ? (
-            <>
-              <span className="loading loading-spinner loading-sm"></span>
+            <div className="flex items-center gap-2">
+              <svg
+                className="animate-spin h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
               {type === "login" ? "Logging in..." : "Registering..."}
-            </>
+            </div>
           ) : type === "login" ? (
-            "Login"
+            "Sign In"
           ) : (
             "Create Account"
           )}
         </motion.button>
 
         <motion.div
-          className="flex items-center justify-center text-gray-400"
+          className="flex items-center justify-center space-x-3 text-gray-400 my-6"
           variants={itemVariants}
         >
-          or continue with
+          <div className="h-px bg-gray-600 flex-1"></div>
+          <p className="text-sm uppercase">or</p>
+          <div className="h-px bg-gray-600 flex-1"></div>
         </motion.div>
 
         <motion.button
           type="button"
           onClick={handleGoogleLogin}
-          className="border border-gray-300 bg-white w-full flex items-center justify-center gap-2 py-2 rounded-md hover:bg-gray-50"
-          variants={itemVariants}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
+          className="bg-gray-700 border border-gray-600 w-full flex items-center justify-center gap-2 py-3 rounded-lg hover:bg-gray-600 transition-colors duration-200"
+          variants={buttonVariants}
+          whileHover="hover"
+          whileTap="tap"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -387,7 +449,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
               d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"
             />
           </svg>
-          <span className="text-gray-700">Continue with Google</span>
+          <span className="text-white">Continue with Google</span>
         </motion.button>
 
         <motion.div className="text-center mt-6" variants={itemVariants}>
@@ -396,7 +458,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
               Don't have an account?{" "}
               <a
                 href="/register"
-                className="text-indigo-600 font-medium hover:underline"
+                className="text-indigo-400 font-medium hover:text-indigo-300 hover:underline transition-colors duration-200"
               >
                 Register
               </a>
@@ -406,7 +468,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
               Already have an account?{" "}
               <a
                 href="/login"
-                className="text-indigo-600 font-medium hover:underline"
+                className="text-indigo-400 font-medium hover:text-indigo-300 hover:underline transition-colors duration-200"
               >
                 Login
               </a>
