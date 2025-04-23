@@ -9,12 +9,10 @@ const atlasOptions: mongoose.ConnectOptions = {
   serverSelectionTimeoutMS: 5000,
   connectTimeoutMS: 10000,
   socketTimeoutMS: 45000,
-  maxPoolSize: 5,
+  maxPoolSize: 10,
   retryWrites: true,
-  writeConcern: {
-    w: "majority",
-  },
-  bufferCommands: false,
+  writeConcern: { w: "majority" },
+  autoIndex: false,
 };
 
 const connectDB = async (): Promise<mongoose.Connection> => {
@@ -24,9 +22,7 @@ const connectDB = async (): Promise<mongoose.Connection> => {
 
   try {
     mongoose.set("strictQuery", true);
-
     await mongoose.connect(process.env.MONGO_URI as string, atlasOptions);
-
     cachedConnection = mongoose.connection;
 
     cachedConnection.on("error", (err) => {
