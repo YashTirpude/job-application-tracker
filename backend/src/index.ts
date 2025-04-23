@@ -37,6 +37,11 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session()); // Enable persistent login
+
+app.get("/", (req, res) => {
+  res.send("Express Typescript on Vercel");
+  return;
+});
 app.use("/auth", authRoutes); // Use authentication routes
 
 app.use("/applications", applicationRoutes);
