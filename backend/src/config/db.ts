@@ -1,21 +1,56 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 
-// Load environment variables from .env file
 dotenv.config();
 
-// MongoDB connection function
+let cachedConnection: mongoose.Connection | null = null;
 
-const connectDB = async () => {
+const atlasOptions: mongoose.ConnectOptions = {
+  serverSelectionTimeoutMS: 5000,
+  connectTimeoutMS: 10000,
+  socketTimeoutMS: 45000,
+  maxPoolSize: 5,
+  retryWrites: true,
+  writeConcern: {
+    w: "majority",
+  },
+  bufferCommands: false,
+};
+
+const connectDB = async (): Promise<mongoose.Connection> => {
+  if (cachedConnection) {
+    return cachedConnection;
+  }
+
   try {
-    // Connect to MongoDB using the Mongoose library'
-    const connect = await mongoose.connect(process.env.MONGO_URI as string);
-    console.log(`MongoDB Connected: ${connect.connection.host}`);
-  } catch (error: any) {
-    console.error(`Error: ${error.message}`); // Log the error if connection fails
-    process.exit(1); // Exit the process if there's an error connecting to MongoDB
+    mongoose.set("strictQuery", true);
+
+    await mongoose.connect(process.env.MONGO_URI as string, atlasOptions);
+
+    cachedConnection = mongoose.connection;
+
+    cachedConnection.on("error", (err) => {
+      console.error("MongoDB connection error:", err);
+      cachedConnection = null;
+    });
+
+    cachedConnection.on("disconnected", () => {
+      console.log("MongoDB disconnected");
+      cachedConnection = null;
+    });
+
+    return cachedConnection;
+  } catch (error) {
+    console.error("MongoDB connection failed:", error);
+    throw error;
   }
 };
 
-// Export the MongoDB connection function
-export default connectDB;
+const closeDB = async (): Promise<void> => {
+  if (cachedConnection) {
+    await mongoose.disconnect();
+    cachedConnection = null;
+  }
+};
+
+export { connectDB, closeDB };

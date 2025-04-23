@@ -3,17 +3,23 @@ import dotenv from "dotenv";
 import session from "express-session";
 import MongoStore from "connect-mongo";
 import cors from "cors";
-import connectDB from "./config/db";
+import { connectDB } from "./config/db";
 import applicationRoutes from "./routes/applicationRoutes";
 import passport from "./config/passportConfig";
 import authRoutes from "./routes/authRoutes";
 
 dotenv.config();
 
-connectDB(); // Establish the MongoDB connection
-
+const startServer = async () => {
+  try {
+    await connectDB();
+    // Rest of your server setup...
+  } catch (error) {
+    console.error("Failed to initialize server:", error);
+  }
+}; // Establish the MongoDB connection
+startServer();
 const app = express();
-const port = process.env.PORT || 5000;
 
 app.use(express.json());
 app.use(
@@ -24,16 +30,17 @@ app.use(
   })
 ); // This allows all origins. You can configure it to be more restrictive if needed.
 
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET as string,
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
+const sessionConfig = {
+  secret: process.env.SESSION_SECRET as string,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 15 * 24 * 60 * 60 * 1000,
+  },
+};
 
-    cookie: { secure: false, maxAge: 15 * 24 * 60 * 60 * 1000 }, // 15 days
-  })
-);
+app.use(session(sessionConfig));
 
 app.use(passport.initialize());
 app.use(passport.session()); // Enable persistent login
@@ -46,6 +53,11 @@ app.use("/auth", authRoutes); // Use authentication routes
 
 app.use("/applications", applicationRoutes);
 
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
+export { app };
+
+if (process.env.VERCEL_ENV !== "production") {
+  const port = process.env.PORT || 5000;
+  app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+  });
+}
