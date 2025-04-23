@@ -10,60 +10,54 @@ import authRoutes from "./routes/authRoutes";
 
 dotenv.config();
 
-const app = express();
-
-// Health check endpoint (independent of MongoDB)
-app.get("/health", (req, res) => {
-  res.status(200).json({ status: "OK", message: "Server is running" });
-});
-
 const startServer = async () => {
   try {
     await connectDB();
-    console.log("MongoDB connected successfully");
-
-    // Middleware and routes
-    app.use(express.json());
-    app.use(
-      cors({
-        origin: "https://job-application-tracker-orcin.vercel.app",
-        methods: ["POST", "GET", "PUT", "DELETE"],
-        credentials: true,
-      })
-    );
-
-    const sessionConfig = {
-      secret: process.env.SESSION_SECRET as string,
-      resave: false,
-      saveUninitialized: false,
-      store: MongoStore.create({
-        client: (await connectDB()).getClient(),
-        collectionName: "sessions",
-      }),
-      cookie: {
-        secure:
-          process.env.VERCEL_ENV === "production" ||
-          process.env.VERCEL_ENV === "preview",
-        maxAge: 15 * 24 * 60 * 60 * 1000,
-      },
-    };
-
-    app.use(session(sessionConfig));
-    app.use(passport.initialize());
-    app.use(passport.session());
-
-    app.get("/", (req, res) => {
-      res.send("Express Typescript on Vercel");
-      return;
-    });
-    app.use("/auth", authRoutes);
-    app.use("/applications", applicationRoutes);
+    // Rest of your server setup...
   } catch (error) {
     console.error("Failed to initialize server:", error);
-    process.exit(1);
   }
+}; // Establish the MongoDB connection
+startServer();
+const app = express();
+
+app.use(express.json());
+app.use(
+  cors({
+    origin: "https://job-application-tracker-orcin.vercel.app",
+    methods: ["POST", "GET", "PUT", "DELETE"],
+    credentials: true,
+  })
+); // This allows all origins. You can configure it to be more restrictive if needed.
+
+const sessionConfig = {
+  secret: process.env.SESSION_SECRET as string,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 15 * 24 * 60 * 60 * 1000,
+  },
 };
 
-startServer();
+app.use(session(sessionConfig));
+
+app.use(passport.initialize());
+app.use(passport.session()); // Enable persistent login
+
+app.get("/", (req, res) => {
+  res.send("Express Typescript on Vercel");
+  return;
+});
+app.use("/auth", authRoutes); // Use authentication routes
+
+app.use("/applications", applicationRoutes);
 
 export { app };
+
+if (process.env.VERCEL_ENV !== "production") {
+  const port = process.env.PORT || 5000;
+  app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+  });
+}
