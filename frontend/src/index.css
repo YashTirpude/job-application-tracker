@@ -10,6 +10,4 @@ input[type="password"]::-ms-reveal {
 }
 input[type="password"]::-webkit-textfield-decoration-container {
   display: none !important;
-} 
-
-/* Force override for daisyUI border-radius issues
+}
