@@ -171,7 +171,6 @@ const EditApplicationForm = () => {
           <div className="flex flex-col items-center justify-center min-h-64 p-6">
             <motion.div
               className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full"
-              animate={{ rotate: 360 }}
               transition={{
                 repeat: Infinity,
                 repeatType: "loop",
