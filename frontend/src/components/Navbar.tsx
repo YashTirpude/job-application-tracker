@@ -5,17 +5,7 @@ import { logout } from "../store/slices/authSlice";
 import { AppDispatch, RootState } from "../store";
 import { setApplications } from "../store/slices/applicationSlice";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Search,
-  X,
-  Menu,
-  LogOut,
-  Home,
-  User,
-  UserPlus,
-  Briefcase,
-  ChevronDown,
-} from "lucide-react";
+import { Search, X, Menu, LogOut, Briefcase } from "lucide-react";
 import api from "../services/api";
 
 const Navbar = () => {
@@ -27,7 +17,6 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [showSearchOnMobile, setShowSearchOnMobile] = useState(false);
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   // Handle scroll effect for navbar
   useEffect(() => {
@@ -42,17 +31,13 @@ const Navbar = () => {
   // Close menus when route changes
   useEffect(() => {
     setIsMenuOpen(false);
-    setUserMenuOpen(false);
     setShowSearchOnMobile(false);
   }, [location.pathname]);
 
-  // Close menus when clicking outside
+  // Close mobile search when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
-      if (!target.closest(".user-menu-container") && userMenuOpen) {
-        setUserMenuOpen(false);
-      }
       if (showSearchOnMobile && !target.closest(".mobile-search-container")) {
         setShowSearchOnMobile(false);
       }
@@ -60,13 +45,12 @@ const Navbar = () => {
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [userMenuOpen, showSearchOnMobile]);
+  }, [showSearchOnMobile]);
 
   const handleLogout = () => {
     dispatch(logout());
     localStorage.removeItem("token");
     navigate("/");
-    setUserMenuOpen(false);
   };
 
   const handleSearch = async () => {
@@ -188,25 +172,6 @@ const Navbar = () => {
     },
   };
 
-  const userMenuVariants = {
-    hidden: {
-      opacity: 0,
-      scale: 0.9,
-      y: 10,
-      transition: { duration: 0.15 },
-    },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      y: 0,
-      transition: {
-        type: "spring",
-        stiffness: 400,
-        damping: 20,
-      },
-    },
-  };
-
   const searchIconAnimation = {
     hover: {
       scale: 1.1,
@@ -283,160 +248,67 @@ const Navbar = () => {
             </Link>
           </motion.div>
 
-          {/* Desktop Navigation Links */}
-          <div className="hidden md:flex items-center space-x-6">
-            <motion.div whileHover="hover" className="relative">
-              <Link
-                to="/"
-                className={`font-medium text-base hover:text-primary transition-colors ${
-                  location.pathname === "/"
-                    ? "text-primary"
-                    : "text-base-content/80"
-                }`}
-              >
-                Home
-              </Link>
-              {location.pathname === "/" && (
-                <motion.div
-                  layoutId="navIndicator"
-                  className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary rounded-full"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.3 }}
+          {/* Centered Search Bar - Desktop */}
+          {token && (
+            <motion.div
+              initial={{ opacity: 0, width: 0 }}
+              animate={{
+                opacity: 1,
+                width: "auto",
+                transition: { delay: 0.3, duration: 0.4 },
+              }}
+              className="hidden md:block mx-auto max-w-md"
+            >
+              <div className="relative flex items-center">
+                <input
+                  type="text"
+                  placeholder="Search applications..."
+                  className="input input-sm md:input-md input-bordered rounded-full bg-base-200/60 pl-10 pr-10 w-64 lg:w-80 focus:w-96 transition-all duration-300 focus:bg-base-200 h-9 md:h-10 text-base-content"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                 />
-              )}
-            </motion.div>
-            <motion.div whileHover="hover" className="relative">
-              <Link
-                to="/dashboard"
-                className={`font-medium text-base hover:text-primary transition-colors ${
-                  location.pathname === "/dashboard"
-                    ? "text-primary"
-                    : "text-base-content/80"
-                }`}
-              >
-                Dashboard
-              </Link>
-              {location.pathname === "/dashboard" && (
                 <motion.div
-                  layoutId="navIndicator"
-                  className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary rounded-full"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.3 }}
-                />
-              )}
-            </motion.div>
-          </div>
-
-          {/* Desktop Search and User Actions */}
-          <div className="hidden md:flex items-center space-x-4">
-            {/* Search Bar - Desktop */}
-            {token && (
-              <motion.div
-                initial={{ opacity: 0, width: 0 }}
-                animate={{
-                  opacity: 1,
-                  width: "auto",
-                  transition: { delay: 0.3, duration: 0.4 },
-                }}
-                className="relative"
-              >
-                <div className="relative flex items-center">
-                  <input
-                    type="text"
-                    placeholder="Search applications..."
-                    className="input input-sm md:input-md input-bordered rounded-full bg-base-200/60 pl-10 pr-10 w-48 md:w-64 focus:w-72 transition-all duration-300 focus:bg-base-200 h-9 md:h-10"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                  />
-                  <motion.div
-                    variants={searchIconAnimation}
-                    whileHover="hover"
-                    className="absolute left-3 text-base-content/60"
-                  >
-                    <Search size={16} />
-                  </motion.div>
-                  <AnimatePresence>
-                    {searchQuery && (
-                      <motion.button
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        className="absolute right-3 text-base-content/60 hover:text-error transition-colors"
-                        onClick={clearSearch}
-                        aria-label="Clear search"
-                      >
-                        <X size={14} />
-                      </motion.button>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </motion.div>
-            )}
-
-            {/* Auth Actions */}
-            {token ? (
-              <div className="relative user-menu-container">
-                <motion.button
-                  variants={buttonHoverAnimation}
-                  initial="rest"
+                  variants={searchIconAnimation}
                   whileHover="hover"
-                  whileTap="tap"
-                  onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="btn btn-sm md:btn-md btn-primary rounded-full px-4 md:px-5 flex items-center gap-2 h-9 md:h-10 min-h-0"
+                  className="absolute left-3 text-base-content/60"
                 >
-                  <User size={16} />
-                  <span className="hidden sm:inline">Account</span>
-                  <motion.div
-                    animate={{ rotate: userMenuOpen ? 180 : 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <ChevronDown size={16} />
-                  </motion.div>
-                </motion.button>
-
+                  <Search size={16} />
+                </motion.div>
                 <AnimatePresence>
-                  {userMenuOpen && (
-                    <motion.div
-                      variants={userMenuVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit="hidden"
-                      className="absolute right-0 mt-2 w-48 bg-base-100 shadow-lg rounded-lg overflow-hidden z-50 border border-base-300"
+                  {searchQuery && (
+                    <motion.button
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      className="absolute right-3 text-base-content/60 hover:text-error transition-colors"
+                      onClick={clearSearch}
+                      aria-label="Clear search"
                     >
-                      <div className="py-1">
-                        <Link
-                          to="/profile"
-                          className="block px-4 py-2.5 text-sm hover:bg-base-200 transition-colors"
-                          onClick={() => setUserMenuOpen(false)}
-                        >
-                          Profile Settings
-                        </Link>
-                        <Link
-                          to="/dashboard"
-                          className="block px-4 py-2.5 text-sm hover:bg-base-200 transition-colors"
-                          onClick={() => setUserMenuOpen(false)}
-                        >
-                          Dashboard
-                        </Link>
-                        <button
-                          onClick={handleLogout}
-                          className="block w-full text-left px-4 py-2.5 text-sm text-error hover:bg-error/10 transition-colors"
-                        >
-                          <div className="flex items-center gap-2">
-                            <LogOut size={14} />
-                            <span>Logout</span>
-                          </div>
-                        </button>
-                      </div>
-                    </motion.div>
+                      <X size={14} />
+                    </motion.button>
                   )}
                 </AnimatePresence>
               </div>
+            </motion.div>
+          )}
+
+          {/* Auth Actions */}
+          <div className="hidden md:flex">
+            {token ? (
+              <motion.button
+                variants={buttonHoverAnimation}
+                initial="rest"
+                whileHover="hover"
+                whileTap="tap"
+                onClick={handleLogout}
+                className="btn btn-sm md:btn-md btn-primary rounded-full px-4 md:px-5 flex items-center gap-2 h-9 md:h-10 min-h-0"
+              >
+                <LogOut size={16} />
+                <span>Logout</span>
+              </motion.button>
             ) : (
               <div className="flex items-center gap-3">
                 <motion.div
@@ -535,7 +407,7 @@ const Navbar = () => {
                 <input
                   type="text"
                   placeholder="Search applications..."
-                  className="input input-bordered rounded-full bg-base-200/80 pl-10 pr-10 w-full h-9 focus:outline-none"
+                  className="input input-bordered rounded-full bg-base-200/80 pl-10 pr-10 w-full h-9 text-base-content"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSearch()}
@@ -618,81 +490,13 @@ const Navbar = () => {
                 </motion.button>
               </motion.div>
 
-              {/* Mobile Menu Links */}
-              <div className="flex-1 overflow-y-auto py-4">
-                <nav className="px-4 space-y-1">
-                  <motion.div variants={menuItemVariants}>
-                    <Link
-                      to="/"
-                      className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-                        location.pathname === "/"
-                          ? "bg-primary/10 text-primary"
-                          : "hover:bg-base-200"
-                      }`}
-                    >
-                      <Home
-                        size={18}
-                        className={
-                          location.pathname === "/" ? "text-primary" : ""
-                        }
-                      />
-                      <span className="font-medium">Home</span>
-                    </Link>
-                  </motion.div>
-
-                  <motion.div variants={menuItemVariants}>
-                    <Link
-                      to="/dashboard"
-                      className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-                        location.pathname === "/dashboard"
-                          ? "bg-primary/10 text-primary"
-                          : "hover:bg-base-200"
-                      }`}
-                    >
-                      <Briefcase
-                        size={18}
-                        className={
-                          location.pathname === "/dashboard"
-                            ? "text-primary"
-                            : ""
-                        }
-                      />
-                      <span className="font-medium">Dashboard</span>
-                    </Link>
-                  </motion.div>
-
-                  {token && (
-                    <motion.div variants={menuItemVariants}>
-                      <Link
-                        to="/profile"
-                        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-                          location.pathname === "/profile"
-                            ? "bg-primary/10 text-primary"
-                            : "hover:bg-base-200"
-                        }`}
-                      >
-                        <User
-                          size={18}
-                          className={
-                            location.pathname === "/profile"
-                              ? "text-primary"
-                              : ""
-                          }
-                        />
-                        <span className="font-medium">Profile</span>
-                      </Link>
-                    </motion.div>
-                  )}
-                </nav>
-              </div>
-
               {/* Mobile Menu Footer */}
-              <div className="p-4 border-t border-base-200">
+              <div className="mt-auto p-6 border-t border-base-200">
                 {token ? (
                   <motion.div variants={menuItemVariants} className="w-full">
                     <button
                       onClick={handleLogout}
-                      className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl bg-error/10 hover:bg-error/20 text-error transition-all font-medium"
+                      className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl bg-primary text-primary-content transition-all font-medium"
                     >
                       <LogOut size={18} />
                       <span>Logout</span>
@@ -705,7 +509,6 @@ const Navbar = () => {
                         to="/login"
                         className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl border border-base-300 hover:bg-base-200 transition-all"
                       >
-                        <User size={18} className="text-primary" />
                         <span className="font-medium">Login</span>
                       </Link>
                     </motion.div>
@@ -715,7 +518,6 @@ const Navbar = () => {
                         to="/register"
                         className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl bg-primary text-primary-content hover:brightness-105 transition-all"
                       >
-                        <UserPlus size={18} />
                         <span className="font-medium">Register</span>
                       </Link>
                     </motion.div>
