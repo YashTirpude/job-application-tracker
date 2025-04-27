@@ -15,7 +15,6 @@ const Navbar = () => {
   const token = useSelector((state: RootState) => state.auth.token);
   const [searchQuery, setSearchQuery] = useState("");
   const [scrolled, setScrolled] = useState(false);
-  const [showSearchOnMobile, setShowSearchOnMobile] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,21 +23,6 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  useEffect(() => {
-    setShowSearchOnMobile(false);
-  }, [location.pathname]);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-      if (showSearchOnMobile && !target.closest(".mobile-search-container")) {
-        setShowSearchOnMobile(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [showSearchOnMobile]);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -54,7 +38,6 @@ const Navbar = () => {
         params: { search: searchQuery, page: 1, limit: 10 },
       });
       dispatch(setApplications(res.data.applications));
-      setShowSearchOnMobile(false);
     } catch (error) {
       console.error("Search failed", error);
     }
@@ -107,15 +90,6 @@ const Navbar = () => {
     hover: { scale: 1.05, transition: { duration: 0.2 } },
   };
 
-  const mobileSearchVariants = {
-    hidden: { opacity: 0, y: -10 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.4, ease: "easeOut" },
-    },
-  };
-
   return (
     <>
       <motion.nav
@@ -152,13 +126,13 @@ const Navbar = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2, duration: 0.4 }}
-              className="hidden md:flex items-center gap-3 max-w-md"
+              className="flex-1 mx-4 max-w-md"
             >
               <div className="relative flex items-center">
                 <input
                   type="text"
                   placeholder="Search applications..."
-                  className="w-64 lg:w-80 h-10 px-10 py-2 bg-gray-700/50 border border-gray-600 rounded-lg text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all duration-200"
+                  className="w-full h-9 sm:h-10 px-10 py-2 bg-gray-700/50 border border-gray-600 rounded-lg text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all duration-200 text-sm sm:text-base"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSearch()}
@@ -200,74 +174,31 @@ const Navbar = () => {
             </motion.div>
           )}
 
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="flex items-center gap-2">
             {token ? (
-              <motion.button
-                variants={buttonVariants}
-                whileHover="hover"
-                whileTap="tap"
-                onClick={handleLogout}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors duration-200"
-              >
-                <LogOut size={16} className="text-indigo-400" />
-                <span>Logout</span>
-              </motion.button>
-            ) : (
-              <div className="flex items-center gap-3">
-                <motion.div
-                  variants={buttonVariants}
-                  whileHover="hover"
-                  whileTap="tap"
-                >
-                  <Link
-                    to="/login"
-                    className="px-4 py-2 text-gray-300 hover:text-indigo-400 transition-colors duration-200"
-                  >
-                    Login
-                  </Link>
-                </motion.div>
-                <motion.div
-                  variants={buttonVariants}
-                  whileHover="hover"
-                  whileTap="tap"
-                >
-                  <Link
-                    to="/register"
-                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all duration-200"
-                  >
-                    Register
-                  </Link>
-                </motion.div>
-              </div>
-            )}
-          </div>
-
-          <div className="flex items-center gap-2 md:hidden">
-            {token && (
               <>
                 <motion.button
                   variants={buttonVariants}
                   whileHover="hover"
                   whileTap="tap"
-                  onClick={() => setShowSearchOnMobile(!showSearchOnMobile)}
-                  className="p-2 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg transition-colors duration-200"
-                  aria-label="Search"
+                  onClick={handleLogout}
+                  className="hidden md:flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors duration-200"
                 >
-                  <Search size={20} />
+                  <LogOut size={16} className="text-indigo-400" />
+                  <span>Logout</span>
                 </motion.button>
                 <motion.button
                   variants={buttonVariants}
                   whileHover="hover"
                   whileTap="tap"
                   onClick={handleLogout}
-                  className="p-2 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg transition-colors duration-200"
+                  className="md:hidden p-2 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg transition-colors duration-200"
                   aria-label="Logout"
                 >
                   <LogOut size={20} className="text-indigo-400" />
                 </motion.button>
               </>
-            )}
-            {!token && (
+            ) : (
               <div className="flex items-center gap-2">
                 <motion.div
                   variants={buttonVariants}
@@ -276,7 +207,13 @@ const Navbar = () => {
                 >
                   <Link
                     to="/login"
-                    className="p-2 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg transition-colors duration-200"
+                    className="px-4 py-2 text-gray-300 hover:text-indigo-400 transition-colors duration-200 hidden md:block"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/login"
+                    className="p-2 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg transition-colors duration-200 md:hidden"
                   >
                     Login
                   </Link>
@@ -288,7 +225,13 @@ const Navbar = () => {
                 >
                   <Link
                     to="/register"
-                    className="p-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors duration-200"
+                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all duration-200 hidden md:block"
+                  >
+                    Register
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="p-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-all duration-200 md:hidden"
                   >
                     Register
                   </Link>
@@ -297,59 +240,6 @@ const Navbar = () => {
             )}
           </div>
         </div>
-
-        <AnimatePresence>
-          {showSearchOnMobile && token && (
-            <motion.div
-              variants={mobileSearchVariants}
-              initial="hidden"
-              animate="visible"
-              exit="hidden"
-              className="md:hidden px-4 py-3 border-t border-gray-700 mobile-search-container"
-            >
-              <div className="relative flex items-center">
-                <input
-                  type="text"
-                  placeholder="Search applications..."
-                  className="w-full h-10 px-10 py-2 bg-gray-700/50 border border-gray-600 rounded-lg text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all duration-200"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                  autoFocus
-                />
-                <div className="absolute left-3 text-gray-400">
-                  <Search size={16} />
-                </div>
-                <div className="absolute right-3 flex items-center space-x-2">
-                  {searchQuery && (
-                    <motion.button
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="text-gray-400 hover:text-gray-200 transition-colors"
-                      onClick={clearSearch}
-                      aria-label="Clear search"
-                    >
-                      <X size={14} />
-                    </motion.button>
-                  )}
-                  <motion.button
-                    variants={buttonVariants}
-                    whileHover="hover"
-                    whileTap="tap"
-                    onClick={handleSearch}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white p-1.5 rounded-md transition-colors duration-200"
-                    aria-label="Search"
-                  >
-                    <Search size={16} />
-                  </motion.button>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </motion.nav>
 
       <div className="h-16 md:h-20" />
