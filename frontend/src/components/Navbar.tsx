@@ -18,7 +18,6 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [showSearchOnMobile, setShowSearchOnMobile] = useState(false);
 
-  // Handle scroll effect for navbar
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
@@ -28,13 +27,11 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close menus when route changes
   useEffect(() => {
     setIsMenuOpen(false);
     setShowSearchOnMobile(false);
   }, [location.pathname]);
 
-  // Close mobile search when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
@@ -94,7 +91,6 @@ const Navbar = () => {
     }
   };
 
-  // Animation variants
   const navbarVariants = {
     initial: { y: -100, opacity: 0 },
     animate: {
@@ -221,12 +217,11 @@ const Navbar = () => {
         animate="animate"
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled
-            ? "bg-base-100/90 backdrop-blur-lg shadow-md py-2"
-            : "bg-base-100/80 backdrop-blur-sm py-3"
+            ? "bg-dark-card/90 backdrop-blur-lg shadow-lg border-b border-dark-border py-2"
+            : "bg-dark-card/50 backdrop-blur-sm py-3"
         }`}
       >
         <div className="container mx-auto px-4 flex items-center justify-between">
-          {/* Logo Section */}
           <motion.div
             variants={logoVariants}
             initial="initial"
@@ -243,12 +238,11 @@ const Navbar = () => {
               </motion.div>
               <span className="text-xl md:text-2xl font-bold tracking-tight">
                 <span className="text-primary">Job</span>
-                <span>Tracker</span>
+                <span className="text-gray-100">Tracker</span>
               </span>
             </Link>
           </motion.div>
 
-          {/* Centered Search Bar - Desktop */}
           {token && (
             <motion.div
               initial={{ opacity: 0, width: 0 }}
@@ -263,7 +257,7 @@ const Navbar = () => {
                 <input
                   type="text"
                   placeholder="Search applications..."
-                  className="input input-sm md:input-md input-bordered rounded-full bg-base-200/60 pl-10 pr-10 w-64 lg:w-80 focus:w-96 transition-all duration-300 focus:bg-base-200 h-9 md:h-10 text-base-content"
+                  className="w-64 lg:w-80 h-9 md:h-10 px-10 py-2 bg-dark-hover/50 border border-dark-border focus:border-primary/50 rounded-full text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all duration-300"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSearch()}
@@ -271,7 +265,7 @@ const Navbar = () => {
                 <motion.div
                   variants={searchIconAnimation}
                   whileHover="hover"
-                  className="absolute left-3 text-base-content/60"
+                  className="absolute left-3 text-gray-400"
                 >
                   <Search size={16} />
                 </motion.div>
@@ -283,7 +277,7 @@ const Navbar = () => {
                       exit={{ opacity: 0, scale: 0.8 }}
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
-                      className="absolute right-3 text-base-content/60 hover:text-error transition-colors"
+                      className="absolute right-3 text-gray-400 hover:text-gray-200 transition-colors"
                       onClick={clearSearch}
                       aria-label="Clear search"
                     >
@@ -295,8 +289,7 @@ const Navbar = () => {
             </motion.div>
           )}
 
-          {/* Auth Actions */}
-          <div className="hidden md:flex">
+          <div className="hidden md:flex items-center space-x-4">
             {token ? (
               <motion.button
                 variants={buttonHoverAnimation}
@@ -304,7 +297,7 @@ const Navbar = () => {
                 whileHover="hover"
                 whileTap="tap"
                 onClick={handleLogout}
-                className="btn btn-sm md:btn-md btn-primary rounded-full px-4 md:px-5 flex items-center gap-2 h-9 md:h-10 min-h-0"
+                className="flex items-center gap-2 px-4 py-2 bg-dark-hover rounded-full text-gray-100 hover:text-primary transition-colors duration-200"
               >
                 <LogOut size={16} />
                 <span>Logout</span>
@@ -319,7 +312,7 @@ const Navbar = () => {
                 >
                   <Link
                     to="/login"
-                    className="btn btn-ghost btn-sm md:btn-md text-primary h-9 md:h-10 min-h-0"
+                    className="px-4 py-2 text-gray-100 hover:text-primary transition-colors duration-200"
                   >
                     Login
                   </Link>
@@ -332,7 +325,7 @@ const Navbar = () => {
                 >
                   <Link
                     to="/register"
-                    className="btn btn-primary btn-sm md:btn-md rounded-full shadow-md hover:shadow-lg h-9 md:h-10 min-h-0"
+                    className="px-4 py-2 bg-primary text-white rounded-full hover:shadow-glow transition-all duration-200"
                   >
                     Register
                   </Link>
@@ -341,7 +334,6 @@ const Navbar = () => {
             )}
           </div>
 
-          {/* Mobile Search & Menu */}
           <div className="flex items-center gap-2 md:hidden">
             {token && (
               <motion.button
@@ -350,10 +342,10 @@ const Navbar = () => {
                 whileHover="hover"
                 whileTap="tap"
                 onClick={() => setShowSearchOnMobile(!showSearchOnMobile)}
-                className="p-2 rounded-full focus:outline-none hover:bg-base-200 transition-colors"
+                className="p-2 rounded-full text-gray-400 hover:text-primary transition-colors"
                 aria-label="Search"
               >
-                <Search size={20} className="text-primary" />
+                <Search size={20} />
               </motion.button>
             )}
 
@@ -363,7 +355,7 @@ const Navbar = () => {
               whileHover="hover"
               whileTap="tap"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2 rounded-full focus:outline-none hover:bg-base-200 transition-colors"
+              className="p-2 rounded-full text-gray-400 hover:text-primary transition-colors"
               aria-label="Toggle menu"
             >
               <AnimatePresence mode="wait">
@@ -393,7 +385,6 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Mobile Search Bar (shown when search icon is clicked) */}
         <AnimatePresence>
           {showSearchOnMobile && token && (
             <motion.div
@@ -401,22 +392,22 @@ const Navbar = () => {
               initial="hidden"
               animate="visible"
               exit="hidden"
-              className="md:hidden px-4 py-2 border-t border-base-200 mobile-search-container"
+              className="md:hidden px-4 py-2 border-t border-dark-border mobile-search-container"
             >
               <div className="relative flex items-center">
                 <input
                   type="text"
                   placeholder="Search applications..."
-                  className="input input-bordered rounded-full bg-base-200/80 pl-10 pr-10 w-full h-9 text-base-content"
+                  className="w-full h-9 px-10 py-2 bg-dark-hover/50 border border-dark-border rounded-full text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   autoFocus
                 />
-                <div className="absolute left-3 text-base-content/60">
+                <div className="absolute left-3 text-gray-400">
                   <Search size={16} />
                 </div>
-                <div className="absolute right-3 flex items-center space-x-1">
+                <div className="absolute right-3 flex items-center space-x-2">
                   {searchQuery && (
                     <motion.button
                       initial={{ opacity: 0, scale: 0.8 }}
@@ -424,7 +415,7 @@ const Navbar = () => {
                       exit={{ opacity: 0, scale: 0.8 }}
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
-                      className="text-base-content/60 hover:text-error transition-colors p-1"
+                      className="text-gray-400 hover:text-gray-200 transition-colors"
                       onClick={clearSearch}
                       aria-label="Clear search"
                     >
@@ -434,7 +425,7 @@ const Navbar = () => {
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
-                    className="text-primary p-1"
+                    className="text-primary"
                     onClick={handleSearch}
                     aria-label="Search"
                   >
@@ -447,7 +438,6 @@ const Navbar = () => {
         </AnimatePresence>
       </motion.nav>
 
-      {/* Mobile Menu Slide-in */}
       <AnimatePresence>
         {isMenuOpen && (
           <>
@@ -456,7 +446,7 @@ const Navbar = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40 md:hidden"
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
               onClick={() => setIsMenuOpen(false)}
             />
 
@@ -465,38 +455,35 @@ const Navbar = () => {
               initial="closed"
               animate="open"
               exit="closed"
-              className="fixed right-0 top-0 h-screen w-4/5 max-w-xs bg-base-100 shadow-xl z-50 md:hidden flex flex-col"
-              onClick={(e) => e.stopPropagation()}
+              className="fixed right-0 top-0 h-screen w-4/5 max-w-xs bg-dark-card shadow-xl z-50 md:hidden"
             >
-              {/* Mobile Menu Header */}
               <motion.div
                 variants={menuItemVariants}
-                className="p-6 border-b border-base-200 flex items-center justify-between"
+                className="p-6 border-b border-dark-border flex items-center justify-between"
               >
                 <div className="flex items-center gap-2">
                   <Briefcase className="text-primary h-6 w-6" />
                   <span className="text-xl font-bold">
                     <span className="text-primary">Job</span>
-                    <span>Tracker</span>
+                    <span className="text-gray-100">Tracker</span>
                   </span>
                 </div>
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                   onClick={() => setIsMenuOpen(false)}
-                  className="p-1 rounded-full hover:bg-base-200"
+                  className="p-2 rounded-full text-gray-400 hover:text-gray-200"
                 >
                   <X size={20} />
                 </motion.button>
               </motion.div>
 
-              {/* Mobile Menu Footer */}
-              <div className="mt-auto p-6 border-t border-base-200">
+              <div className="mt-auto p-6 border-t border-dark-border">
                 {token ? (
-                  <motion.div variants={menuItemVariants} className="w-full">
+                  <motion.div variants={menuItemVariants}>
                     <button
                       onClick={handleLogout}
-                      className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl bg-primary text-primary-content transition-all font-medium"
+                      className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-dark-hover rounded-xl text-gray-100 hover:text-primary transition-colors duration-200"
                     >
                       <LogOut size={18} />
                       <span>Logout</span>
@@ -507,18 +494,18 @@ const Navbar = () => {
                     <motion.div variants={menuItemVariants}>
                       <Link
                         to="/login"
-                        className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl border border-base-300 hover:bg-base-200 transition-all"
+                        className="w-full flex items-center justify-center px-4 py-3 bg-dark-hover rounded-xl text-gray-100 hover:text-primary transition-colors duration-200"
                       >
-                        <span className="font-medium">Login</span>
+                        Login
                       </Link>
                     </motion.div>
 
                     <motion.div variants={menuItemVariants}>
                       <Link
                         to="/register"
-                        className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl bg-primary text-primary-content hover:brightness-105 transition-all"
+                        className="w-full flex items-center justify-center px-4 py-3 bg-primary text-white rounded-xl hover:shadow-glow transition-all duration-200"
                       >
-                        <span className="font-medium">Register</span>
+                        Register
                       </Link>
                     </motion.div>
                   </div>
@@ -529,8 +516,7 @@ const Navbar = () => {
         )}
       </AnimatePresence>
 
-      {/* Spacer for fixed navbar */}
-      <div className="h-16 md:h-20"></div>
+      <div className="h-16 md:h-20" />
     </>
   );
 };

@@ -1,14 +1,22 @@
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../store";
 import {
   updateApplication,
   Application,
 } from "../store/slices/applicationSlice";
-import StatusBadge from "./StatusBadge";
 import StatusDropdown from "./StatusDropdown";
 import axios from "axios";
+import {
+  ExternalLink,
+  FileEdit,
+  Eye,
+  Download,
+  X,
+  Calendar,
+  Globe,
+} from "lucide-react";
 
 interface ApplicationCardProps {
   application: Application;
@@ -24,39 +32,73 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
   token,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
+  const [isHovered, setIsHovered] = useState(false);
+  const [showFullDescription, setShowFullDescription] = useState(false);
 
-  const cardItem = {
-    hidden: { opacity: 0, y: 20, scale: 0.98 },
-    show: {
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20, scale: 0.95 },
+    visible: {
       opacity: 1,
       y: 0,
       scale: 1,
       transition: {
         type: "spring",
-        duration: 0.5,
-        stiffness: 120,
-        damping: 20,
+        duration: 0.6,
+        stiffness: 100,
+        damping: 15,
+        delayChildren: 0.1,
+        staggerChildren: 0.05,
       },
     },
     exit: {
       opacity: 0,
-      y: 20,
+      y: 10,
       scale: 0.98,
       transition: {
         duration: 0.3,
         ease: "easeInOut",
       },
     },
+    hover: {
+      y: -8,
+      boxShadow: "0 10px 30px -10px rgba(79, 70, 229, 0.3)",
+      transition: {
+        type: "spring",
+        stiffness: 300,
+        damping: 20,
+      },
+    },
   };
 
-  const buttonHover = {
-    scale: 1.1,
-    transition: { duration: 0.2, type: "spring", stiffness: 400, damping: 10 },
+  const itemVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 200,
+        damping: 20,
+      },
+    },
   };
 
-  const buttonTap = {
-    scale: 0.95,
-    transition: { duration: 0.1, ease: "easeIn" },
+  const buttonVariants = {
+    initial: { scale: 1 },
+    hover: {
+      scale: 1.1,
+      transition: {
+        type: "spring",
+        stiffness: 400,
+        damping: 10,
+      },
+    },
+    tap: {
+      scale: 0.95,
+      transition: {
+        duration: 0.1,
+      },
+    },
   };
 
   const formatDate = (dateString: string) =>
@@ -103,126 +145,254 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
     }
   };
 
+  const getStatusColors = (status: string) => {
+    switch (status.toLowerCase()) {
+      case "pending":
+        return {
+          border: "border-yellow-500/50",
+          bg: "bg-yellow-500/10",
+          text: "text-yellow-200",
+          glow: "shadow-yellow-500/20",
+          ring: "ring-yellow-500/30",
+          hover: "hover:bg-yellow-500/20",
+        };
+      case "applied":
+        return {
+          border: "border-blue-500/50",
+          bg: "bg-blue-500/10",
+          text: "text-blue-200",
+          glow: "shadow-blue-500/20",
+          ring: "ring-blue-500/30",
+          hover: "hover:bg-blue-500/20",
+        };
+      case "interview":
+        return {
+          border: "border-orange-500/50",
+          bg: "bg-orange-500/10",
+          text: "text-orange-200",
+          glow: "shadow-orange-500/20",
+          ring: "ring-orange-500/30",
+          hover: "hover:bg-orange-500/20",
+        };
+      case "offer":
+        return {
+          border: "border-green-500/50",
+          bg: "bg-green-500/10",
+          text: "text-green-200",
+          glow: "shadow-green-500/20",
+          ring: "ring-green-500/30",
+          hover: "hover:bg-green-500/20",
+        };
+      case "rejected":
+        return {
+          border: "border-red-500/50",
+          bg: "bg-red-500/10",
+          text: "text-red-200",
+          glow: "shadow-red-500/20",
+          ring: "ring-red-500/30",
+          hover: "hover:bg-red-500/20",
+        };
+      default:
+        return {
+          border: "border-gray-500/50",
+          bg: "bg-gray-500/10",
+          text: "text-gray-200",
+          glow: "shadow-gray-500/20",
+          ring: "ring-gray-500/30",
+          hover: "hover:bg-gray-500/20",
+        };
+    }
+  };
+
+  const statusStyles = getStatusColors(app.status);
+
   return (
     <motion.div
-      variants={cardItem}
+      layout
       layoutId={`card-${app._id}`}
-      className={`bg-dark-card rounded-xl shadow-md hover:shadow-glow border-l-4 ${getStatusColor(
-        app.status
-      )} overflow-hidden transition-all duration-300`}
-      whileHover={{
-        y: -4,
-        scale: 1.02,
-        transition: { type: "spring", stiffness: 400, damping: 17 },
+      variants={cardVariants}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
+      whileHover={isHovered ? "hover" : "visible"}
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
+      className={`bg-gray-900/80 backdrop-blur-sm rounded-xl overflow-hidden ${statusStyles.border} border-l-4 shadow-lg transition-all duration-300`}
+      style={{
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
       }}
     >
-      <div className="p-6">
-        <div className="flex justify-between items-start mb-4">
-          <motion.h2
-            className="text-lg font-semibold text-gray-100 truncate"
-            layoutId={`title-${app._id}`}
-          >
-            {app.jobTitle}
-          </motion.h2>
+      <div className="p-6 relative">
+        {/* Subtle background gradient effect */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.15 }}
+          transition={{ duration: 0.5 }}
+          className="absolute inset-0 rounded-xl"
+          style={{
+            background: `radial-gradient(circle at 120% 50%, ${statusStyles.bg
+              .replace("bg-", "")
+              .replace("-500/10", "-500")}, transparent 80%)`,
+          }}
+        />
+
+        {/* Card header with job title and status */}
+        <div className="flex justify-between items-start mb-6 relative z-10">
+          <motion.div variants={itemVariants} className="flex-1 mr-4">
+            <motion.h2
+              layoutId={`title-${app._id}`}
+              className="text-xl font-bold text-gray-100 mb-1 truncate group-hover:text-white"
+            >
+              {app.jobTitle}
+            </motion.h2>
+            <motion.p
+              variants={itemVariants}
+              className="text-gray-300 font-medium flex items-center gap-2"
+            >
+              <span className="text-gray-400">@</span>
+              {app.company}
+            </motion.p>
+          </motion.div>
+
           <StatusDropdown
             currentStatus={app.status}
             onStatusChange={updateStatus}
           />
         </div>
 
-        <motion.p
-          className="text-gray-300 font-medium flex items-center gap-2 mb-4"
-          layoutId={`company-${app._id}`}
-        >
-          <span className="text-gray-400">@</span>
-          {app.company}
-        </motion.p>
+        {/* Card body with application details */}
+        <div className="space-y-3 text-gray-300 mb-6 relative z-10">
+          <motion.div
+            variants={itemVariants}
+            className="flex items-center gap-2"
+          >
+            <Calendar size={16} className="text-indigo-400" />
+            <span className="opacity-80">Applied:</span>{" "}
+            {formatDate(app.dateApplied)}
+          </motion.div>
 
-        <div className="space-y-3 text-gray-400 text-sm mb-4">
-          <p className="flex items-center gap-2">
-            <span className="text-indigo-400">•</span>
-            Applied: {formatDate(app.dateApplied)}
-          </p>
-
-          <p className="flex items-center gap-2">
-            <span className="text-indigo-400">•</span>
-            {app.jobPlatform}
-          </p>
+          <motion.div
+            variants={itemVariants}
+            className="flex items-center gap-2"
+          >
+            <Globe size={16} className="text-indigo-400" />
+            <span className="opacity-80">Platform:</span> {app.jobPlatform}
+          </motion.div>
 
           {app.description && (
-            <motion.p
-              className="text-xs text-gray-500 line-clamp-2 mt-2 pl-4 border-l-2 border-gray-700"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-            >
-              {app.description}
-            </motion.p>
+            <motion.div variants={itemVariants} layout>
+              <div
+                className="mt-3 pt-3 border-t border-gray-800 relative"
+                onClick={() => setShowFullDescription(!showFullDescription)}
+              >
+                <motion.p
+                  layout
+                  className={`text-sm text-gray-400 ${
+                    showFullDescription ? "" : "line-clamp-2"
+                  } cursor-pointer`}
+                >
+                  {app.description}
+                </motion.p>
+                {!showFullDescription && app.description.length > 120 && (
+                  <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-gray-900/80 to-transparent pointer-events-none"></div>
+                )}
+                {app.description.length > 120 && (
+                  <motion.button
+                    variants={buttonVariants}
+                    whileHover="hover"
+                    whileTap="tap"
+                    className="mt-1 text-xs text-indigo-400 hover:text-indigo-300"
+                  >
+                    {showFullDescription ? "Show less" : "Read more"}
+                  </motion.button>
+                )}
+              </div>
+            </motion.div>
           )}
         </div>
 
-        {app.jobUrl && (
-          <motion.a
-            href={app.jobUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-gray-800/50 text-gray-300 rounded-lg text-sm hover:bg-gray-800 hover:text-gray-100 transition-all duration-200"
-            whileHover={{ x: 3 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            View Job
-            <span className="text-indigo-400">→</span>
-          </motion.a>
-        )}
-
-        <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-800">
-          <motion.button
-            className="p-2 bg-gray-800/50 text-indigo-400 rounded-full hover:bg-gray-800 hover:shadow-glow-sm transition-all duration-200"
-            onClick={onEdit}
-            whileHover={buttonHover}
-            whileTap={buttonTap}
-          >
-            <span className="sr-only">Edit</span>✎
-          </motion.button>
-
-          <div className="flex gap-2">
-            {app.resumeUrl && (
-              <>
-                <motion.button
-                  className="p-2 bg-gray-800/50 text-emerald-400 rounded-full hover:bg-gray-800 hover:shadow-glow-sm transition-all duration-200"
-                  onClick={() => handleView(app.resumeUrl)}
-                  whileHover={buttonHover}
-                  whileTap={buttonTap}
-                  title="View Resume"
-                >
-                  <span className="sr-only">View</span>
-                  👁
-                </motion.button>
-
-                <motion.button
-                  className="p-2 bg-gray-800/50 text-sky-400 rounded-full hover:bg-gray-800 hover:shadow-glow-sm transition-all duration-200"
-                  onClick={() =>
-                    handleDownload(app.resumeUrl, `${app.jobTitle}-resume.pdf`)
-                  }
-                  whileHover={buttonHover}
-                  whileTap={buttonTap}
-                  title="Download Resume"
-                >
-                  <span className="sr-only">Download</span>⭳
-                </motion.button>
-              </>
-            )}
-
-            <motion.button
-              className="p-2 bg-gray-800/50 text-red-400 rounded-full hover:bg-gray-800 hover:shadow-glow-sm transition-all duration-200"
-              onClick={onDelete}
-              whileHover={buttonHover}
-              whileTap={buttonTap}
-              title="Delete Application"
+        {/* Actions section */}
+        <div className="flex flex-wrap items-center gap-3 relative z-10">
+          {app.jobUrl && (
+            <motion.a
+              href={app.jobUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              variants={buttonVariants}
+              whileHover="hover"
+              whileTap="tap"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-500/20 text-indigo-200 rounded-lg text-sm hover:bg-indigo-500/30 transition-all duration-200"
             >
-              <span className="sr-only">Delete</span>✕
-            </motion.button>
-          </div>
+              View Job
+              <ExternalLink size={14} />
+            </motion.a>
+          )}
+
+          <AnimatePresence>
+            {isHovered && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.2 }}
+                className="flex gap-2 ml-auto"
+              >
+                <motion.button
+                  variants={buttonVariants}
+                  whileHover="hover"
+                  whileTap="tap"
+                  onClick={onEdit}
+                  className="p-2 bg-gray-800/80 text-indigo-400 rounded-full hover:bg-indigo-500/20 transition-all duration-200"
+                >
+                  <span className="sr-only">Edit</span>
+                  <FileEdit size={16} />
+                </motion.button>
+
+                {app.resumeUrl && (
+                  <>
+                    <motion.button
+                      variants={buttonVariants}
+                      whileHover="hover"
+                      whileTap="tap"
+                      onClick={() => handleView(app.resumeUrl)}
+                      className="p-2 bg-gray-800/80 text-emerald-400 rounded-full hover:bg-emerald-500/20 transition-all duration-200"
+                    >
+                      <span className="sr-only">View</span>
+                      <Eye size={16} />
+                    </motion.button>
+
+                    <motion.button
+                      variants={buttonVariants}
+                      whileHover="hover"
+                      whileTap="tap"
+                      onClick={() =>
+                        handleDownload(
+                          app.resumeUrl,
+                          `${app.jobTitle}-resume.pdf`
+                        )
+                      }
+                      className="p-2 bg-gray-800/80 text-sky-400 rounded-full hover:bg-sky-500/20 transition-all duration-200"
+                    >
+                      <span className="sr-only">Download</span>
+                      <Download size={16} />
+                    </motion.button>
+                  </>
+                )}
+
+                <motion.button
+                  variants={buttonVariants}
+                  whileHover="hover"
+                  whileTap="tap"
+                  onClick={onDelete}
+                  className="p-2 bg-gray-800/80 text-red-400 rounded-full hover:bg-red-500/20 transition-all duration-200"
+                >
+                  <span className="sr-only">Delete</span>
+                  <X size={16} />
+                </motion.button>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </motion.div>
