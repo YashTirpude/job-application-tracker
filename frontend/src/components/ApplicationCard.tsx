@@ -1,22 +1,14 @@
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React from "react";
+import { motion } from "framer-motion";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../store";
 import {
   updateApplication,
   Application,
 } from "../store/slices/applicationSlice";
+import StatusBadge from "./StatusBadge";
 import StatusDropdown from "./StatusDropdown";
 import axios from "axios";
-import {
-  ExternalLink,
-  FileEdit,
-  Eye,
-  Download,
-  X,
-  Calendar,
-  Globe,
-} from "lucide-react";
 
 interface ApplicationCardProps {
   application: Application;
@@ -32,38 +24,39 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
   token,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const [isHovered, setIsHovered] = useState(false);
-  const [showFullDescription, setShowFullDescription] = useState(false);
 
-  const cardVariants = {
-    hidden: { opacity: 0, scale: 0.95, y: 20 },
-    visible: {
+  const cardItem = {
+    hidden: { opacity: 0, y: 20, scale: 0.98 },
+    show: {
       opacity: 1,
-      scale: 1,
       y: 0,
+      scale: 1,
       transition: {
         type: "spring",
-        stiffness: 150,
-        damping: 18,
-        duration: 0.4,
+        duration: 0.5,
+        stiffness: 120,
+        damping: 20,
       },
-    },
-    hover: {
-      scale: 1.02,
-      transition: { type: "spring", stiffness: 300, damping: 20 },
     },
     exit: {
       opacity: 0,
-      scale: 0.9,
-      y: 10,
-      transition: { duration: 0.3 },
+      y: 20,
+      scale: 0.98,
+      transition: {
+        duration: 0.3,
+        ease: "easeInOut",
+      },
     },
   };
 
-  const buttonVariants = {
-    initial: { scale: 1 },
-    hover: { scale: 1.1 },
-    tap: { scale: 0.95 },
+  const buttonHover = {
+    scale: 1.1,
+    transition: { duration: 0.2, type: "spring", stiffness: 400, damping: 10 },
+  };
+
+  const buttonTap = {
+    scale: 0.95,
+    transition: { duration: 0.1, ease: "easeIn" },
   };
 
   const formatDate = (dateString: string) =>
@@ -110,173 +103,157 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
     }
   };
 
-  const getStatusColors: Record<string, string> = {
-    pending: "from-yellow-600 via-yellow-700 to-yellow-800",
-    applied: "from-blue-600 via-blue-700 to-blue-800",
-    interview: "from-orange-600 via-orange-700 to-orange-800",
-    offer: "from-green-600 via-green-700 to-green-800",
-    rejected: "from-red-600 via-red-700 to-red-800",
-    default: "from-gray-600 via-gray-700 to-gray-800",
-  };
-
-  const getStatusGradient = (status: string) =>
-    getStatusColors[status.toLowerCase()] || getStatusColors.default;
-
   return (
     <motion.div
-      layout
+      variants={cardItem}
       layoutId={`card-${app._id}`}
-      variants={cardVariants}
-      initial="hidden"
-      animate="visible"
-      exit="exit"
-      whileHover="hover"
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
-      className={`rounded-2xl p-6 bg-gradient-to-br ${getStatusGradient(
-        app.status
-      )} text-white/90 shadow-xl hover:shadow-2xl transition-all relative overflow-hidden backdrop-blur-md`}
+      className={`group relative bg-dark-card/80 backdrop-blur-sm rounded-xl border border-dark-border overflow-hidden transition-all duration-300`}
+      whileHover={{
+        y: -4,
+        scale: 1.02,
+        transition: { type: "spring", stiffness: 400, damping: 17 },
+      }}
     >
-      {/* Glass effect background */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.1 }}
-        transition={{ duration: 0.5 }}
-        className="absolute inset-0 bg-white/10 backdrop-blur-md rounded-2xl pointer-events-none"
+      {/* Status Indicator */}
+      <div
+        className={`absolute inset-x-0 h-1 top-0 ${getStatusColor(app.status)}`}
       />
 
-      <div className="flex justify-between items-start mb-4 relative z-10">
-        <div className="flex-1">
-          <h2 className="text-2xl font-bold mb-1">{app.jobTitle}</h2>
-          <p className="text-sm opacity-80">@ {app.company}</p>
-        </div>
-        <StatusDropdown
-          currentStatus={app.status}
-          onStatusChange={updateStatus}
-        />
-      </div>
-
-      <div className="space-y-3 text-sm mb-6 relative z-10">
-        <div className="flex items-center gap-2">
-          <Calendar size={16} /> Applied: {formatDate(app.dateApplied)}
-        </div>
-        <div className="flex items-center gap-2">
-          <Globe size={16} /> Platform: {app.jobPlatform}
-        </div>
-
-        {app.description && (
-          <div
-            className="relative mt-2 cursor-pointer"
-            onClick={() => setShowFullDescription(!showFullDescription)}
+      <div className="p-6">
+        <div className="flex justify-between items-start mb-4">
+          <motion.h2
+            className="text-lg font-semibold text-gray-100 truncate group-hover:text-primary transition-colors duration-300"
+            layoutId={`title-${app._id}`}
           >
-            <p className={`${showFullDescription ? "" : "line-clamp-2"}`}>
-              {app.description}
-            </p>
-            {app.description.length > 120 && (
-              <button className="text-xs underline mt-1">
-                {showFullDescription ? "Show less" : "Read more"}
-              </button>
-            )}
+            {app.jobTitle}
+          </motion.h2>
+          <StatusDropdown
+            currentStatus={app.status}
+            onStatusChange={updateStatus}
+          />
+        </div>
+
+        <motion.div
+          className="flex items-center gap-3 mb-4"
+          layoutId={`company-${app._id}`}
+        >
+          <span className="px-3 py-1 bg-dark-hover rounded-full text-gray-300 text-sm">
+            {app.company}
+          </span>
+          <span className="px-2 py-1 bg-dark-hover rounded-full text-xs text-gray-400">
+            {app.jobPlatform}
+          </span>
+        </motion.div>
+
+        <div className="space-y-3 mb-4">
+          <div className="flex items-center gap-2 text-sm">
+            <span className="w-2 h-2 rounded-full bg-primary/50" />
+            <span className="text-gray-400">Applied:</span>
+            <span className="text-gray-300">{formatDate(app.dateApplied)}</span>
           </div>
-        )}
-      </div>
 
-      <div className="flex flex-wrap items-center gap-3 relative z-10">
-        {app.jobUrl && (
-          <motion.a
-            href={app.jobUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            variants={buttonVariants}
-            initial="initial"
-            whileHover="hover"
-            whileTap="tap"
-            className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg flex items-center gap-2 text-xs backdrop-blur"
-          >
-            View Job <ExternalLink size={14} />
-          </motion.a>
-        )}
-
-        <AnimatePresence>
-          {isHovered && (
+          {app.description && (
             <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              transition={{ duration: 0.2 }}
-              className="flex gap-2 ml-auto"
+              className="relative pl-4 border-l-2 border-dark-border"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
             >
-              <motion.button
-                variants={buttonVariants}
-                initial="initial"
-                whileHover="hover"
-                whileTap="tap"
-                onClick={onEdit}
-                className="p-2 bg-white/10 hover:bg-white/20 rounded-full"
-              >
-                <FileEdit size={16} />
-              </motion.button>
-
-              {app.resumeUrl && (
-                <>
-                  <motion.button
-                    variants={buttonVariants}
-                    initial="initial"
-                    whileHover="hover"
-                    whileTap="tap"
-                    onClick={() => handleView(app.resumeUrl)}
-                    className="p-2 bg-white/10 hover:bg-white/20 rounded-full"
-                  >
-                    <Eye size={16} />
-                  </motion.button>
-
-                  <motion.button
-                    variants={buttonVariants}
-                    initial="initial"
-                    whileHover="hover"
-                    whileTap="tap"
-                    onClick={() =>
-                      handleDownload(
-                        app.resumeUrl,
-                        `${app.jobTitle}-resume.pdf`
-                      )
-                    }
-                    className="p-2 bg-white/10 hover:bg-white/20 rounded-full"
-                  >
-                    <Download size={16} />
-                  </motion.button>
-                </>
-              )}
-
-              <motion.button
-                variants={buttonVariants}
-                initial="initial"
-                whileHover="hover"
-                whileTap="tap"
-                onClick={onDelete}
-                className="p-2 bg-white/10 hover:bg-white/20 rounded-full text-red-300"
-              >
-                <X size={16} />
-              </motion.button>
+              <p className="text-sm text-gray-400 line-clamp-2">
+                {app.description}
+              </p>
+              <div className="absolute inset-y-0 left-[-2px] w-[2px] bg-gradient-to-b from-primary/50 to-transparent" />
             </motion.div>
           )}
-        </AnimatePresence>
+        </div>
+
+        <div className="flex flex-wrap gap-2 mb-6">
+          {app.jobUrl && (
+            <motion.a
+              href={app.jobUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-dark-hover rounded-lg text-sm text-gray-300 hover:text-primary transition-all duration-200 group/link"
+              whileHover={{ x: 3 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              View Job
+              <span className="text-primary group-hover/link:translate-x-1 transition-transform duration-200">
+                →
+              </span>
+            </motion.a>
+          )}
+        </div>
+
+        <div className="flex justify-between items-center pt-4 border-t border-dark-border">
+          <motion.button
+            className="p-2.5 bg-dark-hover text-primary rounded-lg hover:bg-primary/10 transition-all duration-200"
+            onClick={onEdit}
+            whileHover={buttonHover}
+            whileTap={buttonTap}
+          >
+            <span className="sr-only">Edit</span>✎
+          </motion.button>
+
+          <div className="flex gap-2">
+            {app.resumeUrl && (
+              <>
+                <motion.button
+                  className="p-2.5 bg-dark-hover text-emerald-400 rounded-lg hover:bg-emerald-500/10 transition-all duration-200"
+                  onClick={() => handleView(app.resumeUrl)}
+                  whileHover={buttonHover}
+                  whileTap={buttonTap}
+                  title="View Resume"
+                >
+                  <span className="sr-only">View</span>
+                  👁
+                </motion.button>
+
+                <motion.button
+                  className="p-2.5 bg-dark-hover text-sky-400 rounded-lg hover:bg-sky-500/10 transition-all duration-200"
+                  onClick={() =>
+                    handleDownload(app.resumeUrl, `${app.jobTitle}-resume.pdf`)
+                  }
+                  whileHover={buttonHover}
+                  whileTap={buttonTap}
+                  title="Download Resume"
+                >
+                  <span className="sr-only">Download</span>⭳
+                </motion.button>
+              </>
+            )}
+
+            <motion.button
+              className="p-2.5 bg-dark-hover text-red-400 rounded-lg hover:bg-red-500/10 transition-all duration-200"
+              onClick={onDelete}
+              whileHover={buttonHover}
+              whileTap={buttonTap}
+              title="Delete Application"
+            >
+              <span className="sr-only">Delete</span>✕
+            </motion.button>
+          </div>
+        </div>
       </div>
     </motion.div>
   );
 };
 
-// Updated export function for use elsewhere
-export const getStatusColor = (status: string) =>
-  `bg-gradient-to-br ${
-    {
-      pending: "from-yellow-600 via-yellow-700 to-yellow-800",
-      applied: "from-blue-600 via-blue-700 to-blue-800",
-      interview: "from-orange-600 via-orange-700 to-orange-800",
-      offer: "from-green-600 via-green-700 to-green-800",
-      rejected: "from-red-600 via-red-700 to-red-800",
-      default: "from-gray-600 via-gray-700 to-gray-800",
-    }[status.toLowerCase()] || "from-gray-600 via-gray-700 to-gray-800"
-  }`;
+export const getStatusColor = (status: string) => {
+  switch (status.toLowerCase()) {
+    case "pending":
+      return "bg-gradient-to-r from-yellow-500/50 to-yellow-500/20";
+    case "applied":
+      return "bg-gradient-to-r from-blue-500/50 to-blue-500/20";
+    case "interview":
+      return "bg-gradient-to-r from-orange-500/50 to-orange-500/20";
+    case "offer":
+      return "bg-gradient-to-r from-emerald-500/50 to-emerald-500/20";
+    case "rejected":
+      return "bg-gradient-to-r from-red-500/50 to-red-500/20";
+    default:
+      return "bg-gradient-to-r from-gray-500/50 to-gray-500/20";
+  }
+};
 
 export default ApplicationCard;
