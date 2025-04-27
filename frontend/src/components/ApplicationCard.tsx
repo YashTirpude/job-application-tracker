@@ -36,67 +36,70 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
   const [showFullDescription, setShowFullDescription] = useState(false);
 
   const cardVariants = {
-    hidden: { opacity: 0, y: 20, scale: 0.95 },
+    hidden: { opacity: 0, y: 30, scale: 0.9 },
     visible: {
       opacity: 1,
       y: 0,
       scale: 1,
       transition: {
         type: "spring",
-        duration: 0.6,
-        stiffness: 100,
+        duration: 0.8,
+        stiffness: 120,
         damping: 15,
-        delayChildren: 0.1,
-        staggerChildren: 0.05,
+        delayChildren: 0.2,
+        staggerChildren: 0.1,
       },
     },
     exit: {
       opacity: 0,
-      y: 10,
-      scale: 0.98,
+      y: 20,
+      scale: 0.95,
       transition: {
-        duration: 0.3,
+        duration: 0.4,
         ease: "easeInOut",
       },
     },
     hover: {
-      y: -8,
-      boxShadow: "0 10px 30px -10px rgba(79, 70, 229, 0.3)",
+      y: -10,
+      scale: 1.02,
+      boxShadow: "0 15px 40px rgba(0, 255, 255, 0.3)",
       transition: {
         type: "spring",
-        stiffness: 300,
+        stiffness: 400,
         damping: 20,
       },
     },
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 10 },
+    hidden: { opacity: 0, y: 15 },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
         type: "spring",
-        stiffness: 200,
-        damping: 20,
+        stiffness: 300,
+        damping: 25,
       },
     },
   };
 
   const buttonVariants = {
-    initial: { scale: 1 },
+    initial: { scale: 1, rotate: 0 },
     hover: {
-      scale: 1.1,
+      scale: 1.15,
+      rotate: 5,
       transition: {
         type: "spring",
-        stiffness: 400,
+        stiffness: 500,
         damping: 10,
       },
     },
     tap: {
-      scale: 0.95,
+      scale: 0.9,
+      rotate: -5,
       transition: {
-        duration: 0.1,
+        duration: 0.15,
       },
     },
   };
@@ -145,66 +148,66 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
     }
   };
 
-  const getStatusColors = (status: string) => {
+  const getStatusStyles = (status: string) => {
     switch (status.toLowerCase()) {
       case "pending":
         return {
-          border: "border-yellow-500/50",
-          bg: "bg-yellow-500/10",
-          text: "text-yellow-200",
-          glow: "shadow-yellow-500/20",
-          ring: "ring-yellow-500/30",
-          hover: "hover:bg-yellow-500/20",
+          border: "border-neon-yellow",
+          bg: "bg-neon-yellow/10",
+          text: "text-neon-yellow",
+          glow: "shadow-neon-yellow/30",
+          ring: "ring-neon-yellow/20",
+          hover: "hover:bg-neon-yellow/20",
         };
       case "applied":
         return {
-          border: "border-blue-500/50",
-          bg: "bg-blue-500/10",
-          text: "text-blue-200",
-          glow: "shadow-blue-500/20",
-          ring: "ring-blue-500/30",
-          hover: "hover:bg-blue-500/20",
+          border: "border-neon-blue",
+          bg: "bg-neon-blue/10",
+          text: "text-neon-blue",
+          glow: "shadow-neon-blue/30",
+          ring: "ring-neon-blue/20",
+          hover: "hover:bg-neon-blue/20",
         };
       case "interview":
         return {
-          border: "border-orange-500/50",
-          bg: "bg-orange-500/10",
-          text: "text-orange-200",
-          glow: "shadow-orange-500/20",
-          ring: "ring-orange-500/30",
-          hover: "hover:bg-orange-500/20",
+          border: "border-neon-orange",
+          bg: "bg-neon-orange/10",
+          text: "text-neon-orange",
+          glow: "shadow-neon-orange/30",
+          ring: "ring-neon-orange/20",
+          hover: "hover:bg-neon-orange/20",
         };
       case "offer":
         return {
-          border: "border-green-500/50",
-          bg: "bg-green-500/10",
-          text: "text-green-200",
-          glow: "shadow-green-500/20",
-          ring: "ring-green-500/30",
-          hover: "hover:bg-green-500/20",
+          border: "border-neon-green",
+          bg: "bg-neon-green/10",
+          text: "text-neon-green",
+          glow: "shadow-neon-green/30",
+          ring: "ring-neon-green/20",
+          hover: "hover:bg-neon-green/20",
         };
       case "rejected":
         return {
-          border: "border-red-500/50",
-          bg: "bg-red-500/10",
-          text: "text-red-200",
-          glow: "shadow-red-500/20",
-          ring: "ring-red-500/30",
-          hover: "hover:bg-red-500/20",
+          border: "border-neon-red",
+          bg: "bg-neon-red/10",
+          text: "text-neon-red",
+          glow: "shadow-neon-red/30",
+          ring: "ring-neon-red/20",
+          hover: "hover:bg-neon-red/20",
         };
       default:
         return {
-          border: "border-gray-500/50",
-          bg: "bg-gray-500/10",
-          text: "text-gray-200",
-          glow: "shadow-gray-500/20",
-          ring: "ring-gray-500/30",
-          hover: "hover:bg-gray-500/20",
+          border: "border-neon-purple",
+          bg: "bg-neon-purple/10",
+          text: "text-neon-purple",
+          glow: "shadow-neon-purple/30",
+          ring: "ring-neon-purple/20",
+          hover: "hover:bg-neon-purple/20",
         };
     }
   };
 
-  const statusStyles = getStatusColors(app.status);
+  const statusStyles = getStatusStyles(app.status);
 
   return (
     <motion.div
@@ -217,40 +220,41 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
       whileHover={isHovered ? "hover" : "visible"}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
-      className={`bg-gray-900/80 backdrop-blur-sm rounded-xl overflow-hidden ${statusStyles.border} border-l-4 shadow-lg transition-all duration-300`}
+      className={`relative bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-xl rounded-2xl overflow-hidden ${statusStyles.border} border-2 ${statusStyles.glow} transition-all duration-500`}
       style={{
-        backdropFilter: "blur(12px)",
-        WebkitBackdropFilter: "blur(12px)",
+        backdropFilter: "blur(16px)",
+        WebkitBackdropFilter: "blur(16px)",
       }}
     >
-      <div className="p-6 relative">
-        {/* Subtle background gradient effect */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.15 }}
-          transition={{ duration: 0.5 }}
-          className="absolute inset-0 rounded-xl"
-          style={{
-            background: `radial-gradient(circle at 120% 50%, ${statusStyles.bg
-              .replace("bg-", "")
-              .replace("-500/10", "-500")}, transparent 80%)`,
-          }}
-        />
+      {/* Neon glow effect */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 0.2, scale: 1 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="absolute inset-0 rounded-2xl"
+        style={{
+          background: `radial-gradient(circle at 150% 30%, ${statusStyles.bg
+            .replace("bg-", "")
+            .replace("/10", "")}, transparent 70%)`,
+          filter: "blur(20px)",
+        }}
+      />
 
-        {/* Card header with job title and status */}
-        <div className="flex justify-between items-start mb-6 relative z-10">
+      <div className="p-6 relative z-10">
+        {/* Card header */}
+        <div className="flex justify-between items-start mb-6">
           <motion.div variants={itemVariants} className="flex-1 mr-4">
             <motion.h2
               layoutId={`title-${app._id}`}
-              className="text-xl font-bold text-gray-100 mb-1 truncate group-hover:text-white"
+              className="text-2xl font-bold text-white tracking-tight truncate hover:text-neon-pink transition-colors duration-300"
             >
               {app.jobTitle}
             </motion.h2>
             <motion.p
               variants={itemVariants}
-              className="text-gray-300 font-medium flex items-center gap-2"
+              className="text-neon-purple font-semibold flex items-center gap-2 mt-1"
             >
-              <span className="text-gray-400">@</span>
+              <span className="text-neon-purple/60">@</span>
               {app.company}
             </motion.p>
           </motion.div>
@@ -261,48 +265,48 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
           />
         </div>
 
-        {/* Card body with application details */}
-        <div className="space-y-3 text-gray-300 mb-6 relative z-10">
+        {/* Card body */}
+        <div className="space-y-4 text-gray-200 mb-6">
           <motion.div
             variants={itemVariants}
-            className="flex items-center gap-2"
+            className="flex items-center gap-3 text-sm"
           >
-            <Calendar size={16} className="text-indigo-400" />
+            <Calendar size={18} className="text-neon-blue" />
             <span className="opacity-80">Applied:</span>{" "}
             {formatDate(app.dateApplied)}
           </motion.div>
 
           <motion.div
             variants={itemVariants}
-            className="flex items-center gap-2"
+            className="flex items-center gap-3 text-sm"
           >
-            <Globe size={16} className="text-indigo-400" />
+            <Globe size={18} className="text-neon-blue" />
             <span className="opacity-80">Platform:</span> {app.jobPlatform}
           </motion.div>
 
           {app.description && (
             <motion.div variants={itemVariants} layout>
               <div
-                className="mt-3 pt-3 border-t border-gray-800 relative"
+                className="mt-4 pt-4 border-t border-gray-700/50"
                 onClick={() => setShowFullDescription(!showFullDescription)}
               >
                 <motion.p
                   layout
-                  className={`text-sm text-gray-400 ${
-                    showFullDescription ? "" : "line-clamp-2"
-                  } cursor-pointer`}
+                  className={`text-sm text-gray-300 ${
+                    showFullDescription ? "" : "line-clamp-3"
+                  } cursor-pointer hover:text-neon-green transition-colors duration-200`}
                 >
                   {app.description}
                 </motion.p>
-                {!showFullDescription && app.description.length > 120 && (
-                  <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-gray-900/80 to-transparent pointer-events-none"></div>
+                {!showFullDescription && app.description.length > 150 && (
+                  <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-gray-900/90 to-transparent pointer-events-none"></div>
                 )}
-                {app.description.length > 120 && (
+                {app.description.length > 150 && (
                   <motion.button
                     variants={buttonVariants}
                     whileHover="hover"
                     whileTap="tap"
-                    className="mt-1 text-xs text-indigo-400 hover:text-indigo-300"
+                    className="mt-2 text-xs text-neon-blue hover:text-neon-blue/80 transition-colors duration-200"
                   >
                     {showFullDescription ? "Show less" : "Read more"}
                   </motion.button>
@@ -313,7 +317,7 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
         </div>
 
         {/* Actions section */}
-        <div className="flex flex-wrap items-center gap-3 relative z-10">
+        <div className="flex flex-wrap items-center gap-3">
           {app.jobUrl && (
             <motion.a
               href={app.jobUrl}
@@ -322,20 +326,20 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
               variants={buttonVariants}
               whileHover="hover"
               whileTap="tap"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-500/20 text-indigo-200 rounded-lg text-sm hover:bg-indigo-500/30 transition-all duration-200"
+              className={`inline-flex items-center gap-2 px-4 py-2 bg-neon-pink/20 text-neon-pink rounded-xl text-sm ${statusStyles.hover} font-medium transition-all duration-300`}
             >
               View Job
-              <ExternalLink size={14} />
+              <ExternalLink size={16} />
             </motion.a>
           )}
 
           <AnimatePresence>
             {isHovered && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ duration: 0.2 }}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
                 className="flex gap-2 ml-auto"
               >
                 <motion.button
@@ -343,7 +347,7 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
                   whileHover="hover"
                   whileTap="tap"
                   onClick={onEdit}
-                  className="p-2 bg-gray-800/80 text-indigo-400 rounded-full hover:bg-indigo-500/20 transition-all duration-200"
+                  className="p-2 bg-gray-800/60 text-neon-blue rounded-full hover:bg-neon-blue/20 transition-all duration-300"
                 >
                   <span className="sr-only">Edit</span>
                   <FileEdit size={16} />
@@ -356,7 +360,7 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
                       whileHover="hover"
                       whileTap="tap"
                       onClick={() => handleView(app.resumeUrl)}
-                      className="p-2 bg-gray-800/80 text-emerald-400 rounded-full hover:bg-emerald-500/20 transition-all duration-200"
+                      className="p-2 bg-gray-800/60 text-neon-green rounded-full hover:bg-neon-green/20 transition-all duration-300"
                     >
                       <span className="sr-only">View</span>
                       <Eye size={16} />
@@ -372,7 +376,7 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
                           `${app.jobTitle}-resume.pdf`
                         )
                       }
-                      className="p-2 bg-gray-800/80 text-sky-400 rounded-full hover:bg-sky-500/20 transition-all duration-200"
+                      className="p-2 bg-gray-800/60 text-neon-yellow rounded-full hover:bg-neon-yellow/20 transition-all duration-300"
                     >
                       <span className="sr-only">Download</span>
                       <Download size={16} />
@@ -385,7 +389,7 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
                   whileHover="hover"
                   whileTap="tap"
                   onClick={onDelete}
-                  className="p-2 bg-gray-800/80 text-red-400 rounded-full hover:bg-red-500/20 transition-all duration-200"
+                  className="p-2 bg-gray-800/60 text-neon-red rounded-full hover:bg-neon-red/20 transition-all duration-300"
                 >
                   <span className="sr-only">Delete</span>
                   <X size={16} />
@@ -402,17 +406,17 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
 export const getStatusColor = (status: string) => {
   switch (status.toLowerCase()) {
     case "pending":
-      return "border-yellow-500/50 text-yellow-200 bg-yellow-500/10";
+      return "border-neon-yellow text-neon-yellow bg-neon-yellow/10";
     case "applied":
-      return "border-blue-500/50 text-blue-200 bg-blue-500/10";
+      return "border-neon-blue text-neon-blue bg-neon-blue/10";
     case "interview":
-      return "border-orange-500/50 text-orange-200 bg-orange-500/10";
+      return "border-neon-orange text-neon-orange bg-neon-orange/10";
     case "offer":
-      return "border-green-500/50 text-green-200 bg-green-500/10";
+      return "border-neon-green text-neon-green bg-neon-green/10";
     case "rejected":
-      return "border-red-500/50 text-red-200 bg-red-500/10";
+      return "border-neon-red text-neon-red bg-neon-red/10";
     default:
-      return "border-gray-500/50 text-gray-200 bg-gray-500/10";
+      return "border-neon-purple text-neon-purple bg-neon-purple/10";
   }
 };
 
