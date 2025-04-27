@@ -11,7 +11,7 @@ import Register from "./pages/Register";
 import useAuth from "./hooks/useAuth";
 import PrivateRoute from "./components/routes/PrivateRoute";
 import PublicRoute from "./components/routes/PublicRoute";
-import CreateApplication from "./pages/CreateApplication";
+import CreateApplication from "./components/routes/CreateApplication";
 import EditApplicationForm from "./components/routes/EditApplication";
 import ForgotPassword from "./pages/ForgotPassword";
 

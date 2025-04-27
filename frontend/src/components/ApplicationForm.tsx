@@ -81,24 +81,26 @@ const ApplicationForm = () => {
   };
 
   const containerVariants = {
-    hidden: { opacity: 0 },
+    hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
+      y: 0,
       transition: {
+        duration: 0.5,
+        ease: "easeOut",
         staggerChildren: 0.1,
       },
     },
   };
 
   const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
+    hidden: { opacity: 0, y: 10 },
     visible: {
-      y: 0,
       opacity: 1,
+      y: 0,
       transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 24,
+        duration: 0.4,
+        ease: "easeOut",
       },
     },
   };
@@ -108,22 +110,29 @@ const ApplicationForm = () => {
     visible: {
       opacity: 1,
       height: "auto",
-      transition: { duration: 0.3 },
+      transition: { duration: 0.3, ease: "easeOut" },
     },
+  };
+
+  const buttonVariants = {
+    hover: {
+      scale: 1.03,
+      boxShadow: "0px 5px 15px rgba(99, 102, 241, 0.4)",
+      transition: { duration: 0.2, ease: "easeOut" },
+    },
+    tap: { scale: 0.97, transition: { duration: 0.1, ease: "easeIn" } },
   };
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="bg-gray-100 p-6 rounded-lg shadow-lg max-w-xl mx-auto mt-10"
+      className="bg-gray-800/90 backdrop-blur-lg p-6 rounded-2xl shadow-2xl max-w-xl mx-auto mt-10 border border-gray-700"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
     >
       <motion.h2
-        className="text-2xl font-bold text-indigo-600 text-center mb-6"
-        initial={{ y: -20 }}
-        animate={{ y: 0 }}
-        transition={{ type: "spring", stiffness: 300 }}
+        className="text-2xl font-semibold text-white text-center mb-6"
+        variants={itemVariants}
       >
         Job Application Form
       </motion.h2>
@@ -131,13 +140,13 @@ const ApplicationForm = () => {
       <motion.form
         onSubmit={handleSubmit(onSubmit)}
         encType="multipart/form-data"
-        className="space-y-4"
+        className="space-y-5"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
         <motion.div variants={itemVariants} className="flex flex-col">
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-gray-300">
             Job Title
           </label>
           <Controller
@@ -149,7 +158,7 @@ const ApplicationForm = () => {
                 {...field}
                 type="text"
                 placeholder="Senior Developer"
-                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                className="mt-1 block w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all duration-200"
               />
             )}
           />
@@ -160,7 +169,7 @@ const ApplicationForm = () => {
                 initial="hidden"
                 animate="visible"
                 exit="hidden"
-                className="text-sm text-red-600 mt-1"
+                className="text-sm text-red-400 mt-1"
               >
                 {errors.jobTitle.message}
               </motion.p>
@@ -169,7 +178,7 @@ const ApplicationForm = () => {
         </motion.div>
 
         <motion.div variants={itemVariants} className="flex flex-col">
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-gray-300">
             Company
           </label>
           <Controller
@@ -181,7 +190,7 @@ const ApplicationForm = () => {
                 {...field}
                 type="text"
                 placeholder="Tech Inc."
-                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                className="mt-1 block w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all duration-200"
               />
             )}
           />
@@ -192,7 +201,7 @@ const ApplicationForm = () => {
                 initial="hidden"
                 animate="visible"
                 exit="hidden"
-                className="text-sm text-red-600 mt-1"
+                className="text-sm text-red-400 mt-1"
               >
                 {errors.company.message}
               </motion.p>
@@ -201,7 +210,7 @@ const ApplicationForm = () => {
         </motion.div>
 
         <motion.div variants={itemVariants} className="flex flex-col">
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-gray-300">
             Job Description
           </label>
           <Controller
@@ -212,7 +221,7 @@ const ApplicationForm = () => {
               <textarea
                 {...field}
                 placeholder="Detail the job requirements and responsibilities"
-                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                className="mt-1 block w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all duration-200"
                 rows={4}
               />
             )}
@@ -224,7 +233,7 @@ const ApplicationForm = () => {
                 initial="hidden"
                 animate="visible"
                 exit="hidden"
-                className="text-sm text-red-600 mt-1"
+                className="text-sm text-red-400 mt-1"
               >
                 {errors.description.message}
               </motion.p>
@@ -233,7 +242,7 @@ const ApplicationForm = () => {
         </motion.div>
 
         <motion.div variants={itemVariants} className="flex flex-col">
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-gray-300">
             Date Applied
           </label>
           <Controller
@@ -244,7 +253,7 @@ const ApplicationForm = () => {
               <input
                 {...field}
                 type="date"
-                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                className="mt-1 block w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all duration-200"
               />
             )}
           />
@@ -255,7 +264,7 @@ const ApplicationForm = () => {
                 initial="hidden"
                 animate="visible"
                 exit="hidden"
-                className="text-sm text-red-600 mt-1"
+                className="text-sm text-red-400 mt-1"
               >
                 {errors.dateApplied.message}
               </motion.p>
@@ -264,7 +273,7 @@ const ApplicationForm = () => {
         </motion.div>
 
         <motion.div variants={itemVariants} className="flex flex-col">
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-gray-300">
             Status
           </label>
           <Controller
@@ -273,7 +282,7 @@ const ApplicationForm = () => {
             render={({ field }) => (
               <select
                 {...field}
-                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                className="mt-1 block w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all duration-200"
               >
                 <option value="applied">Applied</option>
                 <option value="interview">Interview</option>
@@ -285,7 +294,7 @@ const ApplicationForm = () => {
         </motion.div>
 
         <motion.div variants={itemVariants} className="flex flex-col">
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-gray-300">
             Job Platform
           </label>
           <Controller
@@ -297,7 +306,7 @@ const ApplicationForm = () => {
                 {...field}
                 type="text"
                 placeholder="LinkedIn, Indeed, etc."
-                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                className="mt-1 block w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all duration-200"
               />
             )}
           />
@@ -308,7 +317,7 @@ const ApplicationForm = () => {
                 initial="hidden"
                 animate="visible"
                 exit="hidden"
-                className="text-sm text-red-600 mt-1"
+                className="text-sm text-red-400 mt-1"
               >
                 {errors.jobPlatform.message}
               </motion.p>
@@ -317,7 +326,7 @@ const ApplicationForm = () => {
         </motion.div>
 
         <motion.div variants={itemVariants} className="flex flex-col">
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-gray-300">
             Job URL
           </label>
           <Controller
@@ -329,7 +338,7 @@ const ApplicationForm = () => {
                 {...field}
                 type="text"
                 placeholder="https://example.com/job-listing"
-                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                className="mt-1 block w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all duration-200"
               />
             )}
           />
@@ -340,7 +349,7 @@ const ApplicationForm = () => {
                 initial="hidden"
                 animate="visible"
                 exit="hidden"
-                className="text-sm text-red-600 mt-1"
+                className="text-sm text-red-400 mt-1"
               >
                 {errors.jobUrl.message}
               </motion.p>
@@ -349,7 +358,7 @@ const ApplicationForm = () => {
         </motion.div>
 
         <motion.div variants={itemVariants} className="flex flex-col">
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-gray-300">
             Resume (Optional)
           </label>
           <Controller
@@ -360,7 +369,7 @@ const ApplicationForm = () => {
                 {...fieldProps}
                 type="file"
                 accept=".pdf,.doc,.docx"
-                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 file:bg-white file:border-0 file:text-gray-700 file:cursor-pointer"
+                className="mt-1 block w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-gray-300 file:bg-gray-600 file:border-0 file:text-gray-300 file:rounded-lg file:px-3 file:py-1 file:cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all duration-200"
                 onChange={(e) => {
                   const file = e.target.files?.[0] || null;
                   onChange(file);
@@ -370,28 +379,28 @@ const ApplicationForm = () => {
           />
         </motion.div>
 
-        <motion.div
-          variants={itemVariants}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          className="mt-6"
-        >
-          <button
+        <motion.div variants={itemVariants} className="mt-6">
+          <motion.button
             type="submit"
-            className="bg-indigo-600 text-white rounded-full w-full h-12 flex items-center justify-center hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+            className="bg-indigo-600 text-white rounded-lg w-full h-12 flex items-center justify-center shadow-md hover:bg-indigo-700 disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors duration-200"
             disabled={isSubmitting}
+            variants={buttonVariants}
+            whileHover="hover"
+            whileTap="tap"
           >
             {isSubmitting ? (
-              <div className="flex items-center justify-center">
-                <span className="loading loading-spinner loading-sm mr-2"></span>
-                <motion.div style={{ "--value": uploadProgress } as any}>
-                  {uploadProgress}%
-                </motion.div>
+              <div className="flex items-center justify-center gap-2">
+                <motion.div
+                  className="w-5 h-5 rounded-full border-2 border-white border-t-indigo-400"
+                  animate={{ rotate: 360 }}
+                  transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                />
+                <span>{uploadProgress}%</span>
               </div>
             ) : (
               "Submit Application"
             )}
-          </button>
+          </motion.button>
         </motion.div>
       </motion.form>
     </motion.div>

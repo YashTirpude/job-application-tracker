@@ -1,5 +1,5 @@
 import React from "react";
-import ApplicationForm from "../components/ApplicationForm";
+import ApplicationForm from "../ApplicationForm";
 
 const CreateApplication = () => {
   return (
