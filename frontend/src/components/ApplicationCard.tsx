@@ -36,70 +36,63 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
   const [showFullDescription, setShowFullDescription] = useState(false);
 
   const cardVariants = {
-    hidden: { opacity: 0, y: 50, scale: 0.85 },
+    hidden: { opacity: 0, y: 20, scale: 0.95 },
     visible: {
       opacity: 1,
       y: 0,
       scale: 1,
       transition: {
-        type: "spring",
         duration: 0.5,
-        stiffness: 200,
-        damping: 20,
+        ease: "easeOut",
         delayChildren: 0.1,
         staggerChildren: 0.05,
       },
     },
     exit: {
       opacity: 0,
-      y: 30,
-      scale: 0.9,
+      y: 20,
+      scale: 0.95,
       transition: {
-        duration: 0.2,
-        ease: "easeInOut",
+        duration: 0.3,
+        ease: "easeIn",
       },
     },
     hover: {
-      y: -12,
-      scale: 1.05,
-      boxShadow: "0 20px 50px rgba(0, 255, 255, 0.5)",
+      y: -8,
+      boxShadow: "0 15px 30px rgba(0, 0, 0, 0.2)",
       transition: {
-        type: "spring",
-        stiffness: 600,
-        damping: 15,
+        duration: 0.3,
+        ease: "easeOut",
       },
     },
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 10 },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        type: "spring",
-        stiffness: 400,
-        damping: 20,
+        duration: 0.3,
+        ease: "easeOut",
       },
     },
   };
 
   const buttonVariants = {
-    initial: { scale: 1, rotate: 0 },
+    initial: { scale: 1 },
     hover: {
-      scale: 1.2,
-      rotate: 8,
+      scale: 1.1,
       transition: {
-        type: "spring",
-        stiffness: 800,
-        damping: 12,
+        duration: 0.2,
+        ease: "easeOut",
       },
     },
     tap: {
-      scale: 0.85,
-      rotate: -8,
+      scale: 0.95,
       transition: {
         duration: 0.1,
+        ease: "easeIn",
       },
     },
   };
@@ -148,72 +141,48 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
     }
   };
 
-  const getStatusStyles = (status: string) => {
+  const getStatusColors = (status: string) => {
     switch (status.toLowerCase()) {
       case "pending":
         return {
-          border: "border-[#FFFF00]",
-          bg: "bg-[#FFFF00]/20",
-          text: "text-[#FFFF00]",
-          glow: "shadow-[#FFFF00]/40",
-          ring: "ring-[#FFFF00]/30",
-          hover: "hover:bg-[#FFFF00]/30",
-          gradient: "from-[#FFFF00]/20 to-[#FFAA00]/20",
+          border: "border-l-yellow-400",
+          bg: "bg-yellow-50",
+          text: "text-yellow-600",
         };
       case "applied":
         return {
-          border: "border-[#00FFFF]",
-          bg: "bg-[#00FFFF]/20",
-          text: "text-[#00FFFF]",
-          glow: "shadow-[#00FFFF]/40",
-          ring: "ring-[#00FFFF]/30",
-          hover: "hover:bg-[#00FFFF]/30",
-          gradient: "from-[#00FFFF]/20 to-[#00AAFF]/20",
+          border: "border-l-blue-400",
+          bg: "bg-blue-50",
+          text: "text-blue-600",
         };
       case "interview":
         return {
-          border: "border-[#FF6600]",
-          bg: "bg-[#FF6600]/20",
-          text: "text-[#FF6600]",
-          glow: "shadow-[#FF6600]/40",
-          ring: "ring-[#FF6600]/30",
-          hover: "hover:bg-[#FF6600]/30",
-          gradient: "from-[#FF6600]/20 to-[#FF3300]/20",
+          border: "border-l-orange-400",
+          bg: "bg-orange-50",
+          text: "text-orange-600",
         };
       case "offer":
         return {
-          border: "border-[#00FF00]",
-          bg: "bg-[#00FF00]/20",
-          text: "text-[#00FF00]",
-          glow: "shadow-[#00FF00]/40",
-          ring: "ring-[#00FF00]/30",
-          hover: "hover:bg-[#00FF00]/30",
-          gradient: "from-[#00FF00]/20 to-[#00CC00]/20",
+          border: "border-l-green-400",
+          bg: "bg-green-50",
+          text: "text-green-600",
         };
       case "rejected":
         return {
-          border: "border-[#FF0000]",
-          bg: "bg-[#FF0000]/20",
-          text: "text-[#FF0000]",
-          glow: "shadow-[#FF0000]/40",
-          ring: "ring-[#FF0000]/30",
-          hover: "hover:bg-[#FF0000]/30",
-          gradient: "from-[#FF0000]/20 to-[#CC0000]/20",
+          border: "border-l-red-400",
+          bg: "bg-red-50",
+          text: "text-red-600",
         };
       default:
         return {
-          border: "border-[#FF00FF]",
-          bg: "bg-[#FF00FF]/20",
-          text: "text-[#FF00FF]",
-          glow: "shadow-[#FF00FF]/40",
-          ring: "ring-[#FF00FF]/30",
-          hover: "hover:bg-[#FF00FF]/30",
-          gradient: "from-[#FF00FF]/20 to-[#CC00CC]/20",
+          border: "border-l-gray-400",
+          bg: "bg-gray-50",
+          text: "text-gray-600",
         };
     }
   };
 
-  const statusStyles = getStatusStyles(app.status);
+  const statusStyles = getStatusColors(app.status);
 
   return (
     <motion.div
@@ -223,58 +192,39 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
       initial="hidden"
       animate="visible"
       exit="exit"
-      whileHover={isHovered ? "hover" : "visible"}
+      whileHover="hover"
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
-      className={`relative bg-gradient-to-br ${statusStyles.gradient} backdrop-blur-2xl rounded-3xl overflow-hidden ${statusStyles.border} border-4 ${statusStyles.glow} transition-all duration-300`}
-      style={{
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-      }}
+      className={`bg-white rounded-xl overflow-hidden ${statusStyles.border} border-l-4 shadow-lg transition-all duration-300`}
     >
-      {/* Dynamic neon glow effect */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.5 }}
-        animate={{ opacity: 0.3, scale: 1 }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
-        className="absolute inset-0 rounded-3xl"
-        style={{
-          background: `radial-gradient(circle at 130% 20%, ${statusStyles.bg
-            .replace("bg-", "")
-            .replace("/20", "")}, transparent 60%)`,
-          filter: "blur(30px)",
-        }}
-      />
-
-      {/* Animated border pulse */}
-      <motion.div
-        className={`absolute inset-0 ${statusStyles.ring} rounded-3xl`}
-        animate={{
-          scale: [1, 1.02, 1],
-          opacity: [0.3, 0.5, 0.3],
-        }}
-        transition={{
-          duration: 2,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      />
-
-      <div className="p-8 relative z-10">
-        {/* Card header */}
-        <div className="flex justify-between items-start mb-8">
-          <motion.div variants={itemVariants} className="flex-1 mr-6">
+      <div className="p-6">
+        {/* Card header with job title and status */}
+        <div className="flex justify-between items-start mb-4">
+          <motion.div variants={itemVariants} className="flex-1 mr-4">
             <motion.h2
               layoutId={`title-${app._id}`}
-              className="text-3xl font-extrabold text-white tracking-wide truncate hover:text-[#FF00FF] transition-colors duration-200"
+              className="text-xl font-bold text-gray-800 truncate"
             >
               {app.jobTitle}
             </motion.h2>
             <motion.p
               variants={itemVariants}
-              className="text-[#00FFFF] font-bold flex items-center gap-3 mt-2 text-lg"
+              className="text-gray-700 font-semibold flex items-center gap-2 mt-1"
             >
-              <span className="text-[#00FFFF]/50">@</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                />
+              </svg>
               {app.company}
             </motion.p>
           </motion.div>
@@ -285,49 +235,44 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
           />
         </div>
 
-        {/* Card body */}
-        <div className="space-y-6 text-gray-100 mb-8">
+        {/* Card body with application details */}
+        <div className="space-y-2 text-gray-600 mb-6">
           <motion.div
             variants={itemVariants}
-            className="flex items-center gap-4 text-base"
+            className="flex items-center gap-2"
           >
-            <Calendar size={20} className="text-[#FFFF00]" />
-            <span className="opacity-70 font-medium">Applied:</span>{" "}
-            {formatDate(app.dateApplied)}
+            <Calendar size={16} className="text-gray-400" />
+            <span>Applied: {formatDate(app.dateApplied)}</span>
           </motion.div>
 
           <motion.div
             variants={itemVariants}
-            className="flex items-center gap-4 text-base"
+            className="flex items-center gap-2"
           >
-            <Globe size={20} className="text-[#FFFF00]" />
-            <span className="opacity-70 font-medium">Platform:</span>{" "}
-            {app.jobPlatform}
+            <Globe size={16} className="text-gray-400" />
+            <span>{app.jobPlatform}</span>
           </motion.div>
 
           {app.description && (
             <motion.div variants={itemVariants} layout>
               <div
-                className="mt-6 pt-6 border-t border-gray-600/30"
+                className="mt-3 pt-3 border-t border-gray-200"
                 onClick={() => setShowFullDescription(!showFullDescription)}
               >
                 <motion.p
                   layout
-                  className={`text-base text-gray-200 ${
-                    showFullDescription ? "" : "line-clamp-3"
-                  } cursor-pointer hover:text-[#00FF00] transition-colors duration-200`}
+                  className={`text-sm text-gray-500 ${
+                    showFullDescription ? "" : "line-clamp-2"
+                  } cursor-pointer`}
                 >
                   {app.description}
                 </motion.p>
-                {!showFullDescription && app.description.length > 150 && (
-                  <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-gray-900/95 to-transparent pointer-events-none"></div>
-                )}
-                {app.description.length > 150 && (
+                {app.description.length > 120 && (
                   <motion.button
                     variants={buttonVariants}
                     whileHover="hover"
                     whileTap="tap"
-                    className="mt-3 text-sm text-[#00FFFF] hover:text-[#00FFFF]/70 font-medium transition-colors duration-200"
+                    className="mt-1 text-xs text-indigo-600 hover:text-indigo-800"
                   >
                     {showFullDescription ? "Show less" : "Read more"}
                   </motion.button>
@@ -338,7 +283,7 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
         </div>
 
         {/* Actions section */}
-        <div className="flex flex-wrap items-center gap-4">
+        <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-gray-200">
           {app.jobUrl && (
             <motion.a
               href={app.jobUrl}
@@ -347,77 +292,64 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
               variants={buttonVariants}
               whileHover="hover"
               whileTap="tap"
-              className={`inline-flex items-center gap-2 px-6 py-3 bg-[#FF00FF]/30 text-[#FF00FF] rounded-xl text-base font-semibold ${statusStyles.hover} transition-all duration-300`}
+              className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-800 text-sm transition-colors duration-200"
             >
               View Job
-              <ExternalLink size={18} />
+              <ExternalLink size={14} />
             </motion.a>
           )}
 
-          <AnimatePresence>
-            {isHovered && (
-              <motion.div
-                initial={{ opacity: 0, x: 30 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 30 }}
-                transition={{ duration: 0.2, ease: "easeOut" }}
-                className="flex gap-3 ml-auto"
-              >
+          <div className="flex gap-2 ml-auto">
+            <motion.button
+              variants={buttonVariants}
+              whileHover="hover"
+              whileTap="tap"
+              onClick={onEdit}
+              className="p-2 bg-blue-100 text-blue-600 rounded-full hover:bg-blue-200 transition-colors duration-200"
+            >
+              <span className="sr-only">Edit</span>
+              <FileEdit size={16} />
+            </motion.button>
+
+            {app.resumeUrl && (
+              <>
                 <motion.button
                   variants={buttonVariants}
                   whileHover="hover"
                   whileTap="tap"
-                  onClick={onEdit}
-                  className="p-3 bg-gray-900/50 text-[#00FFFF] rounded-full hover:bg-[#00FFFF]/30 transition-all duration-300"
+                  onClick={() => handleView(app.resumeUrl)}
+                  className="p-2 bg-green-100 text-green-600 rounded-full hover:bg-green-200 transition-colors duration-200"
                 >
-                  <span className="sr-only">Edit</span>
-                  <FileEdit size={18} />
+                  <span className="sr-only">View</span>
+                  <Eye size={16} />
                 </motion.button>
-
-                {app.resumeUrl && (
-                  <>
-                    <motion.button
-                      variants={buttonVariants}
-                      whileHover="hover"
-                      whileTap="tap"
-                      onClick={() => handleView(app.resumeUrl)}
-                      className="p-3 bg-gray-900/50 text-[#00FF00] rounded-full hover:bg-[#00FF00]/30 transition-all duration-300"
-                    >
-                      <span className="sr-only">View</span>
-                      <Eye size={18} />
-                    </motion.button>
-
-                    <motion.button
-                      variants={buttonVariants}
-                      whileHover="hover"
-                      whileTap="tap"
-                      onClick={() =>
-                        handleDownload(
-                          app.resumeUrl,
-                          `${app.jobTitle}-resume.pdf`
-                        )
-                      }
-                      className="p-3 bg-gray-900/50 text-[#FFFF00] rounded-full hover:bg-[#FFFF00]/30 transition-all duration-300"
-                    >
-                      <span className="sr-only">Download</span>
-                      <Download size={18} />
-                    </motion.button>
-                  </>
-                )}
 
                 <motion.button
                   variants={buttonVariants}
                   whileHover="hover"
                   whileTap="tap"
-                  onClick={onDelete}
-                  className="p-3 bg-gray-900/50 text-[#FF0000] rounded-full hover:bg-[#FF0000]/30 transition-all duration-300"
+                  onClick={() =>
+                    handleDownload(app.resumeUrl, `${app.jobTitle}-resume.pdf`)
+                  }
+                  className="p-2 bg-indigo-100 text-indigo-600 rounded-full hover:bg-indigo-200 transition-colors duration-200"
                 >
-                  <span className="sr-only">Delete</span>
-                  <X size={18} />
+                  <span className="sr-only">Download</span>
+                  <Download size={16} />
                 </motion.button>
-              </motion.div>
+              </>
             )}
-          </AnimatePresence>
+
+            <motion.button
+              variants={buttonVariants}
+              whileHover="hover"
+              whileTap="tap"
+              onClick={onDelete}
+              className="p-2 bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition-colors duration-200"
+            >
+              <span className="sr-only">Delete</span>
+              <X size={16} />
+            </motion.button>
+          </div>
         </div>
       </div>
     </motion.div>
@@ -427,17 +359,17 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
 export const getStatusColor = (status: string) => {
   switch (status.toLowerCase()) {
     case "pending":
-      return "border-[#FFFF00] text-[#FFFF00] bg-[#FFFF00]/20";
+      return "border-l-yellow-400 text-yellow-600 bg-yellow-50";
     case "applied":
-      return "border-[#00FFFF] text-[#00FFFF] bg-[#00FFFF]/20";
+      return "border-l-blue-400 text-blue-600 bg-blue-50";
     case "interview":
-      return "border-[#FF6600] text-[#FF6600] bg-[#FF6600]/20";
+      return "border-l-orange-400 text-orange-600 bg-orange-50";
     case "offer":
-      return "border-[#00FF00] text-[#00FF00] bg-[#00FF00]/20";
+      return "border-l-green-400 text-green-600 bg-green-50";
     case "rejected":
-      return "border-[#FF0000] text-[#FF0000] bg-[#FF0000]/20";
+      return "border-l-red-400 text-red-600 bg-red-50";
     default:
-      return "border-[#FF00FF] text-[#FF00FF] bg-[#FF00FF]/20";
+      return "border-l-gray-400 text-gray-600 bg-gray-50";
   }
 };
 
