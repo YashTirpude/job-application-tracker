@@ -15,6 +15,7 @@ const Navbar = () => {
   const token = useSelector((state: RootState) => state.auth.token);
   const [searchQuery, setSearchQuery] = useState("");
   const [scrolled, setScrolled] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -32,6 +33,7 @@ const Navbar = () => {
 
   const handleSearch = async () => {
     if (!token || !searchQuery.trim()) return;
+    setIsSearching(true);
     try {
       const res = await api.get("/applications", {
         headers: { Authorization: `Bearer ${token}` },
@@ -40,6 +42,8 @@ const Navbar = () => {
       dispatch(setApplications(res.data.applications));
     } catch (error) {
       console.error("Search failed", error);
+    } finally {
+      setIsSearching(false);
     }
   };
 
@@ -168,7 +172,19 @@ const Navbar = () => {
                   className="absolute right-2 bg-indigo-600 hover:bg-indigo-700 text-white p-1.5 rounded-md transition-colors duration-200"
                   aria-label="Search"
                 >
-                  <Search size={16} />
+                  {isSearching ? (
+                    <motion.div
+                      className="w-4 h-4 rounded-full border-2 border-white border-t-indigo-400"
+                      animate={{ rotate: 360 }}
+                      transition={{
+                        repeat: Infinity,
+                        duration: 1,
+                        ease: "linear",
+                      }}
+                    />
+                  ) : (
+                    <Search size={16} />
+                  )}
                 </motion.button>
               </div>
             </motion.div>
