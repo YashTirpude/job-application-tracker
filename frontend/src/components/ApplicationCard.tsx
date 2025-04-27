@@ -49,7 +49,7 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
       },
     },
     hover: {
-      scale: 1.03,
+      scale: 1.02,
       transition: { type: "spring", stiffness: 300, damping: 20 },
     },
     exit: {
@@ -111,12 +111,12 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
   };
 
   const getStatusColors: Record<string, string> = {
-    pending: "from-yellow-400 via-yellow-500 to-yellow-600",
-    applied: "from-blue-400 via-blue-500 to-blue-600",
-    interview: "from-orange-400 via-orange-500 to-orange-600",
-    offer: "from-green-400 via-green-500 to-green-600",
-    rejected: "from-red-400 via-red-500 to-red-600",
-    default: "from-gray-400 via-gray-500 to-gray-600",
+    pending: "from-yellow-600 via-yellow-700 to-yellow-800",
+    applied: "from-blue-600 via-blue-700 to-blue-800",
+    interview: "from-orange-600 via-orange-700 to-orange-800",
+    offer: "from-green-600 via-green-700 to-green-800",
+    rejected: "from-red-600 via-red-700 to-red-800",
+    default: "from-gray-600 via-gray-700 to-gray-800",
   };
 
   const getStatusGradient = (status: string) =>
@@ -135,16 +135,17 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
       onHoverEnd={() => setIsHovered(false)}
       className={`rounded-2xl p-6 bg-gradient-to-br ${getStatusGradient(
         app.status
-      )} text-white shadow-2xl hover:shadow-3xl transition-all relative overflow-hidden`}
+      )} text-white/90 shadow-xl hover:shadow-2xl transition-all relative overflow-hidden backdrop-blur-md`}
     >
+      {/* Glass effect background */}
       <motion.div
         initial={{ opacity: 0 }}
-        animate={{ opacity: 0.2 }}
+        animate={{ opacity: 0.1 }}
         transition={{ duration: 0.5 }}
-        className="absolute inset-0 bg-white opacity-5 blur-2xl rounded-2xl pointer-events-none"
+        className="absolute inset-0 bg-white/10 backdrop-blur-md rounded-2xl pointer-events-none"
       />
 
-      <div className="flex justify-between items-start mb-4">
+      <div className="flex justify-between items-start mb-4 relative z-10">
         <div className="flex-1">
           <h2 className="text-2xl font-bold mb-1">{app.jobTitle}</h2>
           <p className="text-sm opacity-80">@ {app.company}</p>
@@ -155,26 +156,20 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
         />
       </div>
 
-      <div className="space-y-3 text-sm mb-6">
+      <div className="space-y-3 text-sm mb-6 relative z-10">
         <div className="flex items-center gap-2">
-          <Calendar size={16} />
-          Applied: {formatDate(app.dateApplied)}
+          <Calendar size={16} /> Applied: {formatDate(app.dateApplied)}
         </div>
         <div className="flex items-center gap-2">
-          <Globe size={16} />
-          Platform: {app.jobPlatform}
+          <Globe size={16} /> Platform: {app.jobPlatform}
         </div>
 
         {app.description && (
           <div
-            className="relative mt-2"
+            className="relative mt-2 cursor-pointer"
             onClick={() => setShowFullDescription(!showFullDescription)}
           >
-            <p
-              className={`cursor-pointer ${
-                showFullDescription ? "" : "line-clamp-2"
-              }`}
-            >
+            <p className={`${showFullDescription ? "" : "line-clamp-2"}`}>
               {app.description}
             </p>
             {app.description.length > 120 && (
@@ -186,7 +181,7 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
         )}
       </div>
 
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-wrap items-center gap-3 relative z-10">
         {app.jobUrl && (
           <motion.a
             href={app.jobUrl}
@@ -271,17 +266,17 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
   );
 };
 
-// 👉👉 THIS is the key export you need
+// Updated export function for use elsewhere
 export const getStatusColor = (status: string) =>
   `bg-gradient-to-br ${
     {
-      pending: "from-yellow-400 via-yellow-500 to-yellow-600",
-      applied: "from-blue-400 via-blue-500 to-blue-600",
-      interview: "from-orange-400 via-orange-500 to-orange-600",
-      offer: "from-green-400 via-green-500 to-green-600",
-      rejected: "from-red-400 via-red-500 to-red-600",
-      default: "from-gray-400 via-gray-500 to-gray-600",
-    }[status.toLowerCase()] || "from-gray-400 via-gray-500 to-gray-600"
+      pending: "from-yellow-600 via-yellow-700 to-yellow-800",
+      applied: "from-blue-600 via-blue-700 to-blue-800",
+      interview: "from-orange-600 via-orange-700 to-orange-800",
+      offer: "from-green-600 via-green-700 to-green-800",
+      rejected: "from-red-600 via-red-700 to-red-800",
+      default: "from-gray-600 via-gray-700 to-gray-800",
+    }[status.toLowerCase()] || "from-gray-600 via-gray-700 to-gray-800"
   }`;
 
 export default ApplicationCard;
