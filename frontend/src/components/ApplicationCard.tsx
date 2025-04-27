@@ -25,7 +25,6 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
 }) => {
   const dispatch = useDispatch<AppDispatch>();
 
-  // Animation variants
   const cardItem = {
     hidden: { opacity: 0, y: 20, scale: 0.98 },
     show: {
@@ -60,7 +59,6 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
     transition: { duration: 0.1, ease: "easeIn" },
   };
 
-  // Helper functions
   const formatDate = (dateString: string) =>
     new Date(dateString).toLocaleDateString(undefined, {
       year: "numeric",
@@ -109,20 +107,19 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
     <motion.div
       variants={cardItem}
       layoutId={`card-${app._id}`}
-      className={`bg-white rounded-xl shadow-sm hover:shadow-md border-l-4 ${getStatusColor(
+      className={`bg-dark-card rounded-xl shadow-md hover:shadow-glow border-l-4 ${getStatusColor(
         app.status
       )} overflow-hidden transition-all duration-300`}
       whileHover={{
         y: -4,
-        boxShadow:
-          "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+        scale: 1.02,
         transition: { type: "spring", stiffness: 400, damping: 17 },
       }}
     >
-      <div className="p-5">
-        <div className="flex justify-between items-start mb-3">
+      <div className="p-6">
+        <div className="flex justify-between items-start mb-4">
           <motion.h2
-            className="text-lg font-semibold text-gray-800 truncate"
+            className="text-lg font-semibold text-gray-100 truncate"
             layoutId={`title-${app._id}`}
           >
             {app.jobTitle}
@@ -134,66 +131,27 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
         </div>
 
         <motion.p
-          className="text-gray-700 font-medium flex items-center gap-2 mb-3"
+          className="text-gray-300 font-medium flex items-center gap-2 mb-4"
           layoutId={`company-${app._id}`}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-4 w-4 text-gray-500"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-            />
-          </svg>
+          <span className="text-gray-400">@</span>
           {app.company}
         </motion.p>
 
-        <div className="space-y-2 text-gray-600 text-sm">
+        <div className="space-y-3 text-gray-400 text-sm mb-4">
           <p className="flex items-center gap-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4 text-gray-500"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-              />
-            </svg>
+            <span className="text-indigo-400">•</span>
             Applied: {formatDate(app.dateApplied)}
           </p>
 
           <p className="flex items-center gap-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4 text-gray-500"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
-              />
-            </svg>
+            <span className="text-indigo-400">•</span>
             {app.jobPlatform}
           </p>
 
           {app.description && (
             <motion.p
-              className="text-xs text-gray-500 line-clamp-2 mt-2"
+              className="text-xs text-gray-500 line-clamp-2 mt-2 pl-4 border-l-2 border-gray-700"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
@@ -208,85 +166,41 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
             href={app.jobUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-indigo-600 flex items-center gap-1 mt-3 text-sm hover:text-indigo-800 transition-colors duration-200 w-fit"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-gray-800/50 text-gray-300 rounded-lg text-sm hover:bg-gray-800 hover:text-gray-100 transition-all duration-200"
             whileHover={{ x: 3 }}
             whileTap={{ scale: 0.98 }}
           >
             View Job
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-              />
-            </svg>
+            <span className="text-indigo-400">→</span>
           </motion.a>
         )}
 
-        <div className="flex justify-between items-center mt-4 pt-4 border-t border-gray-200">
+        <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-800">
           <motion.button
-            className="p-2 bg-blue-50 text-blue-600 rounded-full hover:bg-blue-100 transition-colors duration-200"
+            className="p-2 bg-gray-800/50 text-indigo-400 rounded-full hover:bg-gray-800 hover:shadow-glow-sm transition-all duration-200"
             onClick={onEdit}
             whileHover={buttonHover}
             whileTap={buttonTap}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-              />
-            </svg>
+            <span className="sr-only">Edit</span>✎
           </motion.button>
 
           <div className="flex gap-2">
             {app.resumeUrl && (
               <>
                 <motion.button
-                  className="p-2 bg-green-50 text-green-600 rounded-full hover:bg-green-100 transition-colors duration-200"
+                  className="p-2 bg-gray-800/50 text-emerald-400 rounded-full hover:bg-gray-800 hover:shadow-glow-sm transition-all duration-200"
                   onClick={() => handleView(app.resumeUrl)}
                   whileHover={buttonHover}
                   whileTap={buttonTap}
                   title="View Resume"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                    />
-                  </svg>
+                  <span className="sr-only">View</span>
+                  👁
                 </motion.button>
 
                 <motion.button
-                  className="p-2 bg-indigo-50 text-indigo-600 rounded-full hover:bg-indigo-100 transition-colors duration-200"
+                  className="p-2 bg-gray-800/50 text-sky-400 rounded-full hover:bg-gray-800 hover:shadow-glow-sm transition-all duration-200"
                   onClick={() =>
                     handleDownload(app.resumeUrl, `${app.jobTitle}-resume.pdf`)
                   }
@@ -294,45 +208,19 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
                   whileTap={buttonTap}
                   title="Download Resume"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                    />
-                  </svg>
+                  <span className="sr-only">Download</span>⭳
                 </motion.button>
               </>
             )}
 
             <motion.button
-              className="p-2 bg-red-50 text-red-600 rounded-full hover:bg-red-100 transition-colors duration-200"
+              className="p-2 bg-gray-800/50 text-red-400 rounded-full hover:bg-gray-800 hover:shadow-glow-sm transition-all duration-200"
               onClick={onDelete}
               whileHover={buttonHover}
               whileTap={buttonTap}
               title="Delete Application"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                />
-              </svg>
+              <span className="sr-only">Delete</span>✕
             </motion.button>
           </div>
         </div>
@@ -341,21 +229,20 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
   );
 };
 
-// Helper function to get status color
 export const getStatusColor = (status: string) => {
   switch (status.toLowerCase()) {
     case "pending":
-      return "border-yellow-500 text-yellow-600 bg-yellow-50";
+      return "border-yellow-500/50 text-yellow-200 bg-yellow-500/10";
     case "applied":
-      return "border-blue-500 text-blue-600 bg-blue-50";
+      return "border-blue-500/50 text-blue-200 bg-blue-500/10";
     case "interview":
-      return "border-orange-500 text-orange-600 bg-orange-50";
+      return "border-orange-500/50 text-orange-200 bg-orange-500/10";
     case "offer":
-      return "border-green-500 text-green-600 bg-green-50";
+      return "border-green-500/50 text-green-200 bg-green-500/10";
     case "rejected":
-      return "border-red-500 text-red-600 bg-red-50";
+      return "border-red-500/50 text-red-200 bg-red-500/10";
     default:
-      return "border-gray-500 text-gray-600 bg-gray-50";
+      return "border-gray-500/50 text-gray-200 bg-gray-500/10";
   }
 };
 
