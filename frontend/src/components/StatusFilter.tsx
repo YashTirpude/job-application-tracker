@@ -22,13 +22,16 @@ const StatusFilter: React.FC<StatusFilterProps> = ({
     "rejected",
   ];
 
-  // Animation variants matching ApplicationCard style
+  // Animation variants matching ApplicationCard
   const containerVariants = {
-    hidden: { opacity: 0 },
+    hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
+      y: 0,
       transition: {
-        staggerChildren: 0.05,
+        duration: 0.5,
+        ease: "easeOut",
+        staggerChildren: 0.1,
         delayChildren: 0.2,
       },
     },
@@ -39,10 +42,7 @@ const StatusFilter: React.FC<StatusFilterProps> = ({
     visible: {
       opacity: 1,
       y: 0,
-      transition: {
-        duration: 0.4,
-        ease: "easeOut",
-      },
+      transition: { duration: 0.4, ease: "easeOut" },
     },
   };
 
@@ -50,12 +50,12 @@ const StatusFilter: React.FC<StatusFilterProps> = ({
     hover: {
       scale: 1.03,
       boxShadow: "0px 5px 15px rgba(99, 102, 241, 0.4)",
-      transition: { duration: 0.2 },
+      transition: { duration: 0.2, ease: "easeOut" },
     },
-    tap: { scale: 0.97 },
+    tap: { scale: 0.97, transition: { duration: 0.1, ease: "easeIn" } },
   };
 
-  // Get status icon matching ApplicationCard
+  // Status icons matching ApplicationCard
   const getStatusIcon = (status: string) => {
     switch (status.toLowerCase()) {
       case "pending":
@@ -143,24 +143,6 @@ const StatusFilter: React.FC<StatusFilterProps> = ({
     }
   };
 
-  // Get text color based on status to match ApplicationCard
-  const getStatusTextColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "pending":
-        return "text-yellow-400";
-      case "applied":
-        return "text-indigo-400";
-      case "interview":
-        return "text-orange-400";
-      case "offer":
-        return "text-emerald-400";
-      case "rejected":
-        return "text-red-400";
-      default:
-        return "text-gray-400";
-    }
-  };
-
   return (
     <motion.div
       className="mb-8"
@@ -168,7 +150,7 @@ const StatusFilter: React.FC<StatusFilterProps> = ({
       animate="visible"
       variants={containerVariants}
     >
-      <div className="flex justify-between items-center mb-3">
+      <div className="flex justify-between items-center mb-4">
         <div className="flex items-center gap-2">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -181,7 +163,7 @@ const StatusFilter: React.FC<StatusFilterProps> = ({
             <path d="M3 14.5A1.5 1.5 0 0 1 1.5 13V3A1.5 1.5 0 0 1 3 1.5h8a.5.5 0 0 1 0 1H3a.5.5 0 0 0-.5.5v10a.5.5 0 0 0 .5.5h10a.5.5 0 0 0 .5-.5V8a.5.5 0 0 1 1 0v5a1.5 1.5 0 0 1-1.5 1.5H3z" />
             <path d="m8.354 10.354 7-7a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0z" />
           </svg>
-          <h2 className="text-lg font-bold text-white">Filter by Status</h2>
+          <h2 className="text-lg font-semibold text-white">Filter by Status</h2>
         </div>
         {selectedFilter && (
           <motion.button
@@ -206,11 +188,12 @@ const StatusFilter: React.FC<StatusFilterProps> = ({
       </div>
 
       <motion.div
-        className="bg-gray-800 shadow-2xl rounded-2xl p-4 border border-gray-700"
+        className="bg-gray-800/90 backdrop-blur-lg rounded-2xl p-4 border border-gray-700 shadow-2xl"
         variants={itemVariants}
         whileHover={{
+          y: -5,
           boxShadow: "0px 10px 25px rgba(0, 0, 0, 0.3)",
-          transition: { duration: 0.3 },
+          transition: { duration: 0.3, ease: "easeOut" },
         }}
       >
         <motion.div
@@ -231,7 +214,7 @@ const StatusFilter: React.FC<StatusFilterProps> = ({
             <span
               className={`${
                 !selectedFilter ? "bg-indigo-700" : "bg-gray-800"
-              } rounded-full w-6 h-6 flex items-center justify-center text-xs`}
+              } rounded-full w-5 h-5 flex items-center justify-center text-xs text-white`}
             >
               {applications.length}
             </span>
@@ -248,12 +231,8 @@ const StatusFilter: React.FC<StatusFilterProps> = ({
                 key={status}
                 className={`px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 capitalize transition-all duration-200 ${
                   selectedFilter === status
-                    ? getStatusColor(status)
-                    : "bg-gray-700 hover:bg-gray-600"
-                } ${
-                  selectedFilter === status
-                    ? getStatusTextColor(status)
-                    : "text-gray-300"
+                    ? `${getStatusColor(status)} text-white`
+                    : "bg-gray-700 text-gray-300 hover:bg-gray-600"
                 }`}
                 onClick={() => onFilterChange(status)}
                 variants={buttonVariants}
@@ -265,12 +244,9 @@ const StatusFilter: React.FC<StatusFilterProps> = ({
                   <span
                     className={`${
                       selectedFilter === status
-                        ? getStatusColor(status).replace(
-                            "bg-",
-                            "bg-opacity-70 bg-"
-                          )
+                        ? "bg-white bg-opacity-20"
                         : "bg-gray-800"
-                    } rounded-full w-6 h-6 flex items-center justify-center text-xs`}
+                    } rounded-full w-5 h-5 flex items-center justify-center text-xs text-white`}
                   >
                     {count}
                   </span>
