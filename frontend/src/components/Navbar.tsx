@@ -5,7 +5,7 @@ import { logout } from "../store/slices/authSlice";
 import { AppDispatch, RootState } from "../store";
 import { setApplications } from "../store/slices/applicationSlice";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, X, Menu, LogOut, Briefcase } from "lucide-react";
+import { Search, X, LogOut, Briefcase } from "lucide-react";
 import api from "../services/api";
 
 const Navbar = () => {
@@ -14,7 +14,6 @@ const Navbar = () => {
   const dispatch = useDispatch<AppDispatch>();
   const token = useSelector((state: RootState) => state.auth.token);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [showSearchOnMobile, setShowSearchOnMobile] = useState(false);
 
@@ -27,7 +26,6 @@ const Navbar = () => {
   }, []);
 
   useEffect(() => {
-    setIsMenuOpen(false);
     setShowSearchOnMobile(false);
   }, [location.pathname]);
 
@@ -103,28 +101,6 @@ const Navbar = () => {
       transition: { duration: 0.2 },
     },
     tap: { scale: 0.97 },
-  };
-
-  const mobileMenuVariants = {
-    closed: { x: "100%", opacity: 0 },
-    open: {
-      x: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.4,
-        ease: "easeOut",
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const menuItemVariants = {
-    closed: { opacity: 0, y: 10 },
-    open: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.4, ease: "easeOut" },
-    },
   };
 
   const searchIconAnimation = {
@@ -268,49 +244,57 @@ const Navbar = () => {
 
           <div className="flex items-center gap-2 md:hidden">
             {token && (
-              <motion.button
-                variants={buttonVariants}
-                whileHover="hover"
-                whileTap="tap"
-                onClick={() => setShowSearchOnMobile(!showSearchOnMobile)}
-                className="p-2 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg transition-colors duration-200"
-                aria-label="Search"
-              >
-                <Search size={20} />
-              </motion.button>
+              <>
+                <motion.button
+                  variants={buttonVariants}
+                  whileHover="hover"
+                  whileTap="tap"
+                  onClick={() => setShowSearchOnMobile(!showSearchOnMobile)}
+                  className="p-2 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg transition-colors duration-200"
+                  aria-label="Search"
+                >
+                  <Search size={20} />
+                </motion.button>
+                <motion.button
+                  variants={buttonVariants}
+                  whileHover="hover"
+                  whileTap="tap"
+                  onClick={handleLogout}
+                  className="p-2 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg transition-colors duration-200"
+                  aria-label="Logout"
+                >
+                  <LogOut size={20} className="text-indigo-400" />
+                </motion.button>
+              </>
             )}
-            <motion.button
-              variants={buttonVariants}
-              whileHover="hover"
-              whileTap="tap"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg transition-colors duration-200"
-              aria-label="Toggle menu"
-            >
-              <AnimatePresence mode="wait">
-                {isMenuOpen ? (
-                  <motion.div
-                    key="close"
-                    initial={{ rotate: -45, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: 45, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
+            {!token && (
+              <div className="flex items-center gap-2">
+                <motion.div
+                  variants={buttonVariants}
+                  whileHover="hover"
+                  whileTap="tap"
+                >
+                  <Link
+                    to="/login"
+                    className="p-2 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg transition-colors duration-200"
                   >
-                    <X size={20} />
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="menu"
-                    initial={{ rotate: 45, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: -45, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
+                    Login
+                  </Link>
+                </motion.div>
+                <motion.div
+                  variants={buttonVariants}
+                  whileHover="hover"
+                  whileTap="tap"
+                >
+                  <Link
+                    to="/register"
+                    className="p-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors duration-200"
                   >
-                    <Menu size={20} />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.button>
+                    Register
+                  </Link>
+                </motion.div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -367,80 +351,6 @@ const Navbar = () => {
           )}
         </AnimatePresence>
       </motion.nav>
-
-      <AnimatePresence>
-        {isMenuOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
-              onClick={() => setIsMenuOpen(false)}
-            />
-            <motion.div
-              variants={mobileMenuVariants}
-              initial="closed"
-              animate="open"
-              exit="closed"
-              className="fixed right-0 top-0 h-screen w-4/5 max-w-xs bg-gray-800 shadow-2xl border-l border-gray-700 z-50 md:hidden"
-            >
-              <motion.div
-                variants={menuItemVariants}
-                className="p-6 border-b border-gray-700 flex items-center justify-between"
-              >
-                <div className="flex items-center gap-2">
-                  <Briefcase className="text-indigo-400 h-6 w-6" />
-                  <span className="text-xl font-bold text-white">
-                    Job<span className="text-indigo-400">Tracker</span>
-                  </span>
-                </div>
-                <motion.button
-                  variants={buttonVariants}
-                  whileHover="hover"
-                  whileTap="tap"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="p-2 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg"
-                >
-                  <X size={20} />
-                </motion.button>
-              </motion.div>
-              <div className="p-6 space-y-4">
-                {token ? (
-                  <motion.button
-                    variants={menuItemVariants}
-                    onClick={handleLogout}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors duration-200"
-                  >
-                    <LogOut size={18} className="text-indigo-400" />
-                    <span>Logout</span>
-                  </motion.button>
-                ) : (
-                  <div className="space-y-3">
-                    <motion.div variants={menuItemVariants}>
-                      <Link
-                        to="/login"
-                        className="w-full flex items-center justify-center px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors duration-200"
-                      >
-                        Login
-                      </Link>
-                    </motion.div>
-                    <motion.div variants={menuItemVariants}>
-                      <Link
-                        to="/register"
-                        className="w-full flex items-center justify-center px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-all duration-200"
-                      >
-                        Register
-                      </Link>
-                    </motion.div>
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
 
       <div className="h-16 md:h-20" />
     </>
