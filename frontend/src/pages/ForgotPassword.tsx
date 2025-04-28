@@ -282,9 +282,9 @@ const ForgotPassword = () => {
                         transition={{ duration: 0.2 }}
                         className="relative"
                       >
-                        <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none z-10">
                           <svg
-                            className="w-5 h-5 text-gray-500"
+                            className="w-5 h-5 text-gray-400"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -303,7 +303,7 @@ const ForgotPassword = () => {
                           id="email"
                           type="email"
                           placeholder="your.email@example.com"
-                          className={`block w-full pl-10 pr-4 py-4 bg-gray-700/50 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 text-gray-200 placeholder-gray-500 backdrop-blur-sm ${
+                          className={`block w-full pl-10 pr-4 py-4 bg-gray-700/80 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 text-gray-200 placeholder-gray-500 ${
                             errors.email ? "border-red-500" : "border-gray-600"
                           }`}
                           disabled={isSubmitting}
