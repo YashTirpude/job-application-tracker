@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { setUser, setToken } from "../store/slices/authSlice";
 import api from "../services/api";
 import { motion } from "framer-motion";
+import { toast } from "react-toastify";
 
 interface AuthFormProps {
   type: "login" | "register";
@@ -81,13 +82,13 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
 
         dispatch(setUser(user));
         dispatch(setToken(token));
-
+        toast.success("Account created successfully!");
         localStorage.setItem("token", token);
         localStorage.setItem("user", JSON.stringify(user));
 
         navigate("/applications");
       } catch (err: any) {
-        alert(err.response?.data?.message || "Auth failed.");
+        toast.error(err.response?.data?.message || "Registration failed.");
       }
     } else {
       try {
@@ -101,10 +102,10 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
 
         localStorage.setItem("token", token);
         localStorage.setItem("user", JSON.stringify(user));
-
+        toast.success("Login successful!");
         navigate("/applications");
       } catch (err: any) {
-        alert(err.response?.data?.message || "Auth failed.");
+        toast.error(err.response?.data?.message || "Login failed.");
       }
     }
   };

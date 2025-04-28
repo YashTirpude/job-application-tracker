@@ -7,6 +7,8 @@ import { AppDispatch } from "../store";
 import { addApplication } from "../store/slices/applicationSlice";
 import { useForm, Controller } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "react-toastify";
+import { CheckCircle, XCircle } from "lucide-react";
 
 const ApplicationForm = () => {
   const token = useSelector((state: RootState) => state.auth.token);
@@ -33,7 +35,12 @@ const ApplicationForm = () => {
 
   const onSubmit = async (data: any) => {
     if (!token) {
-      console.error("No token found. Please login.");
+      toast.error(
+        <div className="flex items-center gap-2">
+          <XCircle className="text-red-400" size={20} />
+          <span>You must be logged in to submit the application.</span>
+        </div>
+      );
       return;
     }
 
@@ -70,12 +77,23 @@ const ApplicationForm = () => {
       setUploadProgress(100);
 
       console.log("✅ Submitted:", result);
+      toast.success(
+        <div className="flex items-center gap-2">
+          <CheckCircle className="text-green-400" size={20} />
+          <span>Application submitted successfully!</span>
+        </div>
+      );
 
       setTimeout(() => {
         navigate("/applications");
       }, 500);
     } catch (err: any) {
-      console.error("❌ Error:", err.message || err);
+      toast.error(
+        <div className="flex items-center gap-2">
+          <XCircle className="text-red-400" size={20} />
+          <span>Error submitting application. Please try again.</span>
+        </div>
+      );
       setUploadProgress(0);
     }
   };

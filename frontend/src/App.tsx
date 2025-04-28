@@ -14,12 +14,29 @@ import PublicRoute from "./components/routes/PublicRoute";
 import CreateApplication from "./components/routes/CreateApplication";
 import EditApplicationForm from "./components/routes/EditApplication";
 import ForgotPassword from "./pages/ForgotPassword";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { Slide } from "react-toastify";
 
 const App = () => {
   useAuth();
 
   return (
     <Router>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+        transition={Slide}
+        icon={false}
+      />
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-indigo-950 text-gray-100">
         <div className="container mx-auto px-4 py-6">
           <Routes>

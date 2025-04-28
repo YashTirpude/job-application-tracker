@@ -3,8 +3,8 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useForm, Controller } from "react-hook-form";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
+
 import { AppDispatch } from "../store";
 import { setLoading } from "../store/slices/authSlice";
 import api from "../services/api";
@@ -143,19 +143,6 @@ const ForgotPassword = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black px-4 py-12">
       {/* Custom styled ToastContainer */}
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="dark"
-        toastClassName="bg-gray-800 relative flex p-4 min-h-10 rounded-lg justify-between overflow-hidden cursor-pointer border border-gray-700 shadow-lg backdrop-blur-sm"
-      />
 
       <motion.div
         className="w-full max-w-md"

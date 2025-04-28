@@ -6,6 +6,8 @@ import { useForm, Controller } from "react-hook-form";
 import { AppDispatch, RootState } from "../../store";
 import { setLoading } from "../../store/slices/authSlice";
 import api from "../../services/api";
+import { toast } from "react-toastify";
+import { CheckCircle, XCircle } from "lucide-react";
 
 interface FormData {
   jobTitle: string;
@@ -124,7 +126,7 @@ const EditApplicationForm = () => {
       } catch (err: any) {
         const errorMsg =
           err.response?.data?.message || "Failed to fetch application";
-        setApiError(errorMsg);
+        toast.error(errorMsg);
         setIsLoading(false);
       } finally {
         dispatch(setLoading(false));
@@ -172,16 +174,25 @@ const EditApplicationForm = () => {
           "Content-Type": "multipart/form-data",
         },
       });
-
       clearInterval(progressInterval);
       setUploadProgress(100);
+
+      toast.success(
+        <div className="flex items-center gap-2">
+          <CheckCircle className="text-green-400" size={20} />
+          <span>Application updated successfully!</span>
+        </div>
+      );
 
       setTimeout(() => {
         navigate("/applications");
       }, 500);
     } catch (err: any) {
-      setApiError(
-        err.response?.data?.message || "Failed to update application"
+      toast.error(
+        <div className="flex items-center gap-2">
+          <XCircle className="text-red-400" size={20} />
+          <span>Failed to update application.</span>
+        </div>
       );
       setUploadProgress(0);
     }

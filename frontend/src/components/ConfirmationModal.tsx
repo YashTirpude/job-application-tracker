@@ -1,5 +1,8 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { CheckCircle, XCircle } from "lucide-react";
 
 interface ConfirmationModalProps {
   isOpen: boolean;
@@ -59,6 +62,26 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     },
   };
 
+  const handleConfirm = () => {
+    onConfirm();
+    toast.success(
+      <div className="flex items-center gap-2">
+        <CheckCircle className="text-green-400" size={20} />
+        <span>Action confirmed successfully!</span>
+      </div>
+    );
+  };
+
+  const handleCancel = () => {
+    onCancel();
+    toast.info(
+      <div className="flex items-center gap-2">
+        <XCircle className="text-blue-400" size={20} />
+        <span>Action was canceled.</span>
+      </div>
+    );
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -68,7 +91,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           initial="hidden"
           animate="visible"
           exit="exit"
-          onClick={onCancel}
+          onClick={handleCancel}
         >
           <motion.div
             className="bg-gray-800/90 backdrop-blur-lg rounded-2xl p-6 max-w-md w-full border border-gray-700 shadow-2xl"
@@ -107,7 +130,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
             <div className="flex justify-center gap-3">
               <motion.button
                 className="px-5 py-2 bg-indigo-600 text-white rounded-lg font-medium shadow-md hover:bg-indigo-700 transition-colors duration-200"
-                onClick={onConfirm}
+                onClick={handleConfirm}
                 variants={buttonVariants}
                 whileHover="hover"
                 whileTap="tap"
@@ -116,7 +139,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
               </motion.button>
               <motion.button
                 className="px-5 py-2 bg-gray-700 text-gray-300 rounded-lg font-medium shadow-sm hover:bg-gray-600 transition-colors duration-200"
-                onClick={onCancel}
+                onClick={handleCancel}
                 variants={buttonVariants}
                 whileHover="hover"
                 whileTap="tap"

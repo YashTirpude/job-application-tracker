@@ -7,7 +7,6 @@ import {
   getApplications,
   setApplications,
   Application,
-  updateApplication,
 } from "../store/slices/applicationSlice";
 import { useNavigate } from "react-router-dom";
 import ApplicationCard from "./ApplicationCard";
