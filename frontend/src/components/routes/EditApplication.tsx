@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useForm, Controller } from "react-hook-form";
 import { AppDispatch, RootState } from "../../store";
 import { setLoading } from "../../store/slices/authSlice";
@@ -46,23 +46,46 @@ const EditApplicationForm = () => {
   });
 
   const containerVariants = {
-    hidden: { opacity: 0 },
+    hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
+      y: 0,
       transition: {
-        when: "beforeChildren",
+        duration: 0.5,
+        ease: "easeOut",
         staggerChildren: 0.1,
       },
     },
   };
 
   const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
+    hidden: { opacity: 0, y: 10 },
     visible: {
-      y: 0,
       opacity: 1,
-      transition: { type: "spring", stiffness: 300, damping: 24 },
+      y: 0,
+      transition: {
+        duration: 0.4,
+        ease: "easeOut",
+      },
     },
+  };
+
+  const errorVariants = {
+    hidden: { opacity: 0, height: 0 },
+    visible: {
+      opacity: 1,
+      height: "auto",
+      transition: { duration: 0.3, ease: "easeOut" },
+    },
+  };
+
+  const buttonVariants = {
+    hover: {
+      scale: 1.03,
+      boxShadow: "0px 5px 15px rgba(99, 102, 241, 0.4)",
+      transition: { duration: 0.2, ease: "easeOut" },
+    },
+    tap: { scale: 0.97, transition: { duration: 0.1, ease: "easeIn" } },
   };
 
   useEffect(() => {
@@ -133,24 +156,29 @@ const EditApplicationForm = () => {
         formDataToSend.append("resume", data.resume);
       }
 
-      const config = {
+      let simulatedProgress = 0;
+      const progressInterval = setInterval(() => {
+        const increment = Math.max(
+          1,
+          Math.floor((100 - simulatedProgress) / 10)
+        );
+        simulatedProgress = Math.min(simulatedProgress + increment, 90);
+        setUploadProgress(simulatedProgress);
+      }, 200);
+
+      await api.put(`/applications/${id}`, formDataToSend, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
         },
-        onUploadProgress: (progressEvent: any) => {
-          const percentCompleted = Math.round(
-            (progressEvent.loaded * 100) / progressEvent.total
-          );
-          setUploadProgress(percentCompleted);
-        },
-      };
+      });
 
-      await api.put(`/applications/${id}`, formDataToSend, config);
+      clearInterval(progressInterval);
+      setUploadProgress(100);
 
       setTimeout(() => {
         navigate("/applications");
-      }, 800);
+      }, 500);
     } catch (err: any) {
       setApiError(
         err.response?.data?.message || "Failed to update application"
@@ -163,14 +191,15 @@ const EditApplicationForm = () => {
     return (
       <div className="container mx-auto px-4 py-10">
         <motion.div
-          className="bg-white shadow-xl max-w-xl mx-auto rounded-lg"
+          className="bg-gray-800/90 backdrop-blur-lg p-6 rounded-2xl shadow-2xl max-w-xl mx-auto border border-gray-700"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
           <div className="flex flex-col items-center justify-center min-h-64 p-6">
             <motion.div
-              className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full"
+              className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full"
+              animate={{ rotate: 360 }}
               transition={{
                 repeat: Infinity,
                 repeatType: "loop",
@@ -182,7 +211,7 @@ const EditApplicationForm = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
-              className="mt-4 text-gray-600"
+              className="mt-4 text-gray-300"
             >
               Loading application details...
             </motion.p>
@@ -196,14 +225,14 @@ const EditApplicationForm = () => {
     return (
       <div className="container mx-auto px-4 py-10">
         <motion.div
-          className="bg-white shadow-xl max-w-xl mx-auto rounded-lg"
+          className="bg-gray-800/90 backdrop-blur-lg p-6 rounded-2xl shadow-2xl max-w-xl mx-auto border border-gray-700"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
           <div className="p-6">
             <motion.div
-              className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg"
+              className="bg-red-900/50 border border-red-800 text-red-300 p-4 rounded-lg flex items-center"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.4 }}
@@ -225,11 +254,11 @@ const EditApplicationForm = () => {
               <span className="ml-3">{apiError}</span>
             </motion.div>
             <motion.button
-              className="mt-6 w-full py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+              className="mt-6 w-full py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200"
               onClick={() => navigate("/applications")}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              transition={{ type: "spring", stiffness: 400, damping: 17 }}
+              variants={buttonVariants}
+              whileHover="hover"
+              whileTap="tap"
             >
               Back to Applications
             </motion.button>
@@ -240,314 +269,298 @@ const EditApplicationForm = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <motion.div
-        className="bg-white shadow-xl hover:shadow-2xl transition-all duration-300 max-w-xl mx-auto rounded-lg overflow-hidden"
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, type: "spring", damping: 15 }}
+    <motion.div
+      className="bg-gray-800/90 backdrop-blur-lg p-6 rounded-2xl shadow-2xl max-w-xl mx-auto mt-10 border border-gray-700"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
+      <motion.h2
+        className="text-2xl font-semibold text-white text-center mb-6"
+        variants={itemVariants}
       >
-        <div className="p-6">
-          <motion.div
-            className="mb-6"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-          >
-            <h1 className="text-3xl font-bold text-center text-indigo-600">
-              Edit Application
-            </h1>
-            <motion.div
-              className="w-16 h-1 bg-indigo-600 mx-auto mt-2 rounded-full"
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ duration: 0.7, delay: 0.3 }}
-            ></motion.div>
-          </motion.div>
+        Edit Job Application
+      </motion.h2>
 
-          <motion.form
-            onSubmit={handleSubmit(onSubmit)}
-            className="space-y-4"
-            encType="multipart/form-data"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            <motion.div variants={itemVariants} className="form-control">
-              <label className="block text-sm font-medium text-gray-700">
-                Job Title
-              </label>
-              <Controller
-                name="jobTitle"
-                control={control}
-                rules={{ required: "Job Title is required" }}
-                render={({ field }) => (
-                  <input
-                    {...field}
-                    type="text"
-                    placeholder="Job Title"
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                    disabled={isSubmitting}
-                  />
-                )}
+      <motion.form
+        onSubmit={handleSubmit(onSubmit)}
+        encType="multipart/form-data"
+        className="space-y-5"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <motion.div variants={itemVariants} className="flex flex-col">
+          <label className="block text-sm font-medium text-gray-300">
+            Job Title
+          </label>
+          <Controller
+            name="jobTitle"
+            control={control}
+            rules={{ required: "Job Title is required" }}
+            render={({ field }) => (
+              <input
+                {...field}
+                type="text"
+                placeholder="Senior Developer"
+                className="mt-1 block w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all duration-200"
               />
-              {errors.jobTitle && (
-                <motion.p
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mt-1 text-sm text-red-600"
-                >
-                  {errors.jobTitle.message}
-                </motion.p>
-              )}
-            </motion.div>
-
-            <motion.div variants={itemVariants} className="form-control">
-              <label className="block text-sm font-medium text-gray-700">
-                Company
-              </label>
-              <Controller
-                name="company"
-                control={control}
-                rules={{ required: "Company is required" }}
-                render={({ field }) => (
-                  <input
-                    {...field}
-                    type="text"
-                    placeholder="Company"
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                    disabled={isSubmitting}
-                  />
-                )}
-              />
-              {errors.company && (
-                <motion.p
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mt-1 text-sm text-red-600"
-                >
-                  {errors.company.message}
-                </motion.p>
-              )}
-            </motion.div>
-
-            <motion.div variants={itemVariants} className="form-control">
-              <label className="block text-sm font-medium text-gray-700">
-                Job Description
-              </label>
-              <Controller
-                name="description"
-                control={control}
-                rules={{ required: "Job Description is required" }}
-                render={({ field }) => (
-                  <textarea
-                    {...field}
-                    placeholder="Job Description"
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 h-32"
-                    disabled={isSubmitting}
-                  />
-                )}
-              />
-              {errors.description && (
-                <motion.p
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mt-1 text-sm text-red-600"
-                >
-                  {errors.description.message}
-                </motion.p>
-              )}
-            </motion.div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <motion.div variants={itemVariants} className="form-control">
-                <label className="block text-sm font-medium text-gray-700">
-                  Date Applied
-                </label>
-                <Controller
-                  name="dateApplied"
-                  control={control}
-                  rules={{ required: "Date Applied is required" }}
-                  render={({ field }) => (
-                    <input
-                      {...field}
-                      type="date"
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                      disabled={isSubmitting}
-                    />
-                  )}
-                />
-                {errors.dateApplied && (
-                  <motion.p
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mt-1 text-sm text-red-600"
-                  >
-                    {errors.dateApplied.message}
-                  </motion.p>
-                )}
-              </motion.div>
-
-              <motion.div variants={itemVariants} className="form-control">
-                <label className="block text-sm font-medium text-gray-700">
-                  Status
-                </label>
-                <Controller
-                  name="status"
-                  control={control}
-                  render={({ field }) => (
-                    <select
-                      {...field}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                      disabled={isSubmitting}
-                    >
-                      <option value="applied">Applied</option>
-                      <option value="interview">Interview</option>
-                      <option value="rejected">Rejected</option>
-                      <option value="offer">Offer</option>
-                    </select>
-                  )}
-                />
-              </motion.div>
-            </div>
-
-            <motion.div variants={itemVariants} className="form-control">
-              <label className="block text-sm font-medium text-gray-700">
-                Job Platform
-              </label>
-              <Controller
-                name="jobPlatform"
-                control={control}
-                rules={{ required: "Job Platform is required" }}
-                render={({ field }) => (
-                  <input
-                    {...field}
-                    type="text"
-                    placeholder="Job Platform (e.g. LinkedIn)"
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                    disabled={isSubmitting}
-                  />
-                )}
-              />
-              {errors.jobPlatform && (
-                <motion.p
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mt-1 text-sm text-red-600"
-                >
-                  {errors.jobPlatform.message}
-                </motion.p>
-              )}
-            </motion.div>
-
-            <motion.div variants={itemVariants} className="form-control">
-              <label className="block text-sm font-medium text-gray-700">
-                Job URL
-              </label>
-              <Controller
-                name="jobUrl"
-                control={control}
-                rules={{ required: "Job URL is required" }}
-                render={({ field }) => (
-                  <input
-                    {...field}
-                    type="text"
-                    placeholder="Job Listing URL"
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                    disabled={isSubmitting}
-                  />
-                )}
-              />
-              {errors.jobUrl && (
-                <motion.p
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mt-1 text-sm text-red-600"
-                >
-                  {errors.jobUrl.message}
-                </motion.p>
-              )}
-            </motion.div>
-
-            <motion.div variants={itemVariants} className="form-control">
-              <label className="block text-sm font-medium text-gray-700">
-                Resume (Optional)
-              </label>
-              <Controller
-                name="resume"
-                control={control}
-                render={({ field: { value, onChange, ...fieldProps } }) => (
-                  <div className="flex flex-col">
-                    <input
-                      {...fieldProps}
-                      type="file"
-                      accept=".pdf,.doc,.docx"
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 file:bg-white file:text-gray-700 file:rounded-md file:border-0 file:mr-4 file:py-2 file:px-4 hover:file:bg-gray-100"
-                      disabled={isSubmitting}
-                      onChange={(e) => {
-                        const file = e.target.files?.[0] || null;
-                        onChange(file);
-                      }}
-                    />
-                    <span className="mt-1 text-xs text-gray-500">
-                      Accepted formats: PDF, DOC, DOCX
-                    </span>
-                  </div>
-                )}
-              />
-            </motion.div>
-
-            {uploadProgress > 0 && uploadProgress < 100 && (
-              <motion.div
-                initial={{ opacity: 0, scaleX: 0 }}
-                animate={{ opacity: 1, scaleX: 1 }}
-                className="w-full mt-2"
-              >
-                <div className="w-full bg-gray-200 rounded-full h-2.5">
-                  <div
-                    className="bg-indigo-600 h-2.5 rounded-full transition-all duration-300"
-                    style={{ width: `${uploadProgress}%` }}
-                  ></div>
-                </div>
-                <p className="text-sm text-gray-600 mt-1">{uploadProgress}%</p>
-              </motion.div>
             )}
-
-            <motion.div variants={itemVariants} className="pt-4 space-y-3">
-              <motion.button
-                type="submit"
-                className="w-full py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-                disabled={isSubmitting}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                transition={{ type: "spring", stiffness: 400, damping: 17 }}
+          />
+          <AnimatePresence>
+            {errors.jobTitle && (
+              <motion.p
+                variants={errorVariants}
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+                className="text-sm text-red-400 mt-1"
               >
-                {isSubmitting ? (
-                  <>
-                    <span className="loading loading-spinner loading-sm mr-2"></span>
-                    {uploadProgress}% Complete
-                  </>
-                ) : (
-                  "Update Application"
-                )}
-              </motion.button>
+                {errors.jobTitle.message}
+              </motion.p>
+            )}
+          </AnimatePresence>
+        </motion.div>
 
-              <motion.button
-                type="button"
-                className="w-full py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-100 disabled:bg-gray-200 disabled:cursor-not-allowed"
-                onClick={() => navigate("/applications")}
-                disabled={isSubmitting}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                transition={{ type: "spring", stiffness: 400, damping: 17 }}
+        <motion.div variants={itemVariants} className="flex flex-col">
+          <label className="block text-sm font-medium text-gray-300">
+            Company
+          </label>
+          <Controller
+            name="company"
+            control={control}
+            rules={{ required: "Company is required" }}
+            render={({ field }) => (
+              <input
+                {...field}
+                type="text"
+                placeholder="Tech Inc."
+                className="mt-1 block w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all duration-200"
+              />
+            )}
+          />
+          <AnimatePresence>
+            {errors.company && (
+              <motion.p
+                variants={errorVariants}
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+                className="text-sm text-red-400 mt-1"
               >
-                Cancel
-              </motion.button>
-            </motion.div>
-          </motion.form>
-        </div>
-      </motion.div>
-    </div>
+                {errors.company.message}
+              </motion.p>
+            )}
+          </AnimatePresence>
+        </motion.div>
+
+        <motion.div variants={itemVariants} className="flex flex-col">
+          <label className="block text-sm font-medium text-gray-300">
+            Job Description
+          </label>
+          <Controller
+            name="description"
+            control={control}
+            rules={{ required: "Job Description is required" }}
+            render={({ field }) => (
+              <textarea
+                {...field}
+                placeholder="Detail the job requirements and responsibilities"
+                className="mt-1 block w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all duration-200"
+                rows={4}
+              />
+            )}
+          />
+          <AnimatePresence>
+            {errors.description && (
+              <motion.p
+                variants={errorVariants}
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+                className="text-sm text-red-400 mt-1"
+              >
+                {errors.description.message}
+              </motion.p>
+            )}
+          </AnimatePresence>
+        </motion.div>
+
+        <motion.div variants={itemVariants} className="flex flex-col">
+          <label className="block text-sm font-medium text-gray-300">
+            Date Applied
+          </label>
+          <Controller
+            name="dateApplied"
+            control={control}
+            rules={{ required: "Date Applied is required" }}
+            render={({ field }) => (
+              <input
+                {...field}
+                type="date"
+                className="mt-1 block w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all duration-200"
+              />
+            )}
+          />
+          <AnimatePresence>
+            {errors.dateApplied && (
+              <motion.p
+                variants={errorVariants}
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+                className="text-sm text-red-400 mt-1"
+              >
+                {errors.dateApplied.message}
+              </motion.p>
+            )}
+          </AnimatePresence>
+        </motion.div>
+
+        <motion.div variants={itemVariants} className="flex flex-col">
+          <label className="block text-sm font-medium text-gray-300">
+            Status
+          </label>
+          <Controller
+            name="status"
+            control={control}
+            render={({ field }) => (
+              <select
+                {...field}
+                className="mt-1 block w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all duration-200"
+              >
+                <option value="applied">Applied</option>
+                <option value="interview">Interview</option>
+                <option value="rejected">Rejected</option>
+                <option value="offer">Offer</option>
+              </select>
+            )}
+          />
+        </motion.div>
+
+        <motion.div variants={itemVariants} className="flex flex-col">
+          <label className="block text-sm font-medium text-gray-300">
+            Job Platform
+          </label>
+          <Controller
+            name="jobPlatform"
+            control={control}
+            rules={{ required: "Job Platform is required" }}
+            render={({ field }) => (
+              <input
+                {...field}
+                type="text"
+                placeholder="LinkedIn, Indeed, etc."
+                className="mt-1 block w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all duration-200"
+              />
+            )}
+          />
+          <AnimatePresence>
+            {errors.jobPlatform && (
+              <motion.p
+                variants={errorVariants}
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+                className="text-sm text-red-400 mt-1"
+              >
+                {errors.jobPlatform.message}
+              </motion.p>
+            )}
+          </AnimatePresence>
+        </motion.div>
+
+        <motion.div variants={itemVariants} className="flex flex-col">
+          <label className="block text-sm font-medium text-gray-300">
+            Job URL
+          </label>
+          <Controller
+            name="jobUrl"
+            control={control}
+            rules={{ required: "Job URL is required" }}
+            render={({ field }) => (
+              <input
+                {...field}
+                type="text"
+                placeholder="https://example.com/job-listing"
+                className="mt-1 block w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all duration-200"
+              />
+            )}
+          />
+          <AnimatePresence>
+            {errors.jobUrl && (
+              <motion.p
+                variants={errorVariants}
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+                className="text-sm text-red-400 mt-1"
+              >
+                {errors.jobUrl.message}
+              </motion.p>
+            )}
+          </AnimatePresence>
+        </motion.div>
+
+        <motion.div variants={itemVariants} className="flex flex-col">
+          <label className="block text-sm font-medium text-gray-300">
+            Resume (Optional)
+          </label>
+          <Controller
+            name="resume"
+            control={control}
+            render={({ field: { value, onChange, ...fieldProps } }) => (
+              <input
+                {...fieldProps}
+                type="file"
+                accept=".pdf,.doc,.docx"
+                className="mt-1 block w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-gray-300 file:bg-gray-600 file:border-0 file:text-gray-300 file:rounded-lg file:px-3 file:py-1 file:cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all duration-200"
+                onChange={(e) => {
+                  const file = e.target.files?.[0] || null;
+                  onChange(file);
+                }}
+              />
+            )}
+          />
+        </motion.div>
+
+        <motion.div variants={itemVariants} className="mt-6 space-y-4">
+          <motion.button
+            type="submit"
+            className="bg-indigo-600 text-white rounded-lg w-full h-12 flex items-center justify-center shadow-md hover:bg-indigo-700 disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors duration-200"
+            disabled={isSubmitting}
+            variants={buttonVariants}
+            whileHover="hover"
+            whileTap="tap"
+          >
+            {isSubmitting ? (
+              <div className="flex items-center justify-center gap-2">
+                <motion.div
+                  className="w-5 h-5 rounded-full border-2 border-white border-t-indigo-400"
+                  animate={{ rotate: 360 }}
+                  transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                />
+                <span>{uploadProgress}%</span>
+              </div>
+            ) : (
+              "Update Application"
+            )}
+          </motion.button>
+
+          <motion.button
+            type="button"
+            className="bg-gray-700 text-gray-300 rounded-lg w-full h-12 flex items-center justify-center shadow-md hover:bg-gray-600 disabled:bg-gray-800 disabled:cursor-not-allowed transition-colors duration-200"
+            onClick={() => navigate("/applications")}
+            disabled={isSubmitting}
+            variants={buttonVariants}
+            whileHover="hover"
+            whileTap="tap"
+          >
+            Cancel
+          </motion.button>
+        </motion.div>
+      </motion.form>
+    </motion.div>
   );
 };
 
