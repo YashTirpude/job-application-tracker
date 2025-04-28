@@ -10,7 +10,7 @@ import api from "../services/api";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const location = useLocation();
+
   const dispatch = useDispatch<AppDispatch>();
   const token = useSelector((state: RootState) => state.auth.token);
   const [searchQuery, setSearchQuery] = useState("");
