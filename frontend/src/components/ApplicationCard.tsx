@@ -316,7 +316,7 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
           {app.description && (
             <motion.div
               variants={itemVariants}
-              className="pl-4 border-l-2 border-indigo-500 rounded-r-md max-h-24 overflow-y-auto"
+              className="pl-4 border-l-2 border-indigo-500 rounded-r-md h-24 overflow-y-auto"
             >
               <p className="text-sm text-gray-300 py-1.5">{app.description}</p>
             </motion.div>
