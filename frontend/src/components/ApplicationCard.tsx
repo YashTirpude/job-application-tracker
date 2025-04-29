@@ -215,7 +215,7 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
       className="flex justify-center items-center"
     >
       <motion.div
-        className="bg-gray-800 shadow-2xl p-6 max-w-md w-full mx-auto rounded-2xl space-y-6 border border-gray-700 relative overflow-hidden h-96"
+        className="bg-gray-800 shadow-2xl p-6 max-w-md w-full mx-auto rounded-2xl space-y-6 border border-gray-700 relative overflow-hidden"
         variants={itemVariants}
         whileHover={{
           y: -5,
@@ -233,7 +233,7 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
           transition={{ duration: 0.5 }}
         />
 
-        <div className="flex flex-col space-y-4 h-full">
+        <div className="flex flex-col space-y-4">
           {/* Header with job title and company */}
           <motion.div variants={itemVariants} className="space-y-1">
             <h2 className="text-2xl font-bold text-white">{app.jobTitle}</h2>
@@ -312,19 +312,15 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
             <span className="text-white">{formatDate(app.dateApplied)}</span>
           </motion.div>
 
-          {/* Description with styled border and fixed height */}
-          <motion.div
-            variants={itemVariants}
-            className="flex-grow overflow-hidden"
-          >
-            {app.description && (
-              <div className="pl-4 border-l-2 border-indigo-500 rounded-r-md h-16 overflow-auto">
-                <p className="text-sm text-gray-300 py-1.5">
-                  {app.description}
-                </p>
-              </div>
-            )}
-          </motion.div>
+          {/* Scrollable description with fixed height */}
+          {app.description && (
+            <motion.div
+              variants={itemVariants}
+              className="pl-4 border-l-2 border-indigo-500 rounded-r-md max-h-24 overflow-y-auto"
+            >
+              <p className="text-sm text-gray-300 py-1.5">{app.description}</p>
+            </motion.div>
+          )}
 
           {/* Job URL */}
           {app.jobUrl && (
