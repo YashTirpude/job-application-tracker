@@ -16,7 +16,6 @@ interface ApplicationCardProps {
   token: string | null;
 }
 
-// Export this function to maintain compatibility with other components
 export const getStatusColor = (status: string) => {
   switch (status.toLowerCase()) {
     case "pending":
@@ -42,7 +41,6 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
 }) => {
   const dispatch = useDispatch<AppDispatch>();
 
-  // Animation variants matching AuthForm style
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -223,7 +221,6 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
           transition: { duration: 0.3 },
         }}
       >
-        {/* Status indicator at top */}
         <motion.div
           className={`absolute top-0 left-0 right-0 h-1 ${getStatusColor(
             app.status
@@ -234,7 +231,6 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
         />
 
         <div className="flex flex-col space-y-4">
-          {/* Header with job title and company */}
           <motion.div variants={itemVariants} className="space-y-1">
             <h2 className="text-2xl font-bold text-white">{app.jobTitle}</h2>
             <div className="flex items-center gap-2">
@@ -257,7 +253,6 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
             </div>
           </motion.div>
 
-          {/* Status and date */}
           <motion.div
             variants={itemVariants}
             className="flex justify-between items-center"
@@ -290,7 +285,6 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
             />
           </motion.div>
 
-          {/* Date applied with icon */}
           <motion.div
             variants={itemVariants}
             className="flex items-center gap-2 text-sm"
@@ -312,7 +306,6 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
             <span className="text-white">{formatDate(app.dateApplied)}</span>
           </motion.div>
 
-          {/* Scrollable description with fixed height */}
           {app.description && (
             <motion.div
               variants={itemVariants}
@@ -322,7 +315,6 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
             </motion.div>
           )}
 
-          {/* Job URL */}
           {app.jobUrl && (
             <motion.div variants={itemVariants} className="pt-2">
               <motion.a
@@ -355,7 +347,6 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
             </motion.div>
           )}
 
-          {/* Action buttons */}
           <motion.div
             variants={itemVariants}
             className="flex justify-between items-center pt-4 mt-2 border-t border-gray-700"
