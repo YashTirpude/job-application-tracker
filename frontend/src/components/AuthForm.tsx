@@ -33,7 +33,6 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
   const navigate = useNavigate();
   const password = watch("password", "");
 
-  // Enhanced animations
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
 import { AppDispatch, RootState } from "../store";
@@ -30,24 +30,20 @@ const ApplicationList = () => {
     (state: RootState) => state.applications
   );
 
-  // Remove duplicates by ID
   const uniqueApplications = Array.from(
     new Map(applications.map((app) => [app._id, app])).values()
   );
 
-  // Filter applications by status if a filter is selected
   const filteredApplications = selectedFilter
     ? uniqueApplications.filter((app) => app.status === selectedFilter)
     : uniqueApplications;
 
-  // Initial fetch of applications
   useEffect(() => {
     if (token) {
       dispatch(getApplications({ page, limit: 10 }));
     }
   }, [dispatch, token, page]);
 
-  // Infinite scroll setup
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -71,7 +67,6 @@ const ApplicationList = () => {
     };
   }, [hasNextPage, loading]);
 
-  // Action handlers
   const handleCreateClick = () => {
     navigate("/create");
   };
@@ -99,7 +94,6 @@ const ApplicationList = () => {
     setDeleteId(null);
   };
 
-  // Animation variants
   const container = {
     hidden: { opacity: 0 },
     show: {
@@ -112,7 +106,6 @@ const ApplicationList = () => {
     },
   };
 
-  // Error state
   if (error) {
     return (
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -130,27 +123,23 @@ const ApplicationList = () => {
     );
   }
 
-  // Initial loading state
   if (loading && page === 1) {
     return <PageLoader />;
   }
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-      {/* Header */}
       <ListHeader
         count={uniqueApplications.length}
         onCreateClick={handleCreateClick}
       />
 
-      {/* Filter Section */}
       <StatusFilter
         applications={uniqueApplications}
         selectedFilter={selectedFilter}
         onFilterChange={setSelectedFilter}
       />
 
-      {/* Application Cards */}
       {filteredApplications.length === 0 ? (
         <EmptyState
           type="empty"
@@ -179,7 +168,6 @@ const ApplicationList = () => {
         </motion.div>
       )}
 
-      {/* Infinite Scroll Loader */}
       {hasNextPage && (
         <div ref={loaderRef} className="flex justify-center py-10">
           {loading ? (
@@ -197,7 +185,6 @@ const ApplicationList = () => {
         </div>
       )}
 
-      {/* End of list message */}
       {!hasNextPage && uniqueApplications.length > 0 && (
         <motion.div
           className="flex justify-center py-10"
@@ -215,7 +202,6 @@ const ApplicationList = () => {
         </motion.div>
       )}
 
-      {/* Delete Confirmation Modal */}
       <ConfirmationModal
         isOpen={!!deleteId}
         onConfirm={confirmDelete}
